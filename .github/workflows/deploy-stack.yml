@@ -57,6 +57,9 @@ jobs:
     steps:
     - name: Check out Repo
       uses: actions/checkout@v4
+      with:
+        repository: 'nhsconnect/prm-deductions-infra'
+        ref: PRM-495
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
