@@ -44,9 +44,9 @@ permissions:
 
 jobs:
   deploy_stack:
-    environment: ${{ inputs.environment }}${{ (inputs.environment == 'prod' && !inputs.is_deployment) && '-plan' || '' }}
+    environment: ${{ inputs.environment }}
     env:
-      GITHUB_ENV: ${{ inputs.environment }}${{ (inputs.environment == 'prod' && !inputs.is_deployment) && '-plan' || '' }}
+      GITHUB_ENV: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -56,13 +56,13 @@ jobs:
     - name: Check out Repo
       uses: actions/checkout@v4
 
-    - name: Configure AWS Credentials
+    - name: Configure AWS Credentials (Read Write)
       uses: aws-actions/configure-aws-credentials@v4
       with:
+        role-to-assume: ${{ secrets.IAM_ROLE }}
         aws-region: ${{ vars.AWS_REGION }}
-        role-to-assume:  ${{ secrets.IAM_ROLE }}
-        role-skip-session-tagging: true
         mask-aws-account-id: true
+        role-skip-session-tagging: true
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
