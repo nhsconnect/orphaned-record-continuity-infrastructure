@@ -57,6 +57,7 @@ jobs:
       uses: actions/checkout@v4
       with:
           repository: nhsconnect/prm-deductions-infra
+          ref: PRM-495
 
     - name: Configure AWS Credentials (Read Write)
       uses: aws-actions/configure-aws-credentials@v4
