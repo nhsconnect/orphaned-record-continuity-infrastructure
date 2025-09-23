@@ -55,6 +55,8 @@ jobs:
     steps:
     - name: Check out Repo
       uses: actions/checkout@v4
+      with:
+          repository: nhsconnect/prm-deductions-infra/.github/workflows/deploy-stack.yml@PRM-495
 
     - name: Configure AWS Credentials (Read Write)
       uses: aws-actions/configure-aws-credentials@v4
