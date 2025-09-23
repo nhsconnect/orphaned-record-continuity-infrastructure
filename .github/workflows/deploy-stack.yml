@@ -81,7 +81,7 @@ jobs:
     - name: Terraform Init
       id: init
       run: |
-        terraform init -no-color -backend-config="prm-deductions-dev-terraform-state/${{ inputs.stack }}-${{ inputs.environment }}/terraform.tfstate" \
+        terraform init -no-color -backend-config="key=${{ inputs.stack }}-${{ inputs.environment }}/terraform.tfstate" \
         -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
         -backend-config="dynamodb_table=${{ secrets.TF_BACKEND_TABLE }}"
       shell: bash
