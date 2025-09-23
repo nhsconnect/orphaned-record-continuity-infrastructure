@@ -26,7 +26,7 @@ on:
 
   workflow_call:
     inputs:
-      enviornment:
+      environment:
         default: dev
         description: "Environment to deploy to"
         type: string
@@ -57,9 +57,6 @@ jobs:
     steps:
     - name: Check out Repo
       uses: actions/checkout@v4
-      with:
-        repository: nhsconnect/prm-deductions-infra
-        ref: PRM-495
 
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -79,12 +76,12 @@ jobs:
       id: fmt
       run: terraform fmt -check
 
+#        TODO check where the backend config is, what table and what bucket, ensure secrets for relevant github envs
+#             TODO how to handle case where stack and bucket pathing don't match?
     - name: Terraform Init
       id: init
       run: |
-#        TODO check where the backend config is, what table and what bucket, ensure secrets for relevant github envs
-#             TODO how to handle case where stack and bucket pathing don't match?
-        terraform init -no-color -backend-config="${{ secrets.TF_BACKEND_KEY }}/${{ inputs.terraform_stack }}/terraform.tfstate" \
+        terraform init -no-color -backend-config="prm-deductions-dev-terraform-state/${{ inputs.stack }}-${{ inputs.environment }}/terraform.tfstate" \
         -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
         -backend-config="dynamodb_table=${{ secrets.TF_BACKEND_TABLE }}"
       shell: bash
@@ -115,11 +112,11 @@ jobs:
             issue_number: context.issue.number,
           });
           const botComment = comments.find(comment => {
-            return comment.user.type === 'Bot' && comment.body.includes('Report for ${{inputs.terraform_stack}} environment: ${{ inputs.environment }}')
+            return comment.user.type === 'Bot' && comment.body.includes('Report for ${{ inputs.stack }} environment: ${{ inputs.environment }}')
           });
             
           // 2. Prepare format of the comment
-          const output = `### Report for ${{inputs.terraform_stack}} environment: ${{ inputs.environment }}
+          const output = `### Report for ${{inputs.stack}} environment: ${{ inputs.environment }}
             
           #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             
