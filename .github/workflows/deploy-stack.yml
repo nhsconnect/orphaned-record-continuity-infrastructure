@@ -21,7 +21,6 @@ on:
         is_deployment:
           default: false
           type: boolean
-          required: true
           description: "Whether to deploy"
 
   workflow_call:
@@ -36,7 +35,6 @@ on:
       is_deployment:
         default: false
         type: boolean
-        required: true
         description: "Whether to deploy"
 
 permissions:
