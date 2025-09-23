@@ -60,8 +60,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4
       with:
         aws-region: ${{ vars.AWS_REGION }}
-#        TODO review and set up these roles if necessary
-        role-to-assume:  ${{inputs.is_deployment && secrets.AWS_ASSUME_ROLE || secrets.AWS_ASSUME_ROLE_READ_ONLY}}
+        role-to-assume:  ${{ secrets.IAM_ROLE }}
         role-skip-session-tagging: true
         mask-aws-account-id: true
 
@@ -74,8 +73,6 @@ jobs:
       id: fmt
       run: terraform fmt -check
 
-#        TODO check where the backend config is, what table and what bucket, ensure secrets for relevant github envs
-#             TODO how to handle case where stack and bucket pathing don't match?
     - name: Terraform Init
       id: init
       run: |
