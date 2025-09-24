@@ -87,7 +87,7 @@ jobs:
       id: fmt
       run: |
         terraform fmt -check
-      working-directory: ./stacks/${{ inputs.stack }}/terraform
+      working-directory: stacks/${{ inputs.stack }}/terraform
 
     - name: Terraform Init
       id: init
