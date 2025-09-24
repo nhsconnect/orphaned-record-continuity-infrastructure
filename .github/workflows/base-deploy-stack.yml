@@ -61,9 +61,6 @@ jobs:
     env:
       GITHUB_ENV: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./stacks/${{ inputs.stack }}/terraform
 
     steps:
     - name: Check out Repo
