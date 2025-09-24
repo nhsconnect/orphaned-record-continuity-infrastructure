@@ -1,0 +1,17 @@
+# IntelliJ
+.idea
+
+/terraform/ssh/
+.terraform/
+*.tfplan
+*.tfstate
+tf-out.json
+terraform.tfstate*
+.terraform*
+
+node_modules/
+
+# Imported utilities
+/utils/*
+/imagerc/
+/ops/

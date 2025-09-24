@@ -1,0 +1,307 @@
+#!/usr/bin/env bash
+
+DOCKER_OPS_VERSION="2.0.1"
+DOCKER_OPS_FILE="ops/docker-ops-${DOCKER_OPS_VERSION}"
+mkdir -p ops
+if [[ ! -f $DOCKER_OPS_FILE ]];then
+  wget --quiet -O $DOCKER_OPS_FILE https://github.com/kudulab/docker-ops/releases/download/${DOCKER_OPS_VERSION}/docker-ops
+fi
+source $DOCKER_OPS_FILE
+
+set -Eeo pipefail +u
+
+NHS_SERVICE=mhs
+AWS_REGION=eu-west-2
+AWS_DEFAULT_REGION=$AWS_REGION
+AWS_HELPERS_VERSION=0.2.18
+echo "AWS helper scripts version: $AWS_HELPERS_VERSION"
+
+# Do not change the file name as the aws helper scripts depend on it
+AWS_HELPERS_FILE="utils/$AWS_HELPERS_VERSION/aws-helpers"
+
+mkdir -p "utils/$AWS_HELPERS_VERSION"
+if [[ ! -f $AWS_HELPERS_FILE ]];then
+  wget --quiet -O $AWS_HELPERS_FILE https://github.com/nhsconnect/prm-deductions-support-infra/releases/download/${AWS_HELPERS_VERSION}/aws-helpers
+fi
+chmod +x $AWS_HELPERS_FILE
+source $AWS_HELPERS_FILE
+
+CERTIFICATES_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )/mhs-certs"
+
+function set_mhs_image_tag {
+  if [ -z "${MHS_IMAGE_TAG}" ]; then
+    # we assume the same tag for outbound and inbound
+    if [ -f "imagerc/outbound" ]; then
+      source "imagerc/outbound"
+      MHS_IMAGE_TAG="${KUDU_DOCKER_IMAGE_TAG}"
+    else
+      echo "Must set MHS_IMAGE_TAG or fetch imagerc/outbound file with docker image details"
+      echo "Current directory is $(pwd)"
+      echo "Content of the directory:"
+      ls -la
+      exit 1
+    fi
+  fi
+}
+
+if [ -z "${DNS_IMAGE_TAG}" ]; then
+  DNS_IMAGE_TAG="${GO_DEPENDENCY_LABEL_DOCKER_DNS_IMAGES:-alpha}"
+fi
+
+function tf_init {
+  check_env
+
+  cd terraform
+
+  terraform init -reconfigure \
+    -backend-config key="${NHS_SERVICE}-${NHS_ENVIRONMENT}-${cluster_name}/terraform.tfstate" \
+    -backend-config bucket="prm-deductions-${NHS_ENVIRONMENT}-terraform-state" \
+    -backend-config dynamodb_table="prm-deductions-${NHS_ENVIRONMENT}-terraform-table" \
+    -backend-config region=${AWS_DEFAULT_REGION}
+}
+
+function tf_plan {
+  operation=$1
+  cluster_name=$2
+
+  check_mhs_docker_image_tag
+
+  if [ -z "${DNS_IMAGE_TAG}" ]; then
+    echo "DNS_IMAGE_TAG must be set"
+    exit 3
+  fi
+
+  check_cluster_name $cluster_name
+
+  tf_init
+  terraform get # modules
+  if [[ "${operation}" == "create" ]]; then
+    terraform plan -var build_id=$MHS_IMAGE_TAG -var-file=${NHS_ENVIRONMENT}.tfvars -var-file=${NHS_ENVIRONMENT}_${cluster_name}.tfvars -out="deployment.tfplan"
+  elif [[ "${operation}" == "destroy" ]]; then
+    terraform plan -var build_id=$MHS_IMAGE_TAG -var-file=${NHS_ENVIRONMENT}.tfvars -var-file=${NHS_ENVIRONMENT}_${cluster_name}.tfvars -out="deployment.tfplan" -destroy
+  else
+    echo "Unknown operation (should be create or destroy), got: ${operation}"
+    exit 1
+  fi
+}
+
+function tf_apply {
+  tf_init
+  terraform get # modules
+  terraform apply deployment.tfplan
+}
+
+function check_mhs_docker_image_tag {
+  if [ -z "${MHS_IMAGE_TAG}" ]; then
+    echo "MHS_IMAGE_TAG must be set"
+    exit 3
+  fi
+}
+
+function check_env {
+  if [[ -z "${NHS_ENVIRONMENT}" ]]; then
+    echo "Must set NHS_ENVIRONMENT"
+    exit 1
+  fi
+}
+
+function check_cluster_name {
+  cluster_name=$1
+  if [[ $cluster_name != "repo" ]] && [[ $cluster_name != "test_harness" ]]; then
+    echo "cluster_name must be set to either repo or test_harness"
+    exit 3
+  fi
+}
+
+function generate_csr {
+  keys_file_name="$1"
+  # If you intend to secure the URL https://www.yourdomain.com, then your CSR’s common name must be www.yourdomain.com
+  common_name="$2"
+  fqdn=$common_name
+
+  if [[ -z "$keys_file_name" ]]; then
+    echo "Keys filename missing"
+    exit 1
+  fi
+  if [[ -z "$common_name" ]]; then
+    echo "domain name missing"
+    exit 1
+  fi
+
+  echo "Preparing certificates for: ${keys_file_name} on ${fqdn}, common_name: ${common_name}"
+  mkdir -p $CERTIFICATES_DIR
+
+  # 1. Create a config file for generating a Certificate Signing Request (CSR).
+  cat <<EOF >${CERTIFICATES_DIR}/csr.conf
+[ req ]
+default_bits = 2048
+prompt = no
+default_md = sha256
+req_extensions = req_ext
+distinguished_name = dn
+
+[ dn ]
+CN = ${common_name}
+
+[ req_ext ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = ${fqdn}
+
+[ v3_ext ]
+authorityKeyIdentifier=keyid,issuer:always
+basicConstraints=CA:FALSE
+keyUsage=keyEncipherment,dataEncipherment
+extendedKeyUsage=serverAuth,clientAuth
+subjectAltName=@alt_names
+EOF
+
+  # 2. Create a private key (${keys_file_name}.key) and then generate a certificate request (${keys_file_name}.csr) from it.
+  # https://www.openssl.org/docs/manmaster/man1/req.html
+  openssl genrsa -out ${keys_file_name}.key 2048
+  openssl req -new -key ${keys_file_name}.key -out ${keys_file_name}.csr -config ${CERTIFICATES_DIR}/csr.conf
+}
+
+function docker_login {
+  echo Logging in to Amazon ECR...
+  eval $(dojo "aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION")
+}
+
+
+function configure_mhs_inbound_host_name {
+  check_env
+  ods_code=$(get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/repository-ods-code")
+
+  if [[ "${NHS_ENVIRONMENT}" == "prod" ]]; then
+    export MHS_HOST_NAME=in-${ods_code}.mhs.${NHS_ENVIRONMENT}.patient-deductions.nhs.uk
+  else
+    export MHS_HOST_NAME=in-${ods_code}.mhs.${NHS_ENVIRONMENT}.non-prod.patient-deductions.nhs.uk
+  fi
+
+}
+
+function check_mhs_inbound_connectivity() {
+    if nc -w5 -z -v ${MHS_HOST_NAME} 443; then exit 0;
+    else exit 1; fi
+}
+
+command="$1"
+case "${command}" in
+  _test_inbound)
+      check_mhs_inbound_connectivity
+      ;;
+  test_inbound)
+      check_env
+      assume_environment_role $NHS_ENVIRONMENT
+      configure_mhs_inbound_host_name
+      dojo "./tasks _test_inbound"
+      ;;
+  _test)
+      npm install
+      npm run test:outbound
+      ;;
+  test)
+      check_env
+      export NODE_EXTRA_CA_CERTS=certs/deductions.crt
+      # PATCH: do not run the test in PTL-INT which has expired certs
+      if  [[ "${NHS_ENVIRONMENT}" == "prod" ]]; then
+        dojo -c Dojofile-node "./tasks _test"
+      fi
+      ./tasks test_inbound
+      ;;
+  tf)
+      check_env
+      set_mhs_image_tag
+      dojo "bash"
+      ;;
+  _tf_plan_repo)
+      check_env
+      set_mhs_image_tag
+      _assume_environment_role $NHS_ENVIRONMENT
+      tf_plan "$2" repo
+      ;;
+  _tf_plan_test_harness)
+      check_env
+      set_mhs_image_tag
+      _assume_environment_role $NHS_ENVIRONMENT
+      tf_plan "$2" test_harness
+      ;;
+  tf_plan_repo)
+      check_env
+      set_mhs_image_tag
+      dojo "./tasks _tf_plan_repo $2 repo"
+      ;;
+  tf_plan_repo_shell)
+      check_env
+      set_mhs_image_tag
+      dojo
+      ;;
+  tf_plan_test_harness)
+      check_env
+      set_mhs_image_tag
+      dojo "./tasks _tf_plan_test_harness $2 test_harness"
+      ;;
+  _tf_apply)
+      check_env
+      set_mhs_image_tag
+      _assume_environment_role $NHS_ENVIRONMENT
+      tf_apply
+      ;;
+  tf_apply)
+      check_env
+      set_mhs_image_tag
+      dojo "./tasks _tf_apply"
+      ;;
+  _csr)
+      check_env
+      if [ -z $ODS_CODE ]; then
+        echo "Please specify ODS_CODE"
+        exit 4
+      fi
+      fqdn="in-$ODS_CODE.mhs.$NHS_ENVIRONMENT.non-prod.patient-deductions.nhs.uk"
+      generate_csr "in-$ODS_CODE-mhs-$NHS_ENVIRONMENT" $fqdn
+      echo "The CSR has to be sent together with endpoint registration. Use the form below or ask endpoint admin to register it"
+      echo "https://digital.nhs.uk/forms/combined-endpoint-and-service-registration-request"
+      ;;
+  promote_docker_image)
+      check_env
+      set_mhs_image_tag
+      promote_docker_image "mhs-inbound:$MHS_IMAGE_TAG" "$NHS_ENVIRONMENT"
+      promote_docker_image "mhs-outbound:$MHS_IMAGE_TAG" "$NHS_ENVIRONMENT"
+      ;;
+  _wait_ecs)
+      _assume_environment_role $NHS_ENVIRONMENT
+      cluster_name=$2
+      check_cluster_name $cluster_name
+
+      CLUSTER_NAME=$cluster_name
+      if [[ $cluster_name == "test_harness" ]]; then
+        CLUSTER_NAME=test-harness
+      fi
+
+      # Wait for outbound
+      aws ecs wait services-stable \
+        --region $AWS_DEFAULT_REGION \
+        --cluster $NHS_ENVIRONMENT-$CLUSTER_NAME-mhs-outbound-cluster \
+        --service $NHS_ENVIRONMENT-$CLUSTER_NAME-mhs-outbound
+
+      # Wait for inbound
+      aws ecs wait services-stable \
+        --region $AWS_DEFAULT_REGION \
+        --cluster $NHS_ENVIRONMENT-$CLUSTER_NAME-mhs-inbound-cluster \
+        --service $NHS_ENVIRONMENT-$CLUSTER_NAME-mhs-inbound
+      ;;
+
+  wait_ecs)
+      cluster_name=$2
+      check_cluster_name $cluster_name
+      check_env
+      dojo "./tasks _wait_ecs $cluster_name"
+      ;;
+  *)
+      echo "Invalid command: '${command}'"
+      exit 1
+      ;;
+esac
+set +e
