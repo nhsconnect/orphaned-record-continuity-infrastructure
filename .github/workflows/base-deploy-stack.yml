@@ -89,8 +89,8 @@ jobs:
     - name: Terraform Format
       id: fmt
       run: |
-        ls
         terraform fmt -check
+      working-directory: ./stacks/${{ inputs.stack }}/terraform
 
     - name: Terraform Init
       id: init
