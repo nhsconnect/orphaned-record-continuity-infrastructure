@@ -70,6 +70,9 @@ jobs:
         ref: PRM-495
         fetch-depth: 0
 
+    - name: Check Files
+      run: |
+        ls -la
     - name: Configure AWS Credentials (Read Write)
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -85,10 +88,8 @@ jobs:
 
     - name: Terraform Format
       id: fmt
+      working-directory: ./stacks/${{ inputs.stack }}/terraform
       run: |
-        ls -la
-        cd ./stacks/${{ inputs.stack }}/terraform
-        ls -la
         terraform fmt -check
 
     - name: Terraform Init
