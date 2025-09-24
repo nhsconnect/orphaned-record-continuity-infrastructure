@@ -61,7 +61,9 @@ jobs:
     env:
       GITHUB_ENV: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./stacks/${{ inputs.stack }}/terraform
     steps:
     - name: Check out Repo
       uses: actions/checkout@v4
@@ -73,6 +75,7 @@ jobs:
     - name: Check Files
       run: |
         ls -la
+
     - name: Configure AWS Credentials (Read Write)
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -88,7 +91,6 @@ jobs:
 
     - name: Terraform Format
       id: fmt
-      working-directory: ./stacks/${{ inputs.stack }}/terraform
       run: |
         terraform fmt -check
 
