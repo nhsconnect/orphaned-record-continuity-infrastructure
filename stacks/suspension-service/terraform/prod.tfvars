@@ -1,4 +1,1 @@
-variable "environment" {
-  type    = string
-  default = "prod"
-}
+environment = "prod"
