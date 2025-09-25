@@ -51,7 +51,8 @@ variable "mhs_spine_request_max_size" {
 }
 
 variable "build_id" {
-  description = "ID used to identify the current build such as a commit sha."
+  description = "ID used to identify the current build such as a commit sha."f
+  default = "2.0.1"
 }
 
 variable "deregistration_delay" {
