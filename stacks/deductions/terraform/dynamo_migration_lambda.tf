@@ -264,13 +264,13 @@ data "aws_security_group" "ehr-transfer-service-ecs-task" {
 variable "dynamo_migration_lambda_zip" {
   type        = string
   description = "path to zipfile containing lambda code for the dynamo-migration-lambda"
-  default     = "../dynamo-migration-lambda/build/dynamo-migration-lambda.zip"
+  default     = "../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"
 }
 
 resource "aws_lambda_layer_version" "psycopg2" {
   layer_name          = "psycopg2"
   description         = "Contains the psycopg2 library to connect to PostgreSQL databases"
-  filename            = "../lambda-layer-psycopg2/psycopg2.zip"
-  source_code_hash    = filebase64sha256("../lambda-layer-psycopg2/psycopg2.zip")
+  filename            = "../../lambdas/lambda-layer-psycopg2/psycopg2.zip"
+  source_code_hash    = filebase64sha256("../lambdas/lambda-layer-psycopg2/psycopg2.zip")
   compatible_runtimes = ["python3.10"]
 }
