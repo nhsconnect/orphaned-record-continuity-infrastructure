@@ -1,3 +1,6 @@
+locals {
+  dynamo_migration_lambda_zip = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"))
+}
 // TODO: PRMT-4648 - THIS IS A ONE-TIME MIGRATION SCRIPT LAMBDA. DELETE THIS .TF FILE AFTER USAGE!
 resource "aws_lambda_function" "dynamo_migration" {
   filename         = var.dynamo_migration_lambda_zip
@@ -250,10 +253,11 @@ resource "aws_iam_policy" "lambda_rds_migration_access" {
   })
 }
 
+# cSpell:ignore joinpath
 data "archive_file" "dynamo_migration_lambda" {
-  type             = "zip"
-  source_dir       = "${path.root}/../../lambdas/dynamo-migration-lambda"
-  output_path      = var.dynamo_migration_lambda_zip
+  type        = "zip"
+  source_dir  = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda"))
+  output_path = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"))
   output_file_mode = "0644"
 }
 
@@ -261,16 +265,10 @@ data "aws_security_group" "ehr-transfer-service-ecs-task" {
   name = "${var.environment}-ehr-transfer-service-ecs-task-sg"
 }
 
-variable "dynamo_migration_lambda_zip" {
-  type        = string
-  description = "path to zipfile containing lambda code for the dynamo-migration-lambda"
-  default     = "${path.root}/../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"
-}
-
 resource "aws_lambda_layer_version" "psycopg2" {
   layer_name          = "psycopg2"
   description         = "Contains the psycopg2 library to connect to PostgreSQL databases"
-  filename            = "${path.root}/../../lambdas//lambda-layer-psycopg2/psycopg2.zip"
-  source_code_hash    = filebase64sha256("${path.root}/../../lambdas/lambda-layer-psycopg2/psycopg2.zip")
+  filename            = abspath(joinpath(path.root, "../../lambdas//lambda-layer-psycopg2/psycopg2.zip"))
+  source_code_hash    = filebase64sha256(abspath(joinpath(path.root, "../../lambdas//lambda-layer-psycopg2/psycopg2.zip")))
   compatible_runtimes = ["python3.10"]
 }
