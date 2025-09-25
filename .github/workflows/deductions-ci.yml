@@ -114,7 +114,7 @@ jobs:
     needs: get-changed-files
     uses: ./.github/workflows/base-deploy-stack.yml
     with:
-      stack: mesh-forwarder pds-adaptor re-registration-service suspension-service nems-event-processor
+      stack: mesh-forwarder
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
