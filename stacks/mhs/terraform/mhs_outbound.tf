@@ -34,11 +34,11 @@ resource "aws_ecs_task_definition" "mhs_outbound_task" {
   container_definitions = jsonencode(
     [
       {
-        name        = "mhs-outbound"
-        image       = "nhsdev/nia-mhs-inbound:${var.build_id}"
-        environment = local.mhs_outbound_base_environment_vars
-        secrets     = local.mhs_outbound_base_secrets
-        essential   = true
+        name                   = "mhs-outbound"
+        image                  = "nhsdev/nia-mhs-inbound:${var.build_id}"
+        environment            = local.mhs_outbound_base_environment_vars
+        secrets                = local.mhs_outbound_base_secrets
+        essential              = true
         readonlyRootFilesystem = true
         logConfiguration = {
           logDriver = "awslogs"
