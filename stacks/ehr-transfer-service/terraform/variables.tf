@@ -35,7 +35,7 @@ variable "threshold_approx_age_oldest_message" {
 
 variable "timeout_in_seconds" {
   description = "Timeout in seconds at which EHR in transfer is deemed complete and failed if not entire EHR received"
-  default = "14400"
+  default     = "14400"
 }
 
 variable "timeout_scheduler_fixed_rate_in_seconds" {
@@ -58,16 +58,16 @@ variable "enable_scale_action" {
 }
 
 variable "processing_period_milliseconds" {
- type = string
- default = "10000"
+  type    = string
+  default = "10000"
 }
 
 variable "ehr_transfer_finalised_poll_period_milliseconds" {
- type = string
- default = "1000"
+  type    = string
+  default = "1000"
 }
 
 variable "inbound_timeout_seconds" {
- type = string
- default = "1200" # 1200 seconds = 20 minutes
+  type    = string
+  default = "1200" # 1200 seconds = 20 minutes
 }

@@ -86,10 +86,10 @@ resource "aws_security_group" "ehr-transfer-service-ecs-task-sg" {
   }
 
   egress {
-    description     = "Allow HTTPS traffic outbound to VPC Endpoints"
-    protocol        = "TCP"
-    from_port       = 443
-    to_port         = 443
+    description = "Allow HTTPS traffic outbound to VPC Endpoints"
+    protocol    = "TCP"
+    from_port   = 443
+    to_port     = 443
     security_groups = concat(tolist(data.aws_vpc_endpoint.ecr-dkr.security_group_ids), tolist(data.aws_vpc_endpoint.ecr-api.security_group_ids),
     tolist(data.aws_vpc_endpoint.logs.security_group_ids), tolist(data.aws_vpc_endpoint.ssm.security_group_ids))
   }

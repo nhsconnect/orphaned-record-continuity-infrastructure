@@ -1,9 +1,9 @@
 locals {
-  task_role_arn                = aws_iam_role.component-ecs-role.arn
-  task_execution_role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${aws_iam_role.component-ecs-role.name}"
-  task_ecr_url                 = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
-  task_log_group               = "/nhs/deductions/${var.environment}-${data.aws_caller_identity.current.account_id}/${var.component_name}"
-  environment_variables        = [
+  task_role_arn       = aws_iam_role.component-ecs-role.arn
+  task_execution_role = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${aws_iam_role.component-ecs-role.name}"
+  task_ecr_url        = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
+  task_log_group      = "/nhs/deductions/${var.environment}-${data.aws_caller_identity.current.account_id}/${var.component_name}"
+  environment_variables = [
     { name = "EHR_TRANSFER_SERVICE_MHS_QUEUE_URL_1", value = data.aws_ssm_parameter.openwire_endpoint_0.value },
     { name = "EHR_TRANSFER_SERVICE_MHS_QUEUE_URL_2", value = data.aws_ssm_parameter.openwire_endpoint_1.value },
     {

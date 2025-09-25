@@ -1,8 +1,8 @@
 resource "aws_dynamodb_table" "transfer_tracker" {
-  name                        = "${var.environment}-${var.component_name}-transfer-tracker"
-  billing_mode                = "PAY_PER_REQUEST"
-  hash_key                    = "conversation_id"
-#  deletion_protection_enabled = true
+  name         = "${var.environment}-${var.component_name}-transfer-tracker"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "conversation_id"
+  #  deletion_protection_enabled = true
 
   server_side_encryption {
     enabled     = true

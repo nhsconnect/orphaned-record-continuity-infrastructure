@@ -1,24 +1,24 @@
 locals {
-  repo_incoming_queue_name = "${var.environment}-${var.component_name}-repo-incoming"
-  repo_incoming_observability_queue_name = "${var.environment}-${var.component_name}-repo-incoming-observability"
-  repo_incoming_audit_queue_name = "${var.environment}-${var.component_name}-repo-incoming-audit"
-  negative_acks_queue_name = "${var.environment}-${var.component_name}-negative-acknowledgments"
-  negative_acks_observability_queue_name = "${var.environment}-${var.component_name}-negative-acknowledgments-observability"
-  small_ehr_queue_name = "${var.environment}-${var.component_name}-small-ehr"
-  small_ehr_observability_queue_name = "${var.environment}-${var.component_name}-small-ehr-observability"
-  large_ehr_queue_name = "${var.environment}-${var.component_name}-large-ehr"
-  large_ehr_observability_queue_name = "${var.environment}-${var.component_name}-large-ehr-observability"
-  large_message_fragments_queue_name = "${var.environment}-${var.component_name}-large-message-fragments"
+  repo_incoming_queue_name                         = "${var.environment}-${var.component_name}-repo-incoming"
+  repo_incoming_observability_queue_name           = "${var.environment}-${var.component_name}-repo-incoming-observability"
+  repo_incoming_audit_queue_name                   = "${var.environment}-${var.component_name}-repo-incoming-audit"
+  negative_acks_queue_name                         = "${var.environment}-${var.component_name}-negative-acknowledgments"
+  negative_acks_observability_queue_name           = "${var.environment}-${var.component_name}-negative-acknowledgments-observability"
+  small_ehr_queue_name                             = "${var.environment}-${var.component_name}-small-ehr"
+  small_ehr_observability_queue_name               = "${var.environment}-${var.component_name}-small-ehr-observability"
+  large_ehr_queue_name                             = "${var.environment}-${var.component_name}-large-ehr"
+  large_ehr_observability_queue_name               = "${var.environment}-${var.component_name}-large-ehr-observability"
+  large_message_fragments_queue_name               = "${var.environment}-${var.component_name}-large-message-fragments"
   large_message_fragments_observability_queue_name = "${var.environment}-${var.component_name}-large-message-fragments-observability"
-  positive_acks_observability_queue_name = "${var.environment}-${var.component_name}-positive-acknowledgements-observability"
-  parsing_dlq_name = "${var.environment}-${var.component_name}-parsing-dlq"
-  ehr_complete_queue_name = "${var.environment}-${var.component_name}-ehr-complete"
-  ehr_complete_observability_queue_name = "${var.environment}-${var.component_name}-ehr-complete-observability"
-  ehr_transfer_service_audit_queue_name = "${var.environment}-${var.component_name}-audit-uploader"
-  ehr_transfer_service_audit_dlq = "${var.environment}-${var.component_name}-audit-dlq"
-  ehr_in_unhandled_observability_queue_name = "${var.environment}-${var.component_name}-unhandled-observability"
-  max_retention_period = 1209600
-  thirty_minute_retention_period = 1800
+  positive_acks_observability_queue_name           = "${var.environment}-${var.component_name}-positive-acknowledgements-observability"
+  parsing_dlq_name                                 = "${var.environment}-${var.component_name}-parsing-dlq"
+  ehr_complete_queue_name                          = "${var.environment}-${var.component_name}-ehr-complete"
+  ehr_complete_observability_queue_name            = "${var.environment}-${var.component_name}-ehr-complete-observability"
+  ehr_transfer_service_audit_queue_name            = "${var.environment}-${var.component_name}-audit-uploader"
+  ehr_transfer_service_audit_dlq                   = "${var.environment}-${var.component_name}-audit-dlq"
+  ehr_in_unhandled_observability_queue_name        = "${var.environment}-${var.component_name}-unhandled-observability"
+  max_retention_period                             = 1209600
+  thirty_minute_retention_period                   = 1800
 }
 
 resource "aws_sqs_queue" "repo_incoming" {
@@ -218,29 +218,29 @@ resource "aws_sqs_queue" "ehr_in_unhandled_observability" {
 }
 
 resource "aws_sqs_queue" "ehr_transfer_service_audit_uploader" {
-  name                       = local.ehr_transfer_service_audit_queue_name
-  message_retention_seconds  = 1209600
-  kms_master_key_id = aws_kms_key.ehr_transfer_audit_kms_key.id
+  name                      = local.ehr_transfer_service_audit_queue_name
+  message_retention_seconds = 1209600
+  kms_master_key_id         = aws_kms_key.ehr_transfer_audit_kms_key.id
 
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.re_registration_audit_uploader_dlq.arn
     maxReceiveCount     = 4
   })
   tags = {
-    Name = local.ehr_transfer_service_audit_queue_name
+    Name        = local.ehr_transfer_service_audit_queue_name
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
 resource "aws_sqs_queue" "re_registration_audit_uploader_dlq" {
-  name                       = local.ehr_transfer_service_audit_dlq
-  message_retention_seconds  = 1209600
-  kms_master_key_id = aws_kms_key.ehr_transfer_audit_kms_key.id
+  name                      = local.ehr_transfer_service_audit_dlq
+  message_retention_seconds = 1209600
+  kms_master_key_id         = aws_kms_key.ehr_transfer_audit_kms_key.id
 
 
   tags = {
-    Name = local.ehr_transfer_service_audit_dlq
+    Name        = local.ehr_transfer_service_audit_dlq
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
