@@ -14,7 +14,10 @@ variable "component_name" {
   type    = string
   default = "ehr-transfer-service"
 }
-variable "task_image_tag" {}
+
+variable "task_image_tag" {
+  default = "latest"
+}
 variable "task_cpu" {}
 variable "task_memory" {}
 

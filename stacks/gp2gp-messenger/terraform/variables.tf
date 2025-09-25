@@ -12,7 +12,9 @@ variable "environment" {}
 
 variable "component_name" {}
 variable "dns_name" {}
-variable "task_image_tag" {}
+variable "task_image_tag" {
+  default = "latest"
+}
 variable "task_cpu" {}
 variable "task_memory" {}
 variable "port" {}

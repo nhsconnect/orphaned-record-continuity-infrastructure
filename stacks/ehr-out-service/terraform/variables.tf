@@ -14,8 +14,9 @@ variable "component_name" {
   default = "ehr-out-service"
 }
 
-variable "task_image_tag" {}
-
+variable "task_image_tag" {
+  default = "latest"
+}
 variable "task_cpu" {
   default = 512
 }
