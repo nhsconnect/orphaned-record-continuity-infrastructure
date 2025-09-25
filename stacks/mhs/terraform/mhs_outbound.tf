@@ -39,6 +39,7 @@ resource "aws_ecs_task_definition" "mhs_outbound_task" {
         environment = local.mhs_outbound_base_environment_vars
         secrets     = local.mhs_outbound_base_secrets
         essential   = true
+        readonlyRootFilesystem = true
         logConfiguration = {
           logDriver = "awslogs"
           options = {

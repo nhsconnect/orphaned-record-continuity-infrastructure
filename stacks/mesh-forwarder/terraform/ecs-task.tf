@@ -26,6 +26,7 @@ resource "aws_ecs_task_definition" "forwarder" {
       image = "${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.task_image_tag}"
       environment = local.environment_variables
       essential = true
+      readonlyRootFilesystem = true
       logConfiguration = {
         logDriver = "awslogs"
         options = {
