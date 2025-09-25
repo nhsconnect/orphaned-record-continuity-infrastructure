@@ -3,12 +3,12 @@ locals {
 }
 // TODO: PRMT-4648 - THIS IS A ONE-TIME MIGRATION SCRIPT LAMBDA. DELETE THIS .TF FILE AFTER USAGE!
 resource "aws_lambda_function" "dynamo_migration" {
-  filename         = locals.dynamo_migration_lambda_zip
+  filename         = local.dynamo_migration_lambda_zip
   function_name    = "${var.environment}-dynamo-migration-lambda"
   role             = aws_iam_role.dynamo_migration_lambda.arn
   handler          = "app.DynamoMigration.lambda_handler"
   layers           = [aws_lambda_layer_version.psycopg2.arn]
-  source_code_hash = filebase64sha256(locals.dynamo_migration_lambda_zip)
+  source_code_hash = filebase64sha256(local.dynamo_migration_lambda_zip)
   runtime          = tolist(aws_lambda_layer_version.psycopg2.compatible_runtimes)[0] // Required for psycopg2 lambda layer to work
   timeout          = 900
   memory_size      = 1024
