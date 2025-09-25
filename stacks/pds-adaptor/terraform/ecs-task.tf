@@ -28,7 +28,7 @@ resource "aws_ecs_task_definition" "task" {
 
 
   container_definitions = templatefile("${path.module}/templates/ecs-task-def.tmpl", {
-    container_name        = "${var.component_name}-container"
+    container_name        = "${var.component_name}-container",
     ecr_url               = local.task_ecr_url,
     image_name            = "deductions/${var.component_name}",
     image_tag             = var.task_image_tag,
