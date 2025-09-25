@@ -22,7 +22,7 @@ resource "aws_iam_role" "component-ecs-role" {
 
   tags = {
     Environment = var.environment
-    CreatedBy= var.repo_name
+    CreatedBy   = var.repo_name
   }
 }
 

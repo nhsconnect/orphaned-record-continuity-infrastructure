@@ -1,4 +1,4 @@
-environment    = "dev"
+environment = "dev"
 
 task_cpu    = 256
 task_memory = 512

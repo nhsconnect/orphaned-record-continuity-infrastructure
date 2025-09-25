@@ -1,4 +1,4 @@
-environment    = "pre-prod"
+environment = "pre-prod"
 
 task_cpu    = 256
 task_memory = 512

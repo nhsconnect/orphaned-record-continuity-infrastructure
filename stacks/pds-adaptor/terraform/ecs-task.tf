@@ -12,7 +12,7 @@ locals {
     { name = "JWT_KEY_ID", value = data.aws_ssm_parameter.jwt_key_id.value }
   ]
   secret_environment_variables = [
-    { name = "JWT_PRIVATE_KEY", valueFrom =  data.aws_ssm_parameter.jwt_private_key.arn },
+    { name = "JWT_PRIVATE_KEY", valueFrom = data.aws_ssm_parameter.jwt_private_key.arn },
     { name = "JWT_API_KEY", valueFrom = data.aws_ssm_parameter.jwt_api_key.arn }
   ]
 }
@@ -44,19 +44,19 @@ resource "aws_ecs_task_definition" "task" {
 
   tags = {
     Environment = var.environment
-    CreatedBy= var.repo_name
+    CreatedBy   = var.repo_name
   }
 }
 
 resource "aws_security_group" "ecs-tasks-sg" {
-  name        = "${var.environment}-${var.component_name}-ecs-tasks-sg"
-  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
+  name   = "${var.environment}-${var.component_name}-ecs-tasks-sg"
+  vpc_id = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   ingress {
-    description     = "Allow traffic from internal ALB of pds adaptor"
-    protocol        = "tcp"
-    from_port       = var.port
-    to_port         = var.port
+    description = "Allow traffic from internal ALB of pds adaptor"
+    protocol    = "tcp"
+    from_port   = var.port
+    to_port     = var.port
     security_groups = [
       aws_security_group.pds_adaptor_alb.id
     ]
@@ -64,14 +64,14 @@ resource "aws_security_group" "ecs-tasks-sg" {
 
   egress {
     description = "Allow all outbound HTTPS traffic"
-    protocol         = "tcp"
-    from_port        = 443
-    to_port          = 443
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
-    Name = "${var.environment}-${var.component_name}-ecs-tasks-sg"
+    Name        = "${var.environment}-${var.component_name}-ecs-tasks-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
