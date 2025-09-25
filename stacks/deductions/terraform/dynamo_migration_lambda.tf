@@ -255,9 +255,9 @@ resource "aws_iam_policy" "lambda_rds_migration_access" {
 
 # cSpell:ignore joinpath
 data "archive_file" "dynamo_migration_lambda" {
-  type        = "zip"
-  source_dir  = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda"))
-  output_path = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"))
+  type             = "zip"
+  source_dir       = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda"))
+  output_path      = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"))
   output_file_mode = "0644"
 }
 
