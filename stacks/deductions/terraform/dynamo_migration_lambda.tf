@@ -1,14 +1,14 @@
 locals {
-  dynamo_migration_lambda_zip = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"))
+  dynamo_migration_lambda_zip = abspath("${path.root}/../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip")
 }
 // TODO: PRMT-4648 - THIS IS A ONE-TIME MIGRATION SCRIPT LAMBDA. DELETE THIS .TF FILE AFTER USAGE!
 resource "aws_lambda_function" "dynamo_migration" {
-  filename         = var.dynamo_migration_lambda_zip
+  filename         = locals.dynamo_migration_lambda_zip
   function_name    = "${var.environment}-dynamo-migration-lambda"
   role             = aws_iam_role.dynamo_migration_lambda.arn
   handler          = "app.DynamoMigration.lambda_handler"
   layers           = [aws_lambda_layer_version.psycopg2.arn]
-  source_code_hash = filebase64sha256(var.dynamo_migration_lambda_zip)
+  source_code_hash = filebase64sha256(locals.dynamo_migration_lambda_zip)
   runtime          = tolist(aws_lambda_layer_version.psycopg2.compatible_runtimes)[0] // Required for psycopg2 lambda layer to work
   timeout          = 900
   memory_size      = 1024
@@ -256,8 +256,8 @@ resource "aws_iam_policy" "lambda_rds_migration_access" {
 # cSpell:ignore joinpath
 data "archive_file" "dynamo_migration_lambda" {
   type             = "zip"
-  source_dir       = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda"))
-  output_path      = abspath(joinpath(path.root, "../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"))
+  source_dir       = abspath("${path.root}/../../lambdas/dynamo-migration-lambda")
+  output_path      = abspath("${path.root}/../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip")
   output_file_mode = "0644"
 }
 
@@ -268,7 +268,7 @@ data "aws_security_group" "ehr-transfer-service-ecs-task" {
 resource "aws_lambda_layer_version" "psycopg2" {
   layer_name          = "psycopg2"
   description         = "Contains the psycopg2 library to connect to PostgreSQL databases"
-  filename            = abspath(joinpath(path.root, "../../lambdas//lambda-layer-psycopg2/psycopg2.zip"))
-  source_code_hash    = filebase64sha256(abspath(joinpath(path.root, "../../lambdas//lambda-layer-psycopg2/psycopg2.zip")))
+  filename            = abspath("${path.root}/../../lambdas/lambda-layer-psycopg2/psycopg2.zip")
+  source_code_hash    = filebase64sha256(abspath("${path.root}/../../lambdas/lambda-layer-psycopg2/psycopg2.zip"))
   compatible_runtimes = ["python3.10"]
 }
