@@ -1,5 +1,11 @@
-environment = "dev"
+environment          = "dev"
+synthetic_patient_prefix = "96937"
 component_name = "suspension-service"
-metric_namespace = "suspension-service"
-synthetic_patient_prefix = "SYNTH"
-repo_name = "prm-deductions-infra"
+repo_name = "suspension-service"
+metric_namespace = "SuspensionService"
+scale_up_expression = "( (MINUTE(m1)>=0 )),10, 0"
+is_end_of_transfer_service = false
+enable_scale_action = false
+can_update_managing_organisation_to_repo = true
+repo_process_only_safe_listed_ods_codes = true
+process_only_synthetic_patients = false
