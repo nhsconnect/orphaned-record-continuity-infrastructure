@@ -4,7 +4,7 @@ variable "region" {
 }
 
 variable "repo_name" {
-  type = string
+  type    = string
   default = "prm-deductions-nems-event-processor"
 }
 
@@ -32,11 +32,11 @@ variable "service_desired_count" {
 }
 
 variable "log_level" {
-  type = string
+  type    = string
   default = "debug"
 }
 
 variable "re_registration_sns_topic_cross_account_subscriber_account_ids" {
-  type = list(string)
+  type    = list(string)
   default = []
 }

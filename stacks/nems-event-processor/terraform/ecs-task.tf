@@ -41,13 +41,13 @@ resource "aws_ecs_task_definition" "task" {
 
   tags = {
     Environment = var.environment
-    CreatedBy = var.repo_name
+    CreatedBy   = var.repo_name
   }
 }
 
 resource "aws_security_group" "ecs-tasks-sg" {
-  name        = "${var.environment}-${var.component_name}-ecs-tasks-sg"
-  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
+  name   = "${var.environment}-${var.component_name}-ecs-tasks-sg"
+  vpc_id = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   egress {
     description = "Allow all outbound HTTPS traffic in vpc"
@@ -66,7 +66,7 @@ resource "aws_security_group" "ecs-tasks-sg" {
   }
 
   tags = {
-    Name = "${var.environment}-${var.component_name}-ecs-tasks-sg"
+    Name        = "${var.environment}-${var.component_name}-ecs-tasks-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }

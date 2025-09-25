@@ -1,6 +1,6 @@
 resource "aws_kms_key" "suspensions" {
-  description = "Custom KMS Key to enable server side encryption for Suspensions Events"
-  policy      = data.aws_iam_policy_document.kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption for Suspensions Events"
+  policy              = data.aws_iam_policy_document.kms_key_policy_doc.json
   enable_key_rotation = true
 
   tags = {
@@ -28,8 +28,8 @@ resource "aws_ssm_parameter" "suspensions_kms_key_id" {
 
 # Dead Letter Queue
 resource "aws_kms_key" "dlq" {
-  description = "Custom KMS Key to enable server side encryption for dlq"
-  policy      = data.aws_iam_policy_document.kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption for dlq"
+  policy              = data.aws_iam_policy_document.kms_key_policy_doc.json
   enable_key_rotation = true
 
   tags = {
@@ -45,8 +45,8 @@ resource "aws_kms_alias" "dlq_encryption" {
 }
 
 resource "aws_kms_key" "unhandled_events" {
-  description = "Custom KMS Key to enable server side encryption unhandled events"
-  policy      = data.aws_iam_policy_document.kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption unhandled events"
+  policy              = data.aws_iam_policy_document.kms_key_policy_doc.json
   enable_key_rotation = true
 
   tags = {
@@ -62,8 +62,8 @@ resource "aws_kms_alias" "unhandled_events" {
 }
 
 resource "aws_kms_key" "nems_audit" {
-  description = "Custom KMS Key to enable server side encryption continuity nems audit"
-  policy      = data.aws_iam_policy_document.kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption continuity nems audit"
+  policy              = data.aws_iam_policy_document.kms_key_policy_doc.json
   enable_key_rotation = true
 
   tags = {
@@ -80,8 +80,8 @@ resource "aws_kms_alias" "nems_audit" {
 
 #re-registrations
 resource "aws_kms_key" "re_registrations" {
-  description = "Custom KMS Key to enable server side encryption for Re-registrations Events"
-  policy      = data.aws_iam_policy_document.kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption for Re-registrations Events"
+  policy              = data.aws_iam_policy_document.kms_key_policy_doc.json
   enable_key_rotation = true
 
   tags = {
