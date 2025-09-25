@@ -1,1 +1,5 @@
 environment = "dev"
+component_name = "suspension-service"
+metric_namespace = "suspension-service"
+synthetic_patient_prefix = "SYNTH"
+repo_name = "prm-deductions-infra"
