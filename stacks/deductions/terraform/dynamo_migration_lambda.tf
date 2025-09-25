@@ -252,7 +252,7 @@ resource "aws_iam_policy" "lambda_rds_migration_access" {
 
 data "archive_file" "dynamo_migration_lambda" {
   type             = "zip"
-  source_dir       = "../../lambdas/dynamo-migration-lambda"
+  source_dir       = "${path.root}/lambdas/dynamo-migration-lambda"
   output_path      = var.dynamo_migration_lambda_zip
   output_file_mode = "0644"
 }
@@ -264,13 +264,13 @@ data "aws_security_group" "ehr-transfer-service-ecs-task" {
 variable "dynamo_migration_lambda_zip" {
   type        = string
   description = "path to zipfile containing lambda code for the dynamo-migration-lambda"
-  default     = "../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"
+  default     = "${path.root}/lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip"
 }
 
 resource "aws_lambda_layer_version" "psycopg2" {
   layer_name          = "psycopg2"
   description         = "Contains the psycopg2 library to connect to PostgreSQL databases"
-  filename            = "../../lambdas/lambda-layer-psycopg2/psycopg2.zip"
-  source_code_hash    = filebase64sha256("../../lambdas/lambda-layer-psycopg2/psycopg2.zip")
+  filename            = "${path.root}/lambdas//lambda-layer-psycopg2/psycopg2.zip"
+  source_code_hash    = filebase64sha256("${path.root}/lambdas/lambda-layer-psycopg2/psycopg2.zip")
   compatible_runtimes = ["python3.10"]
 }
