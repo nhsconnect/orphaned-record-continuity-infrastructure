@@ -16,22 +16,22 @@ data "aws_lb_target_group" "ehr_repo_target_group" {
 
 data "aws_lb" "mhs_inbound_load_balancer" {
   count = var.environment == "perf" ? 0 : 1
-  name = "${var.environment}-repo-mhs-inbound"
+  name  = "${var.environment}-repo-mhs-inbound"
 }
 
 data "aws_lb_target_group" "mhs_inbound_target_group" {
   count = var.environment == "perf" ? 0 : 1
-  name = "${var.environment}-repo-mhs-in-https"
+  name  = "${var.environment}-repo-mhs-in-https"
 }
 
 data "aws_lb" "mhs_outbound_load_balancer" {
   count = var.environment == "perf" ? 0 : 1
-  name = "${var.environment}-repo-mhs-out-alb"
+  name  = "${var.environment}-repo-mhs-out-alb"
 }
 
 data "aws_lb_target_group" "mhs_outbound_target_group" {
   count = var.environment == "perf" ? 0 : 1
-  name = "${var.environment}-repo-mhs-outbound"
+  name  = "${var.environment}-repo-mhs-outbound"
 }
 
 locals {
@@ -47,26 +47,26 @@ locals {
 
   repo_mq_widget_definitions = [
     {
-      name  = "inbound"
+      name   = "inbound"
       broker = "deductor-amq-broker-${var.environment}-1"
-      title = "Inbound MQueue"
+      title  = "Inbound MQueue"
 
     },
     {
-      name  = "unhandled-messages"
+      name   = "unhandled-messages"
       broker = "deductor-amq-broker-${var.environment}-1"
-      title = "Unhandled MQueue"
+      title  = "Unhandled MQueue"
     },
     {
-      name  = "inbound"
+      name   = "inbound"
       broker = "deductor-amq-broker-${var.environment}-2"
-      title = "Inbound MQueue"
+      title  = "Inbound MQueue"
 
     },
     {
-      name  = "unhandled-messages"
+      name   = "unhandled-messages"
       broker = "deductor-amq-broker-${var.environment}-2"
-      title = "Unhandled MQueue"
+      title  = "Unhandled MQueue"
     }
   ]
 
@@ -145,34 +145,34 @@ locals {
   }
 
   ehr_repo = {
-    name  = "ehr-repo"
-    title = "EHR Repository Service"
+    name         = "ehr-repo"
+    title        = "EHR Repository Service"
     loadbalancer = var.environment == "perf" ? "NA" : data.aws_lb.ehr_repo_load_balancer.arn_suffix
     targetgroup  = var.environment == "perf" ? "NA" : data.aws_lb_target_group.ehr_repo_target_group.arn_suffix
   }
 
   gp2gp_messenger = {
-    name  = "gp2gp-messenger"
-    title = "GP2GP Messenger Service"
+    name         = "gp2gp-messenger"
+    title        = "GP2GP Messenger Service"
     loadbalancer = var.environment == "perf" ? "NA" : data.aws_lb.gp2gp_messenger_load_balancer.arn_suffix
     targetgroup  = var.environment == "perf" ? "NA" : data.aws_lb_target_group.gp2gp_messenger_target_group.arn_suffix
   }
 
   mhs_inbound = {
-    name  = "mhs-inbound"
-    title = "MHS Inbound Service"
+    name         = "mhs-inbound"
+    title        = "MHS Inbound Service"
     loadbalancer = var.environment == "perf" ? "NA" : data.aws_lb.mhs_inbound_load_balancer[0].arn_suffix
     targetgroup  = var.environment == "perf" ? "NA" : data.aws_lb_target_group.mhs_inbound_target_group[0].arn_suffix
   }
 
   mhs_outbound = {
-    name  = "mhs-outbound"
-    title = "MHS Outbound Service"
+    name         = "mhs-outbound"
+    title        = "MHS Outbound Service"
     loadbalancer = var.environment == "perf" ? "NA" : data.aws_lb.mhs_outbound_load_balancer[0].arn_suffix
     targetgroup  = var.environment == "perf" ? "NA" : data.aws_lb_target_group.mhs_outbound_target_group[0].arn_suffix
   }
 
-  repo_task_widget_components  = [
+  repo_task_widget_components = [
     local.re_registration_service,
     local.ehr_transfer_service,
     local.end_of_transfer_service,
@@ -181,18 +181,18 @@ locals {
     local.mhs_inbound,
     local.mhs_outbound
   ]
-  repo_task_widget_types       = ["cpu", "memory"]
+  repo_task_widget_types = ["cpu", "memory"]
   repo_task_widget_definitions = [
-  for pair in setproduct(local.repo_task_widget_types, local.repo_task_widget_components) : {
-    component = pair[1]
-    type      = pair[0]
-  }
+    for pair in setproduct(local.repo_task_widget_types, local.repo_task_widget_components) : {
+      component = pair[1]
+      type      = pair[0]
+    }
   ]
 }
 
 module "repo_task_widgets" {
-  for_each    = {
-  for i, def in local.repo_task_widget_definitions : i => def
+  for_each = {
+    for i, def in local.repo_task_widget_definitions : i => def
   }
   source      = "./widgets/task_widget"
   environment = var.environment
@@ -201,23 +201,23 @@ module "repo_task_widgets" {
 }
 
 module "repo_error_count_widgets" {
-  for_each  = {
+  for_each = {
     re_registration_service = local.re_registration_service
-    ehr_transfer_service = local.ehr_transfer_service
+    ehr_transfer_service    = local.ehr_transfer_service
     end_of_transfer_service = local.end_of_transfer_service
-    gp2gp_messenger = local.gp2gp_messenger
-    ehr_repo = local.ehr_repo
-    mhs_inbound = local.mhs_inbound
-    mhs_outbound = local.mhs_outbound
+    gp2gp_messenger         = local.gp2gp_messenger
+    ehr_repo                = local.ehr_repo
+    mhs_inbound             = local.mhs_inbound
+    mhs_outbound            = local.mhs_outbound
   }
   source    = "./widgets/error_count_widget"
   component = each.value
 }
 
 module "repo_health_widgets" {
-  for_each    = {
+  for_each = {
     re_registration_service = local.re_registration_service
-    ehr_transfer_service = local.ehr_transfer_service
+    ehr_transfer_service    = local.ehr_transfer_service
     end_of_transfer_service = local.end_of_transfer_service
   }
   source      = "./widgets/health_widget"
@@ -226,10 +226,10 @@ module "repo_health_widgets" {
 }
 
 module "repo_health_lb_widgets" {
-  for_each    = {
+  for_each = {
     gp2gp_messenger = local.gp2gp_messenger
-    ehr_repo = local.ehr_repo
-    mhs_outbound = local.mhs_outbound
+    ehr_repo        = local.ehr_repo
+    mhs_outbound    = local.mhs_outbound
   }
   source      = "./widgets/health_lb_widget"
   component   = each.value
@@ -237,7 +237,7 @@ module "repo_health_lb_widgets" {
 }
 
 module "repo_health_network_lb_widgets" {
-  for_each    = {
+  for_each = {
     mhs_inbound = local.mhs_inbound
   }
   source      = "./widgets/health_network_lb_widget"
@@ -246,8 +246,8 @@ module "repo_health_network_lb_widgets" {
 }
 
 module "repo_queue_metrics_widgets" {
-  for_each    = {
-  for i, def in local.repo_queue_widget_definitions : i => def
+  for_each = {
+    for i, def in local.repo_queue_widget_definitions : i => def
   }
   source      = "./widgets/queue_metrics_widget"
   component   = each.value
@@ -255,8 +255,8 @@ module "repo_queue_metrics_widgets" {
 }
 
 module "repo_mq_metrics_widgets" {
-  for_each    = {
-  for i, def in local.repo_mq_widget_definitions : i => def
+  for_each = {
+    for i, def in local.repo_mq_widget_definitions : i => def
   }
   source      = "./widgets/mq_metrics_widget"
   component   = each.value
