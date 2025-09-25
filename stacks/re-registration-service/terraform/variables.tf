@@ -34,7 +34,7 @@ variable "log_level" {
 
 variable "toggle_can_send_delete_ehr_request" {
   description = "Toggle to allow sending delete ehr request"
-  default = false
+  default     = false
 }
 
 variable "period_of_age_of_message_metric" {

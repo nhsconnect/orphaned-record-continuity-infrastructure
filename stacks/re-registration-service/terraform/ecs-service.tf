@@ -1,6 +1,6 @@
 locals {
   ecs_cluster_id  = aws_ecs_cluster.ecs-cluster.id
-  ecs_task_sg_id = aws_security_group.ecs-tasks-sg.id
+  ecs_task_sg_id  = aws_security_group.ecs-tasks-sg.id
   private_subnets = split(",", data.aws_ssm_parameter.deductions_private_private_subnets.value)
 }
 

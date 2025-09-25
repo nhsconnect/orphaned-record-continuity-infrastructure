@@ -1,6 +1,6 @@
 resource "aws_kms_key" "re_registration_audit" {
-  description = "Custom KMS Key to enable server side encryption for SNS and SQS"
-  policy      = data.aws_iam_policy_document.kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption for SNS and SQS"
+  policy              = data.aws_iam_policy_document.kms_key_policy_doc.json
   enable_key_rotation = true
 
   tags = {
@@ -16,8 +16,8 @@ resource "aws_kms_alias" "re_registration_audit" {
 }
 
 resource "aws_kms_key" "active_suspensions_dynamodb_kms_key" {
-  description = "Custom KMS Key to enable server side encryption for active-suspensions DB"
-  policy      = data.aws_iam_policy_document.kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption for active-suspensions DB"
+  policy              = data.aws_iam_policy_document.kms_key_policy_doc.json
   enable_key_rotation = true
 
   tags = {
