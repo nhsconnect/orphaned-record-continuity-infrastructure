@@ -6,18 +6,18 @@ variable "region" {
 variable "repo_name" {
   type        = string
   description = "Docker repository of Mesh to S3 forwarder"
-  default = "prm-deductions-mesh-forwarder"
+  default     = "prm-deductions-mesh-forwarder"
 }
 
 variable "component_name" {
-  type = string
+  type    = string
   default = "mesh-forwarder"
 }
 
 variable "task_image_tag" {
   type        = string
   description = "Docker image tag of Mesh to S3 forwarder"
-  default = "latest"
+  default     = "latest"
 }
 
 variable "task_cpu" {}
@@ -26,15 +26,15 @@ variable "task_memory" {}
 variable "environment" {}
 
 variable "service_desired_count" {
-  type = number
+  type        = number
   description = "Number of desired instances of the service"
-  default = 1
+  default     = 1
 }
 
 variable "poll_frequency" {}
 
 variable "log_level" {
-  type = string
+  type    = string
   default = "debug"
 }
 

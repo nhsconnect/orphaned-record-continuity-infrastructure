@@ -14,7 +14,7 @@ locals {
     { name : "SNS_TOPIC_ARN", value : aws_sns_topic.nems_events.arn },
     { name : "MESSAGE_DESTINATION", value : var.message_destination },
     { name : "DISABLE_MESSAGE_HEADER_VALIDATION", value : var.disable_message_header_validation },
-    { name : "POLL_FREQUENCY", value: var.poll_frequency }
+    { name : "POLL_FREQUENCY", value : var.poll_frequency }
   ]
 }
 
@@ -22,10 +22,10 @@ resource "aws_ecs_task_definition" "forwarder" {
   family = var.component_name
   container_definitions = jsonencode([
     {
-      name  = "mesh-forwarder"
-      image = "${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.task_image_tag}"
-      environment = local.environment_variables
-      essential = true
+      name                   = "mesh-forwarder"
+      image                  = "${data.aws_ecr_repository.mesh_s3_forwarder.repository_url}:${var.task_image_tag}"
+      environment            = local.environment_variables
+      essential              = true
       readonlyRootFilesystem = true
       logConfiguration = {
         logDriver = "awslogs"
@@ -43,28 +43,28 @@ resource "aws_ecs_task_definition" "forwarder" {
   requires_compatibilities = ["FARGATE"]
   tags = merge(
 
-  {
-    Name = "${var.environment}-mesh-forwarder"
-  }
+    {
+      Name = "${var.environment}-mesh-forwarder"
+    }
   )
   execution_role_arn = aws_iam_role.ecs_execution.arn
   task_role_arn      = aws_iam_role.mesh_forwarder.arn
 }
 
 resource "aws_security_group" "mesh-forwarder-ecs-tasks-sg" {
-  name        = "${var.environment}-${var.component_name}-ecs-tasks-sg"
-  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
+  name   = "${var.environment}-${var.component_name}-ecs-tasks-sg"
+  vpc_id = data.aws_ssm_parameter.deductions_private_vpc_id.value
 
   egress {
     description = "Allow all outbound HTTPS traffic"
-    protocol         = "tcp"
-    from_port        = 443
-    to_port          = 443
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
-    Name = "${var.environment}-${var.component_name}-ecs-tasks-sg"
+    Name        = "${var.environment}-${var.component_name}-ecs-tasks-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }

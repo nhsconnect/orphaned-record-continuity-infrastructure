@@ -1,6 +1,6 @@
 locals {
   ecs_cluster_id  = aws_ecs_cluster.mesh-forwarder-ecs-cluster.id
-  ecs_task_sg_id = aws_security_group.mesh-forwarder-ecs-tasks-sg.id
+  ecs_task_sg_id  = aws_security_group.mesh-forwarder-ecs-tasks-sg.id
   private_subnets = split(",", data.aws_ssm_parameter.deductions_private_private_subnets.value)
 }
 
@@ -26,7 +26,7 @@ resource "aws_ecs_cluster" "mesh-forwarder-ecs-cluster" {
   }
 
   tags = {
-    Name = "${var.environment}-${var.component_name}"
+    Name        = "${var.environment}-${var.component_name}"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
