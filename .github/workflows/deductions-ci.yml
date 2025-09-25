@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'stacks/deductions/**'
-      - 'stacks/deductions-backup/**'
+      # - 'stacks/deductions-backup/**'
       - 'stacks/deductions-cross-account/**'
       - 'stacks/deductions-dashboard/**'
       - 'stacks/mesh-forwarder/**'
@@ -25,7 +25,7 @@ on:
     branches: [ main ]
     paths:
       - 'stacks/deductions/**'
-      - 'stacks/deductions-backup/**'
+      # - 'stacks/deductions-backup/**'
       - 'stacks/deductions-cross-account/**'
       - 'stacks/deductions-dashboard/**'
       - 'stacks/mesh-forwarder/**'
@@ -74,16 +74,17 @@ jobs:
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
 
-  deductions-backup-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-backup') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
-    name: Deductions Backup Infrastructure CI
-    uses: ./.github/workflows/base-deploy-stack.yml
-    needs: get-changed-files
-    with:
-      stack: deductions-backup
-      environment: dev
-      is_deployment: ${{ github.ref == 'refs/heads/main' }}
-    secrets: inherit
+  # TODO: Re-enable when we have the backup-store-account in ssm parameters in place if required.
+  # deductions-backup-ci:
+  #   if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-backup') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+  #   name: Deductions Backup Infrastructure CI
+  #   uses: ./.github/workflows/base-deploy-stack.yml
+  #   needs: get-changed-files
+  #   with:
+  #     stack: deductions-backup
+  #     environment: dev
+  #     is_deployment: ${{ github.ref == 'refs/heads/main' }}
+  #   secrets: inherit
 
   deductions-cross-account-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-cross-account') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
