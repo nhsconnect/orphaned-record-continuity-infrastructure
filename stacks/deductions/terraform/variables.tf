@@ -181,19 +181,19 @@ variable "is_restricted_account" {
 variable "alarm_lambda_zip" {
   type        = string
   description = "path to zipfile containing lambda code to dispatch alarm notifications to MS Teams"
-  default     = "${path.root}/lambdas/notification-lambda/build/alarm.zip"
+  default     = "lambdas/notification-lambda/build/alarm.zip"
 }
 
 variable "ehr_hard_deletion_lambda_zip" {
   type        = string
   description = "path to zipfile containing lambda code for the ehr-hard-deletion-lambda"
-  default     = "${path.root}/lambdas/ehr-hard-deletion-lambda/build/ehr-hard-deletion-lambda.zip"
+  default     = "lambdas/ehr-hard-deletion-lambda/build/ehr-hard-deletion-lambda.zip"
 }
 
 variable "generate_cost_report_lambda_zip" {
   type        = string
   description = "path to zip file containing lambda code to schedule cost report"
-  default     = "${path.root}/lambdas/generate-cost-report-lambda/build/generate-cost-report-lambda.zip"
+  default     = "lambdas/generate-cost-report-lambda/build/generate-cost-report-lambda.zip"
 }
 
 variable "s3_backup_enabled" {
