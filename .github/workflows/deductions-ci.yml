@@ -64,7 +64,7 @@ jobs:
           echo "changed=$changed" >> $GITHUB_OUTPUT
 
   deductions-base-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-base') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
     name: Deductions Base Infrastructure CI
     uses: ./.github/workflows/base-deploy-stack.yml
     needs: get-changed-files
