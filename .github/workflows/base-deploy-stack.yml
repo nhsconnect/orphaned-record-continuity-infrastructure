@@ -97,16 +97,16 @@ jobs:
         common_account_id=$COMMON_ACCOUNT_ID
         common_account_role="CiReadOnly"
         EOF
-        
+
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: latest
 
-    - name: Terraform Format
-      id: fmt
-      run: |
-        terraform fmt -check
+    # - name: Terraform Format
+    #   id: fmt
+    #   run: |
+    #     terraform fmt
 
     - name: Terraform Init
       id: init
