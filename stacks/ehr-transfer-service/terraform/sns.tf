@@ -140,7 +140,7 @@ resource "aws_ssm_parameter" "ehr_in_unhandled_sns_topic" {
 }
 
 resource "aws_sns_topic_policy" "deny_http" {
-  for_each = toset(local.sns_topic_arns)
+  for_each = local.sns_topic_map
 
   arn = each.value
 

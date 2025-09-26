@@ -2,6 +2,10 @@ locals {
   sns_topic_arns = [
     aws_sns_topic.alarm_notifications.arn
   ]
+  sns_topic_map = {
+    for idx, arn in local.sns_topic_arns :
+    tostring(idx) => arn
+  }
 }
 
 resource "aws_sns_topic" "alarm_notifications" {
@@ -16,7 +20,7 @@ resource "aws_sns_topic" "alarm_notifications" {
 }
 
 resource "aws_sns_topic_policy" "deny_http" {
-  for_each = toset(local.sns_topic_arns)
+  for_each = local.sns_topic_map
 
   arn = each.value
 

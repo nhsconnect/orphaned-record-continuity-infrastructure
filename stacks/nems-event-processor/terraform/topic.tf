@@ -5,6 +5,10 @@ locals {
     aws_sns_topic.dlq.arn,
     aws_sns_topic.nems_audit.arn
   ]
+  sns_topic_map = {
+    for idx, arn in local.sns_topic_arns :
+    tostring(idx) => arn
+  }
 }
 
 resource "aws_sns_topic" "unhandled_events" {
@@ -73,7 +77,7 @@ resource "aws_sns_topic_policy" "sns_cross_account_permissions_policy" {
 }
 
 resource "aws_sns_topic_policy" "deny_http" {
-  for_each = toset(local.sns_topic_arns)
+  for_each = local.sns_topic_map
 
   arn = each.value
 
