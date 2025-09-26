@@ -7,12 +7,10 @@ resource "aws_route53_zone" "environment_public" {
 }
 
 data "aws_ssm_parameter" "non_prod_public_zone" {
-  provider = aws.ci
   name     = "/repo/output/prm-deductions-base-infra/non-prod-public-zone-id"
 }
 
 data "aws_ssm_parameter" "root_public_zone" {
-  provider = aws.ci
   name     = "/repo/output/prm-deductions-base-infra/root-zone-id"
 }
 
@@ -28,7 +26,6 @@ resource "aws_route53_record" "environment_ns_prod" {
 
 resource "aws_route53_record" "environment_ns_non_prod_env" {
   count    = var.deploy_prod_route53_zone ? 0 : 1
-  provider = aws.ci
   name     = "${var.environment}.non-prod.patient-deductions.nhs.uk"
   ttl      = 30
   type     = "NS"
