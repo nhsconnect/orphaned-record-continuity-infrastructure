@@ -64,12 +64,6 @@ variable "deductions_core_azs" {
   type = list(any)
 }
 
-variable "gocd_cidr" {}
-
-variable "gocd_environment" {
-  default = "prod"
-}
-
 # deductions-public mq variables
 variable "mq_deployment_mode" {
   type = string
@@ -160,19 +154,14 @@ variable "mhs_cidr_newbits" {
   description = "Defines the size of the subnets"
 }
 
-variable "test_harness_mhs_cluster_domain_name" { default = "" }
 variable "repo_mhs_cluster_domain_name" {}
 variable "common_account_id" {}
 variable "common_account_role" {}
 variable "deploy_cross_account_vpc_peering" {}
-variable "deploy_mhs_test_harness" {}
 variable "deploy_prod_route53_zone" { default = false }
 variable "mhs_repo_public_subnets_outbound" {}
 variable "mhs_repo_public_subnets_inbound" {}
 variable "mhs_repo_private_subnets" {}
-variable "mhs_test_harness_public_subnets_outbound" {}
-variable "mhs_test_harness_public_subnets_inbound" {}
-variable "mhs_test_harness_private_subnets" {}
 variable "inbound_sig_ips" {}
 variable "grant_access_to_queues_through_vpn" {}
 variable "is_restricted_account" {

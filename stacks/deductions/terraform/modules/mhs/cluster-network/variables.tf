@@ -19,6 +19,4 @@ variable "mhs_nat_gateway_id" {}
 variable "mhs_subnets" {}
 variable "mhs_vpc_cidr_block" {}
 
-variable "gocd_cidr" {}
-variable "gocd_environment" {}
 variable "deploy_cross_account_vpc_peering"{}

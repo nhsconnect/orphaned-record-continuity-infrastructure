@@ -9,7 +9,6 @@ resource "aws_alb" "alb_internal" {
     aws_security_group.service_from_alb.id,
     aws_security_group.alb_to_app_ecs.id,
     aws_security_group.vpn_to_service_alb.id,
-    aws_security_group.gocd_to_service_alb.id
   ]
   internal                   = true
   drop_invalid_header_fields = true
@@ -197,30 +196,6 @@ resource "aws_security_group_rule" "vpn_to_service_alb" {
   to_port                  = 443
   source_security_group_id = data.aws_ssm_parameter.vpn_sg_id.value
   security_group_id        = aws_security_group.vpn_to_service_alb.id
-}
-
-resource "aws_security_group" "gocd_to_service_alb" {
-  name        = "${var.environment}-gocd-to-${var.component_name}"
-  description = "Controls access from gocd to service"
-  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
-
-  ingress {
-    description     = "Allow gocd to access ehr-out-service ALB"
-    protocol        = "tcp"
-    from_port       = 443
-    to_port         = 443
-    security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
-  }
-
-  tags = {
-    Name        = "${var.environment}-gocd-to-${var.component_name}-sg"
-    CreatedBy   = var.repo_name
-    Environment = var.environment
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_cloudwatch_metric_alarm" "alb_http_errors" {

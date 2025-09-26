@@ -4,12 +4,10 @@ locals {
     aws_security_group.alb_to_mhs_outbound_ecs.id,
     aws_security_group.service_to_mhs_outbound.id,
     aws_security_group.vpn_to_mhs_outbound.id,
-    aws_security_group.gocd_to_mhs_outbound.id
     ] : [
     aws_security_group.mhs_outbound_alb.id,
     aws_security_group.alb_to_mhs_outbound_ecs.id,
     aws_security_group.service_to_mhs_outbound.id,
-    aws_security_group.gocd_to_mhs_outbound.id
   ]
   ecs_task_sgs = var.allow_vpn_to_ecs_tasks ? [aws_security_group.outbound_ecs_tasks_sg.id, aws_security_group.vpn_to_mhs_outbound_ecs[0].id] : [aws_security_group.outbound_ecs_tasks_sg.id]
 }
@@ -256,26 +254,6 @@ resource "aws_security_group" "vpn_to_mhs_outbound" {
   }
 }
 
-resource "aws_security_group" "gocd_to_mhs_outbound" {
-  name        = "${var.environment}-${var.cluster_name}-gocd-to-mhs-outbound"
-  description = "controls access from gocd to MHS outbound"
-  vpc_id      = local.mhs_vpc_id
-
-  ingress {
-    description     = "Allow gocd to access mhs-outbound ALB"
-    protocol        = "tcp"
-    from_port       = 443
-    to_port         = 443
-    security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
-  }
-
-  tags = {
-    Name        = "${var.environment}-${var.cluster_name}-gocd-to-mhs-outbound"
-    CreatedBy   = var.repo_name
-    Environment = var.environment
-  }
-}
-
 resource "aws_security_group" "vpn_to_mhs_outbound_ecs" {
   count       = var.allow_vpn_to_ecs_tasks ? 1 : 0
   name        = "${var.environment}-${var.cluster_name}-vpn-to-mhs-outbound-ecs"
@@ -298,10 +276,6 @@ resource "aws_security_group" "vpn_to_mhs_outbound_ecs" {
 
 data "aws_ssm_parameter" "vpn_sg_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/vpn-sg-id"
-}
-
-data "aws_ssm_parameter" "gocd_sg_id" {
-  name = "/repo/${var.environment}/user-input/external/gocd-agent-sg-id"
 }
 
 resource "aws_lb_target_group" "outbound_alb_target_group" {

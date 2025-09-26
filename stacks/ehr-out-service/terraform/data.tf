@@ -52,10 +52,6 @@ data "aws_ssm_parameter" "vpn_sg_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/vpn-sg-id"
 }
 
-data "aws_ssm_parameter" "gocd_sg_id" {
-  name = "/repo/${var.environment}/user-input/external/gocd-agent-sg-id"
-}
-
 data "aws_ssm_parameter" "ehr_in_unhandled_sns_topic_arn" {
   name = "/repo/${var.environment}/output/ehr-transfer-service/ehr-in-unhandled-sns-topic-arn"
 }

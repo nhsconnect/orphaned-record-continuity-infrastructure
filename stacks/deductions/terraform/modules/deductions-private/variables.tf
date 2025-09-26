@@ -13,18 +13,12 @@ variable "repo_name" {
   default = "prm-deductions-infra"
 }
 
-variable "gocd_environment" {
-  default     = "prod"
-}
-
 variable "component_name" {
   type        = string
   default     = "deductions-private"
 }
 
 variable "cidr" {}
-
-variable "gocd_cidr" {}
 
 variable "deductions_core_cidr" {}
 
@@ -131,10 +125,7 @@ variable "vpn_client_subnet" {}
 
 variable "core_private_vpc_peering_connection_id" {}
 variable "repo_mhs_vpc_cidr_block" {}
-variable "test_harness_mhs_vpc_cidr_block" {}
 variable "repo_mhs_vpc_peering_connection_id" {}
-variable "test_harness_mhs_vpc_peering_connection_id" {}
-variable "deploy_mhs_test_harness" {}
 variable "environment_public_zone" {}
 variable "environment_private_zone" {}
 
