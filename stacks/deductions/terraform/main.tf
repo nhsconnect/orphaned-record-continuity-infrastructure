@@ -35,7 +35,6 @@ module "repo" {
   mhs_public_subnets_outbound      = var.mhs_repo_public_subnets_outbound
   deductions_private_vpc_id        = local.deductions_private_vpc_id
   mhs_cluster_domain_name          = var.repo_mhs_cluster_domain_name
-  deploy_cross_account_vpc_peering = var.deploy_cross_account_vpc_peering
   inbound_sig_ips                  = var.inbound_sig_ips
 }
 
@@ -72,7 +71,7 @@ module "deductions-private" {
   maintenance_time_of_day    = var.maintenance_time_of_day
   maintenance_time_zone      = var.maintenance_time_zone
   vpn_client_subnet          = var.deductions_private_vpn_client_subnet
-
+  repo_mhs_vpc_cidr_block    = local.repo_cidr_block
   state_db_allocated_storage = var.state_db_allocated_storage
   state_db_engine_version    = var.state_db_engine_version
   state_db_instance_class    = var.state_db_instance_class
