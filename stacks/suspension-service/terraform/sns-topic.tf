@@ -99,7 +99,7 @@ data "aws_sns_topic" "alarm_notifications" {
 }
 
 resource "aws_sns_topic_policy" "deny_http" {
-  for_each = toset(local.sns_arns)
+  for_each = sns_arns_map
 
   arn = each.value
 
