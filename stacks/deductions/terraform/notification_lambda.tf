@@ -4,11 +4,11 @@ locals {
 }
 
 resource "aws_lambda_function" "alarm_notifications_lambda" {
-  filename         = var.alarm_lambda_zip
+  filename         = data.archive_file.alarm_lambda.output_path
   function_name    = "${var.environment}-alarm-notifications-lambda"
   role             = aws_iam_role.alarm_notifications_lambda_role.arn
   handler          = "main.lambda_handler"
-  source_code_hash = filebase64sha256(var.alarm_lambda_zip)
+  source_code_hash = data.archive_file.alarm_lambda.output_base64sha256
   runtime          = "python3.12"
   timeout          = 15
   tags = {
@@ -20,6 +20,7 @@ resource "aws_lambda_function" "alarm_notifications_lambda" {
       ALARM_WEBHOOK_URL_PARAM_NAME = local.alarm_webhook_ssm_path
     }
   }
+  depends_on = [data.archive_file.alarm_lambda]
 }
 
 resource "aws_iam_role" "alarm_notifications_lambda_role" {
@@ -91,4 +92,10 @@ resource "aws_sns_topic_subscription" "alarm_notifications_lambda_subscription" 
   topic_arn = aws_sns_topic.alarm_notifications.arn
   protocol  = "lambda"
   endpoint  = aws_lambda_function.alarm_notifications_lambda.arn
+}
+
+data "archive_file" "alarm_lambda" {
+  type        = "zip"
+  source_dir  = abspath("${path.root}/../../../lambdas/alarm-lambda/main.py")
+  output_path = abspath("${path.root}/../../../lambdas/alarm-lambda/build/alarm-lambda.zip")
 }
