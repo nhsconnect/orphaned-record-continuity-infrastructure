@@ -76,10 +76,6 @@ jobs:
       #   ref: PRM-495
       #   fetch-depth: 0
 
-    # - name: Check Files
-    #   run: |
-    #     ls -la
-
     - name: Configure AWS Credentials (Read Write)
       uses: aws-actions/configure-aws-credentials@v4
       with:
