@@ -53,5 +53,5 @@ resource "aws_iam_role_policy_attachment" "lambda_execution_policy" {
 data "archive_file" "lambda" {
   type        = "zip"
   source_file = "${path.root}/../../../lambdas/orc-ingestion-lambda/${local.ingestion_lambda_name}.py"
-  output_path = "${path.root}/../../../lambdas/orc-ingestion-lambda/${local.ingestion_lambda_name}_payload.zip"
+  output_path = "${path.root}/../../../lambdas/orc-ingestion-lambda/build/${local.ingestion_lambda_name}_payload.zip"
 }

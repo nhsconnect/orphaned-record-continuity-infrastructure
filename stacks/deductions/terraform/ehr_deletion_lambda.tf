@@ -1,13 +1,9 @@
-locals {
-  ehr_hard_deletion_lambda_zip = abspath("${path.root}/../../../lambdas/ehr-hard-deletion-lambda/build/ehr-hard-deletion-lambda.zip")
-}
-
 resource "aws_lambda_function" "ehr_hard_deletion" {
-  filename         = local.ehr_hard_deletion_lambda_zip
+  filename         = data.archive_file.lambda.output_path
   function_name    = "${var.environment}-ehr-hard-deletion-lambda"
   role             = aws_iam_role.ehr_hard_deletion_lambda.arn
   handler          = "EhrHardDeletion.lambda_handler"
-  source_code_hash = filebase64sha256(local.ehr_hard_deletion_lambda_zip)
+  source_code_hash = filebase64sha256(data.archive_file.lambda.output_base64sha256)
   runtime          = "python3.12"
   timeout          = 300
   tags = {
@@ -129,9 +125,8 @@ data "aws_iam_policy" "lambda_dynamodb_execution_role" {
   arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole"
 }
 
-data "archive_file" "ehr_hard_deletion_lambda" {
+data "archive_file" "lambda" {
   type             = "zip"
   source_file      = abspath("${path.root}/../../../lambdas/ehr-hard-deletion-lambda/EhrHardDeletion.py")
-  output_path      = local.ehr_hard_deletion_lambda_zip
-  output_file_mode = "0644"
+  output_path      = abspath("${path.root}/../../../lambdas/ehr-hard-deletion-lambda/build/EhrHardDeletion.zip")
 }
