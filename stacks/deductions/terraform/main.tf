@@ -13,6 +13,8 @@ terraform {
 locals {
   first_half_mhs_cidr_block  = cidrsubnets(var.mhs_vpc_cidr_block, 1, 1)[0]
   second_half_mhs_cidr_block = cidrsubnets(var.mhs_vpc_cidr_block, 1, 1)[1]
+  repo_cidr_block            = var.mhs_vpc_cidr_block
+
 }
 
 module "repo" {
