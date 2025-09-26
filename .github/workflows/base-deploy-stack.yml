@@ -100,6 +100,7 @@ jobs:
     - name: Build lambdas with additional requirements
       if: inputs.lambdas_to_build
       run: |
+        cd ../../../
         ./tasks build_lambdas
 
     - name: Setup Terraform
