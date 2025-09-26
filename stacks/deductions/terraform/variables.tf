@@ -159,6 +159,7 @@ variable "mhs_vpc_additional_cidr_block" {
 variable "mhs_cidr_newbits" {
   description = "Defines the size of the subnets"
 }
+
 variable "test_harness_mhs_cluster_domain_name" { default = "" }
 variable "repo_mhs_cluster_domain_name" {}
 variable "common_account_id" {}
@@ -178,22 +179,10 @@ variable "is_restricted_account" {
   default = false
 }
 
-variable "alarm_lambda_zip" {
-  type        = string
-  description = "path to zipfile containing lambda code to dispatch alarm notifications to MS Teams"
-  default     = "../../lambdas/notification-lambda/build/alarm.zip"
-}
-
-variable "ehr_hard_deletion_lambda_zip" {
-  type        = string
-  description = "path to zipfile containing lambda code for the ehr-hard-deletion-lambda"
-  default     = "../../lambdas/ehr-hard-deletion-lambda/build/ehr-hard-deletion-lambda.zip"
-}
-
 variable "generate_cost_report_lambda_zip" {
   type        = string
   description = "path to zip file containing lambda code to schedule cost report"
-  default     = "../../lambdas/generate-cost-report-lambda/build/generate-cost-report-lambda.zip"
+  default     = "../../../lambdas/generate-cost-report-lambda/build/generate-cost-report-lambda.zip"
 }
 
 variable "s3_backup_enabled" {

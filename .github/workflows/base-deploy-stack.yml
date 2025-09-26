@@ -50,11 +50,10 @@ on:
         type: boolean
         description: "Whether to deploy"
       lambdas_to_build:
-        default: ""
-        description: "Comma separated list of lambdas to build"
-        type: string
-        required: false
-        
+        default: false
+        description: "Do we need to build any lambdas before deploying?"
+        type: boolean
+
 permissions:
   pull-requests: write
   id-token: write # This is required for requesting the JWT
@@ -97,6 +96,11 @@ jobs:
         common_account_id=$COMMON_ACCOUNT_ID
         common_account_role="CiReadOnly"
         EOF
+
+    - name: Build lambdas with additional requirements
+      if: inputs.lambdas_to_build
+      run: |
+        ./tasks build_lambdas
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3

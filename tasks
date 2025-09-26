@@ -338,22 +338,19 @@ function build_lambda {
 }
 
 function build_generate_cost_report_lambda {
-  cd generate-cost-report-lambda
-  build_dir=build/generate-cost-report-lambda
+  cd lambdas/generate-cost-report-lambda
+  build_dir=build/
   rm -rf build
-  mkdir -p build/generate-cost-report-lambda
-
   python3 -m pip install --target $build_dir -r requirements.txt
   cp main.py configuration.py cost-report-configuration.yml $build_dir
 
   pushd $build_dir
-  zip -r -q -m -X ../generate-cost-report-lambda.zip .
+  zip -r -q -m -X ../build/generate-cost-report-lambda.zip .
   popd
   cd ..
 }
 
 function build_lambdas {
-    build_lambda alarm
     build_generate_cost_report_lambda
 }
 
