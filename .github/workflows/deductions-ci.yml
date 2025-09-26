@@ -72,6 +72,7 @@ jobs:
       stack: deductions
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
+      lambdas_to_build: true
     secrets: inherit
 
   # TODO: Re-enable when we have the backup-store-account in ssm parameters in place if required.

@@ -96,6 +96,6 @@ resource "aws_sns_topic_subscription" "alarm_notifications_lambda_subscription" 
 
 data "archive_file" "alarm_lambda" {
   type        = "zip"
-  source_dir  = abspath("${path.root}/../../../lambdas/alarm-lambda/main.py")
+  source_dir  = abspath("${path.root}/../../../lambdas/alarm-lambda/")
   output_path = abspath("${path.root}/../../../lambdas/alarm-lambda/build/alarm-lambda.zip")
 }
