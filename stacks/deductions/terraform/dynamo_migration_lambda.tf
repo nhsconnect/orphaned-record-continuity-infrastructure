@@ -8,7 +8,7 @@ resource "aws_lambda_function" "dynamo_migration" {
   role             = aws_iam_role.dynamo_migration_lambda.arn
   handler          = "app.DynamoMigration.lambda_handler"
   layers           = [aws_lambda_layer_version.psycopg2.arn]
-  source_code_hash = filebase64sha256(data.archive_file.dynamo_migration_lambda.output_base64sha256)
+  source_code_hash = data.archive_file.dynamo_migration_lambda.output_base64sha256
   runtime          = tolist(aws_lambda_layer_version.psycopg2.compatible_runtimes)[0] // Required for psycopg2 lambda layer to work
   timeout          = 900
   memory_size      = 1024
@@ -256,8 +256,8 @@ resource "aws_iam_policy" "lambda_rds_migration_access" {
 # cSpell:ignore joinpath
 data "archive_file" "dynamo_migration_lambda" {
   type        = "zip"
-  source_dir  = abspath("${path.root}/../../lambdas/dynamo-migration-lambda")
-  output_path = abspath("${path.root}/../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip")
+  source_dir  = abspath("${path.root}/../../../lambdas/dynamo-migration-lambda")
+  output_path = abspath("${path.root}/../../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip")
 }
 
 data "aws_security_group" "ehr-transfer-service-ecs-task" {

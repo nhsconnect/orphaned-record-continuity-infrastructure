@@ -3,7 +3,7 @@ resource "aws_lambda_function" "ehr_hard_deletion" {
   function_name    = "${var.environment}-ehr-hard-deletion-lambda"
   role             = aws_iam_role.ehr_hard_deletion_lambda.arn
   handler          = "EhrHardDeletion.lambda_handler"
-  source_code_hash = filebase64sha256(data.archive_file.ehr_deletion_lambda.output_base64sha256)
+  source_code_hash = data.archive_file.ehr_deletion_lambda.output_base64sha256
   runtime          = "python3.12"
   timeout          = 300
   tags = {
