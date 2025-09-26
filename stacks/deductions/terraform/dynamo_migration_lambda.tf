@@ -255,9 +255,9 @@ resource "aws_iam_policy" "lambda_rds_migration_access" {
 
 # cSpell:ignore joinpath
 data "archive_file" "lambda" {
-  type             = "zip"
-  source_dir       = abspath("${path.root}/../../lambdas/dynamo-migration-lambda")
-  output_path      = abspath("${path.root}/../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip")
+  type        = "zip"
+  source_dir  = abspath("${path.root}/../../lambdas/dynamo-migration-lambda")
+  output_path = abspath("${path.root}/../../lambdas/dynamo-migration-lambda/build/dynamo-migration-lambda.zip")
 }
 
 data "aws_security_group" "ehr-transfer-service-ecs-task" {
