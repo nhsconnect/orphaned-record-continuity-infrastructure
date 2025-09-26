@@ -2,14 +2,6 @@ provider "aws" {
   region = var.region
 }
 
-provider "aws" {
-  alias  = "ci"
-  region = var.region
-  assume_role {
-    role_arn     = "arn:aws:iam::${var.common_account_id}:role/${var.common_account_role}"
-    session_name = "common-${var.environment}-cross-account"
-  }
-}
 
 terraform {
   backend "s3" {
