@@ -19,7 +19,7 @@ resource "aws_lambda_function" "ehr_hard_deletion" {
   }
 
   depends_on = [
-    data.archive_file.ehr_hard_deletion_lambda
+    data.archive_file.lambda
   ]
 }
 
