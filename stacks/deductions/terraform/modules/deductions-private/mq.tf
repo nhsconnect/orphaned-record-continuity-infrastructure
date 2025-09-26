@@ -181,7 +181,7 @@ resource "aws_security_group_rule" "vpn_to_mq_web_console" {
   security_group_id = aws_security_group.vpn_to_mq.id
   source_security_group_id = aws_security_group.vpn.id
 }
-s
+
 resource "aws_ssm_parameter" "mq_broker_name" {
   name = "/repo/${var.environment}/output/${var.repo_name}/broker-name"
   type  = "String"
