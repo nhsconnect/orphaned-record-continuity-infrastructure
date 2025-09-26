@@ -126,7 +126,7 @@ data "aws_iam_policy" "lambda_dynamodb_execution_role" {
 }
 
 data "archive_file" "lambda" {
-  type             = "zip"
-  source_file      = abspath("${path.root}/../../../lambdas/ehr-hard-deletion-lambda/EhrHardDeletion.py")
-  output_path      = abspath("${path.root}/../../../lambdas/ehr-hard-deletion-lambda/build/EhrHardDeletion.zip")
+  type        = "zip"
+  source_file = abspath("${path.root}/../../../lambdas/ehr-hard-deletion-lambda/EhrHardDeletion.py")
+  output_path = abspath("${path.root}/../../../lambdas/ehr-hard-deletion-lambda/build/EhrHardDeletion.zip")
 }
