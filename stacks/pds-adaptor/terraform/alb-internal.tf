@@ -14,7 +14,6 @@ resource "aws_alb" "alb-internal" {
     aws_security_group.alb_to_pds_adaptor_ecs.id,
     aws_security_group.service_to_pds_adaptor.id,
     aws_security_group.vpn_to_pds_adaptor.id,
-    aws_security_group.gocd_to_pds_adaptor.id
   ]
   internal                   = true
   drop_invalid_header_fields = true
@@ -222,30 +221,6 @@ resource "aws_security_group_rule" "vpn_to_pds_adaptor" {
   security_group_id        = aws_security_group.vpn_to_pds_adaptor.id
 }
 
-resource "aws_security_group" "gocd_to_pds_adaptor" {
-  name        = "${var.environment}-gocd-to-${var.component_name}"
-  description = "Controls access from gocd to pds-adaptor"
-  vpc_id      = data.aws_ssm_parameter.deductions_private_vpc_id.value
-
-  ingress {
-    description     = "Allow gocd to access pds-adaptor ALB"
-    protocol        = "tcp"
-    from_port       = 443
-    to_port         = 443
-    security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
-  }
-
-  tags = {
-    Name        = "${var.environment}-gocd-to-${var.component_name}-sg"
-    CreatedBy   = var.repo_name
-    Environment = var.environment
-  }
-}
-
 data "aws_ssm_parameter" "vpn_sg_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/vpn-sg-id"
-}
-
-data "aws_ssm_parameter" "gocd_sg_id" {
-  name = "/repo/${var.environment}/user-input/external/gocd-agent-sg-id"
 }

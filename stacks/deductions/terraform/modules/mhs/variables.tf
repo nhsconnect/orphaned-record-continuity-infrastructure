@@ -30,8 +30,5 @@ variable "cluster_name" {}
 variable "mhs_public_subnets_inbound" {}
 variable "mhs_public_subnets_outbound" {}
 variable "mhs_cluster_domain_name" {}
-variable "gocd_cidr" {}
-
-variable "deploy_cross_account_vpc_peering"{}
 
 variable "inbound_sig_ips" {}

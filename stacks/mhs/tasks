@@ -105,13 +105,6 @@ function check_env {
   fi
 }
 
-function check_cluster_name {
-  cluster_name=$1
-  if [[ $cluster_name != "repo" ]] && [[ $cluster_name != "test_harness" ]]; then
-    echo "cluster_name must be set to either repo or test_harness"
-    exit 3
-  fi
-}
 
 function generate_csr {
   keys_file_name="$1"
@@ -221,12 +214,6 @@ case "${command}" in
       _assume_environment_role $NHS_ENVIRONMENT
       tf_plan "$2" repo
       ;;
-  _tf_plan_test_harness)
-      check_env
-      set_mhs_image_tag
-      _assume_environment_role $NHS_ENVIRONMENT
-      tf_plan "$2" test_harness
-      ;;
   tf_plan_repo)
       check_env
       set_mhs_image_tag
@@ -236,11 +223,6 @@ case "${command}" in
       check_env
       set_mhs_image_tag
       dojo
-      ;;
-  tf_plan_test_harness)
-      check_env
-      set_mhs_image_tag
-      dojo "./tasks _tf_plan_test_harness $2 test_harness"
       ;;
   _tf_apply)
       check_env
@@ -269,39 +251,6 @@ case "${command}" in
       set_mhs_image_tag
       promote_docker_image "mhs-inbound:$MHS_IMAGE_TAG" "$NHS_ENVIRONMENT"
       promote_docker_image "mhs-outbound:$MHS_IMAGE_TAG" "$NHS_ENVIRONMENT"
-      ;;
-  _wait_ecs)
-      _assume_environment_role $NHS_ENVIRONMENT
-      cluster_name=$2
-      check_cluster_name $cluster_name
-
-      CLUSTER_NAME=$cluster_name
-      if [[ $cluster_name == "test_harness" ]]; then
-        CLUSTER_NAME=test-harness
-      fi
-
-      # Wait for outbound
-      aws ecs wait services-stable \
-        --region $AWS_DEFAULT_REGION \
-        --cluster $NHS_ENVIRONMENT-$CLUSTER_NAME-mhs-outbound-cluster \
-        --service $NHS_ENVIRONMENT-$CLUSTER_NAME-mhs-outbound
-
-      # Wait for inbound
-      aws ecs wait services-stable \
-        --region $AWS_DEFAULT_REGION \
-        --cluster $NHS_ENVIRONMENT-$CLUSTER_NAME-mhs-inbound-cluster \
-        --service $NHS_ENVIRONMENT-$CLUSTER_NAME-mhs-inbound
-      ;;
-
-  wait_ecs)
-      cluster_name=$2
-      check_cluster_name $cluster_name
-      check_env
-      dojo "./tasks _wait_ecs $cluster_name"
-      ;;
-  *)
-      echo "Invalid command: '${command}'"
-      exit 1
       ;;
 esac
 set +e

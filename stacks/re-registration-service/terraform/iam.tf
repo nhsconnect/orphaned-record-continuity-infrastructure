@@ -3,6 +3,10 @@ locals {
   sns_topic_arns = [
     aws_sns_topic.re_registration_audit_topic.arn
   ]
+  sns_topic_map = {
+    for idx, arn in local.sns_topic_arns :
+    tostring(idx) => arn
+  }
 }
 
 data "aws_iam_policy_document" "ecs-assume-role-policy" {

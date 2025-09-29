@@ -37,10 +37,6 @@ variable "service_desired_count" {}
 
 variable "alb_deregistration_delay" {}
 
-variable "gocd_cidr_block" {
-  default = "10.1.0.0/16"
-}
-
 variable "log_level" {
   type    = string
   default = "debug"

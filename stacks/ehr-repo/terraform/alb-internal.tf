@@ -26,7 +26,6 @@ resource "aws_alb" "alb-internal" {
     aws_security_group.alb_to_ehr_repo_ecs.id,
     aws_security_group.service_to_ehr_repo.id,
     aws_security_group.vpn_to_ehr_repo.id,
-    aws_security_group.gocd_to_ehr_repo.id
   ]
   internal                   = true
   drop_invalid_header_fields = true
@@ -237,34 +236,9 @@ resource "aws_security_group" "vpn_to_ehr_repo" {
   }
 }
 
-resource "aws_security_group" "gocd_to_ehr_repo" {
-  name        = "${var.environment}-gocd-to-${var.component_name}"
-  description = "controls access from gocd to ehr-repo"
-  vpc_id      = data.aws_ssm_parameter.deductions_core_vpc_id.value
-
-  ingress {
-    description     = "Allow gocd to access EHR Repo ALB"
-    protocol        = "tcp"
-    from_port       = 443
-    to_port         = 443
-    security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
-  }
-
-  tags = {
-    Name        = "${var.environment}-gocd-to-${var.component_name}-sg"
-    CreatedBy   = var.repo_name
-    Environment = var.environment
-  }
-}
-
 data "aws_ssm_parameter" "vpn_sg_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/vpn-sg-id"
 }
-
-data "aws_ssm_parameter" "gocd_sg_id" {
-  name = "/repo/${var.environment}/user-input/external/gocd-agent-sg-id"
-}
-
 
 resource "aws_ssm_parameter" "deductions_core_internal_alb_dns" {
   name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-core-internal-alb-dns"

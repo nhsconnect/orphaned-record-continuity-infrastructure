@@ -10,8 +10,10 @@ locals {
     aws_sns_topic.event_out_of_order.arn,
     aws_sns_topic.active_suspensions.arn,
   ]
-  sns_for_suspension_service = var.is_end_of_transfer_service ? [module.end-of-transfer-service[0].end_of_transfer_sns_topic] : [module.suspension-service[0].repo_incoming_sns_topic]
+  sns_for_suspension_service = [module.suspension-service[0].repo_incoming_sns_topic]
   sns_arns                   = concat(local.sns_base_arns, local.sns_for_suspension_service)
+  sns_arns_flat              = flatten([local.sns_base_arns, local.sns_for_suspension_service])
+  sns_arns_map               = { for arn in local.sns_arns_flat : arn => arn }
 }
 
 data "aws_iam_policy_document" "ecs-assume-role-policy" {

@@ -10,7 +10,6 @@ resource "aws_mq_broker" "deductor_mq_broker" {
   security_groups            = [
     aws_security_group.service_to_mq.id,
     aws_security_group.vpn_to_mq.id,
-    aws_security_group.gocd_to_mq.id
   ]
   subnet_ids                 =  slice(module.vpc.private_subnets, 0, 2)
 
@@ -181,38 +180,6 @@ resource "aws_security_group_rule" "vpn_to_mq_web_console" {
   description = "Allow traffic from VPN to MQ Web Console"
   security_group_id = aws_security_group.vpn_to_mq.id
   source_security_group_id = aws_security_group.vpn.id
-}
-
-resource "aws_security_group" "gocd_to_mq" {
-  name        = "${var.environment}-gocd-to-mq"
-  description = "controls access from gocd to AMQ"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    protocol = "tcp"
-    from_port = "61617"
-    to_port = "61617"
-    description = "Allow traffic from gocd to MQ through OpenWire"
-    security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
-  }
-
-  ingress {
-    protocol        = "tcp"
-    from_port       = "5671"
-    to_port         = "5671"
-    description = "Allow traffic from gocd to MQ through AMQP"
-    security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
-  }
-
-  tags = {
-    Name = "${var.environment}-gocd-to-${var.component_name}-sg"
-    CreatedBy   = var.repo_name
-    Environment = var.environment
-  }
-}
-
-data "aws_ssm_parameter" "gocd_sg_id" {
-  name = "/repo/${var.environment}/user-input/external/gocd-agent-sg-id"
 }
 
 resource "aws_ssm_parameter" "mq_broker_name" {

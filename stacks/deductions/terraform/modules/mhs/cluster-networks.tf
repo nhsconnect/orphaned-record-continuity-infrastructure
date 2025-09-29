@@ -14,7 +14,4 @@ module "cluster" {
   mhs_subnets = var.mhs_private_cidr_blocks
   mhs_vpc_cidr_block = var.mhs_vpc_cidr_block
   region = var.region
-  gocd_cidr = var.gocd_cidr
-  gocd_environment = "prod"
-  deploy_cross_account_vpc_peering = var.deploy_cross_account_vpc_peering
 }
