@@ -43,8 +43,12 @@ on:
         description: "Environment to deploy to"
         type: string
       stack:
-        description: "Stack to deploy"
+        description: "Stack to deploy - stack folder name"
         type: string
+      alias:
+        description: "Alias for the stack - i.e. deductions is referred to as deductions-infra"
+        type: string
+        required: false
       is_deployment:
         default: false
         type: boolean
@@ -112,7 +116,7 @@ jobs:
     - name: Terraform Init
       id: init
       run: |
-        terraform init -no-color -backend-config="key=${{ inputs.stack }}-${{ inputs.environment }}/terraform.tfstate" \
+        terraform init -no-color -backend-config="key=${{ inputs.stack }}${{ inputs.alias != '' && inputs.alias || ''}}-${{ inputs.environment }}/terraform.tfstate" \
         -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
         -backend-config="dynamodb_table=${{ secrets.TF_BACKEND_TABLE }}"
       shell: bash
