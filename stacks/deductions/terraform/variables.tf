@@ -38,7 +38,9 @@ variable "deductions_private_public_subnets" {
 
 variable "gocd_cidr" {}
 
-variable "gocd_environment" {}
+variable "gocd_environment" {
+  default = "prod"
+}
 
 variable "deductions_private_private_subnets" {
   type = list(any)
