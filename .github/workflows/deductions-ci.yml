@@ -70,6 +70,7 @@ jobs:
     needs: [get-changed-files]
     with:
       stack: deductions
+      alias: deductions-infra
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
       lambdas_to_build: true
