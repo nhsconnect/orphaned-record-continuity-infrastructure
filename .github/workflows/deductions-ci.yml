@@ -194,7 +194,6 @@ jobs:
     needs: [get-changed-files, deductions-ci]
     with:
       stack: mhs
-      ci_account: true
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
