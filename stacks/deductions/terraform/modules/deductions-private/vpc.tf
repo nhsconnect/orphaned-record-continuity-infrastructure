@@ -110,6 +110,13 @@ resource "aws_route" "private_private_to_mhs_repo" {
   vpc_peering_connection_id = var.repo_mhs_vpc_peering_connection_id
 }
 
+resource "aws_route" "private_private_to_mhs_test_harness" {
+  count                     = var.deploy_mhs_test_harness ? 1 : 0
+  route_table_id            = module.vpc.private_route_table_ids[0]
+  destination_cidr_block    = var.test_harness_mhs_vpc_cidr_block
+  vpc_peering_connection_id = var.test_harness_mhs_vpc_peering_connection_id
+}
+
 resource "aws_route" "private_public_to_mhs_repo" {
   route_table_id            = module.vpc.public_route_table_ids[0]
   destination_cidr_block    = var.repo_mhs_vpc_cidr_block
@@ -119,6 +126,74 @@ resource "aws_route" "private_public_to_mhs_repo" {
 data "aws_caller_identity" "ci" {
   provider = aws.ci
 }
+
+resource "aws_route" "private_public_to_mhs_test_harness" {
+  count                     = var.deploy_mhs_test_harness ? 1 : 0
+  route_table_id            = module.vpc.public_route_table_ids[0]
+  destination_cidr_block    = var.test_harness_mhs_vpc_cidr_block
+  vpc_peering_connection_id = var.test_harness_mhs_vpc_peering_connection_id
+}
+resource "aws_vpc_peering_connection" "private_to_gocd" {
+  peer_vpc_id   = data.aws_ssm_parameter.gocd_vpc.value
+  vpc_id        = module.vpc.vpc_id
+  peer_owner_id = data.aws_caller_identity.ci.account_id
+  peer_region   = var.region
+  auto_accept   = var.deploy_cross_account_vpc_peering ? false : true
+
+  tags = {
+    Side        = "Requester"
+    Name        = "${var.environment}-deductions-private-gocd-peering"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
+resource "aws_vpc_peering_connection_accepter" "private_to_gocd" {
+  provider                  = aws.ci
+  count                     = var.deploy_cross_account_vpc_peering ? 1 : 0
+  vpc_peering_connection_id = aws_vpc_peering_connection.private_to_gocd.id
+  auto_accept               = true
+
+  tags = {
+    Side        = "Accepter"
+    Name        = "${var.environment}-deductions-private-to-gocd-peering-connection-accepter"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
+resource "aws_route" "private_private_to_gocd" {
+  route_table_id            = module.vpc.private_route_table_ids[0]
+  destination_cidr_block    = var.gocd_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.private_to_gocd.id
+}
+
+resource "aws_route" "private_public_to_gocd" {
+  route_table_id            = module.vpc.public_route_table_ids[0]
+  destination_cidr_block    = var.gocd_cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.private_to_gocd.id
+}
+
+resource "aws_route" "gocd_to_private" {
+  provider                  = aws.ci
+  route_table_id            = data.aws_ssm_parameter.gocd_route_table_id.value
+  destination_cidr_block    = var.cidr
+  vpc_peering_connection_id = aws_vpc_peering_connection.private_to_gocd.id
+}
+
+# Allow DNS resolution of the domain names defined in gocd VPC in deductions_private vpc
+resource "aws_route53_zone_association" "deductions_private_hosted_zone_gocd_vpc_association" {
+  zone_id = data.aws_ssm_parameter.gocd_zone_id.value
+  vpc_id  = module.vpc.vpc_id
+}
+
+resource "aws_route53_vpc_association_authorization" "deductions_private_hosted_zone_gocd_vpc" {
+  count    = var.deploy_cross_account_vpc_peering ? 1 : 0
+  provider = aws.ci
+  vpc_id   = module.vpc.vpc_id
+  zone_id  = data.aws_ssm_parameter.gocd_zone_id.value
+}
+
 
 resource "aws_flow_log" "nhs_audit" {
   log_destination      = data.aws_ssm_parameter.nhs_audit_flow_s3_bucket_arn.value
@@ -132,7 +207,20 @@ resource "aws_flow_log" "nhs_audit" {
     CreatedBy   = var.repo_name
   }
 }
+data "aws_ssm_parameter" "gocd_vpc" {
+  provider = aws.ci
+  name     = "/repo/prod/output/prm-gocd-infra/gocd-vpc-id"
+}
 
+data "aws_ssm_parameter" "gocd_route_table_id" {
+  provider = aws.ci
+  name     = "/repo/${var.gocd_environment}/output/prm-gocd-infra/gocd-route-table-id"
+}
+
+data "aws_ssm_parameter" "gocd_zone_id" {
+  provider = aws.ci
+  name     = "/repo/${var.gocd_environment}/output/prm-gocd-infra/gocd-route53-zone-id"
+}
 data "aws_ssm_parameter" "nhs_audit_flow_s3_bucket_arn" {
   name = "/repo/user-input/external/nhs-audit-vpc-flow-log-s3-bucket-arn"
 }

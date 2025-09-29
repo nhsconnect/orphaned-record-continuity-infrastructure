@@ -36,6 +36,10 @@ variable "deductions_private_public_subnets" {
   type = list(any)
 }
 
+variable "gocd_cidr" {}
+
+variable "gocd_environment" {}
+
 variable "deductions_private_private_subnets" {
   type = list(any)
 }
@@ -134,7 +138,11 @@ variable "maintenance_time_zone" {
   default     = "UTC"
   description = "The maintenance time zone, in either the Country/City format, or the UTC offset format. e.g. CET"
 }
-
+variable "test_harness_mhs_cluster_domain_name" { default = "" }
+variable "deploy_mhs_test_harness" {}
+variable "mhs_test_harness_public_subnets_outbound" {}
+variable "mhs_test_harness_public_subnets_inbound" {}
+variable "mhs_test_harness_private_subnets" {}
 variable "state_db_allocated_storage" {}
 variable "state_db_engine_version" {}
 variable "state_db_instance_class" {}

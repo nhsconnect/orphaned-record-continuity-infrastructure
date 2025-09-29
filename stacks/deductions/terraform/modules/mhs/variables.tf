@@ -2,7 +2,9 @@ variable "environment" {
   type = string
   description = "An ID used to identify the environment being deployed by this configuration. As this is used as a prefix for the names of most resources this should be kept to 20 characters or less."
 }
+variable "gocd_cidr" {}
 
+variable "deploy_cross_account_vpc_peering"{}
 variable "region" {
   type    = string
   default = "eu-west-2"

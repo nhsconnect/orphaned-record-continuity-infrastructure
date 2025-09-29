@@ -32,6 +32,10 @@ variable "azs" {
   type = list
 }
 
+variable "gocd_cidr" {}
+
+variable "gocd_environment" {}
+
 variable "deductions_private_cidr" {}
 
 variable "core_private_vpc_peering_connection_id" {}

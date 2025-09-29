@@ -130,5 +130,12 @@ variable "environment_public_zone" {}
 variable "environment_private_zone" {}
 
 variable "deploy_cross_account_vpc_peering"{}
+variable "gocd_cidr" {}
+variable "gocd_environment" {
+  default     = "prod"
+}
+variable "test_harness_mhs_vpc_cidr_block" {}
+variable "test_harness_mhs_vpc_peering_connection_id" {}
+variable "deploy_mhs_test_harness" {}
 
 variable "grant_access_to_queues_through_vpn" {}
