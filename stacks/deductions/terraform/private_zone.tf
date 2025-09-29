@@ -93,7 +93,3 @@ data "aws_ssm_parameter" "gocd_vpc" {
   provider = aws.ci
   name     = "/repo/prod/output/prm-gocd-infra/gocd-vpc-id"
 }
-resource "aws_route53_zone_association" "repo_mhs" {
-  zone_id = aws_route53_zone.environment_private.zone_id
-  vpc_id  = local.repo_mhs_vpc_id
-}
