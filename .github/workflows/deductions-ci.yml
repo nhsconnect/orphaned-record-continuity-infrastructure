@@ -194,6 +194,7 @@ jobs:
     needs: [get-changed-files, deductions-ci]
     with:
       stack: mhs
+      alias: mhs-infra
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
