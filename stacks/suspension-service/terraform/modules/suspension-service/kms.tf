@@ -1,6 +1,6 @@
 resource "aws_kms_key" "repo_incoming" {
-  description = "Custom KMS Key to enable server side encryption for repo incoming topic"
-  policy      = data.aws_iam_policy_document.kms_key_policy_doc.json
+  description         = "Custom KMS Key to enable server side encryption for repo incoming topic"
+  policy              = data.aws_iam_policy_document.kms_key_policy_doc.json
   enable_key_rotation = true
 
   tags = {

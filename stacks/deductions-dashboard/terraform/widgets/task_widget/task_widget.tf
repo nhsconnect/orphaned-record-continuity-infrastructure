@@ -21,7 +21,7 @@ variable "region" {
 
 locals {
   titles = {
-    cpu = "CPU"
+    cpu    = "CPU"
     memory = "Memory"
   }
   container_insights_log_group = "/aws/ecs/containerinsights/${var.environment}-${var.component.name}-ecs-cluster/performance"

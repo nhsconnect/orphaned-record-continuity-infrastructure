@@ -1,6 +1,6 @@
 resource "aws_vpc_peering_connection" "private_mhs" {
   peer_vpc_id = var.deductions_private_vpc_id
-  vpc_id = local.mhs_vpc_id
+  vpc_id      = local.mhs_vpc_id
   auto_accept = true
 
   accepter {
@@ -12,7 +12,7 @@ resource "aws_vpc_peering_connection" "private_mhs" {
   }
 
   tags = {
-    Name = "${var.environment}-${var.cluster_name}-deductions-private-mhs-peering"
+    Name        = "${var.environment}-${var.cluster_name}-deductions-private-mhs-peering"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }

@@ -1,16 +1,16 @@
 resource "aws_iam_role" "repo_developer" {
-  name = "RepoDeveloper"
+  name               = "RepoDeveloper"
   assume_role_policy = data.aws_iam_policy_document.strict_env_trust_policy.json
 }
 
 resource "aws_iam_policy" "terraform_plan_permissions_policy" {
-  name = "terraform_plan_permissions_policy"
+  name   = "terraform_plan_permissions_policy"
   policy = data.aws_iam_policy_document.terraform_plan_permissions.json
 }
 
 data "aws_iam_policy_document" "terraform_plan_permissions" {
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["ssm:PutParameter*"]
     resources = [
       "arn:aws:ssm:eu-west-2:${data.aws_caller_identity.current.account_id}:parameter/repo/user-input/ssh-*",
@@ -19,7 +19,7 @@ data "aws_iam_policy_document" "terraform_plan_permissions" {
   }
 
   statement {
-    effect = "Allow"
+    effect  = "Allow"
     actions = ["ssm:GetParameter*"]
     resources = [
       "arn:aws:ssm:eu-west-2:${data.aws_caller_identity.current.account_id}:parameter/repo/*/output/*",
@@ -85,14 +85,14 @@ data "aws_iam_policy_document" "terraform_plan_permissions" {
   }
 
   statement {
-    effect = "Allow"
-    actions = ["iam:GetInstanceProfile"]
+    effect    = "Allow"
+    actions   = ["iam:GetInstanceProfile"]
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:instance-profile/*"]
   }
 
   statement {
-    effect = "Allow"
-    actions =  ["iam:GetRole"]
+    effect  = "Allow"
+    actions = ["iam:GetRole"]
     resources = [
       "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*",
       "arn:aws:iam::${data.aws_ssm_parameter.ci_account_id.value}:role/CiReadOnly"
@@ -100,32 +100,32 @@ data "aws_iam_policy_document" "terraform_plan_permissions" {
   }
 
   statement {
-    effect = "Allow"
-    actions =  ["iam:GetPolicy", "iam:GetPolicyVersion"]
+    effect    = "Allow"
+    actions   = ["iam:GetPolicy", "iam:GetPolicyVersion"]
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:policy/*"]
   }
 
   statement {
-    effect = "Allow"
-    actions =  ["iam:GetRolePolicy"]
+    effect    = "Allow"
+    actions   = ["iam:GetRolePolicy"]
     resources = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/*"]
   }
 
   statement {
-    effect = "Allow"
-    actions =  ["route53:GetHostedZone"]
+    effect    = "Allow"
+    actions   = ["route53:GetHostedZone"]
     resources = ["arn:aws:route53:::hostedzone/*"]
   }
 
   statement {
-    effect = "Allow"
-    actions =  ["sts:AssumeRole"]
+    effect    = "Allow"
+    actions   = ["sts:AssumeRole"]
     resources = ["arn:aws:iam::${data.aws_ssm_parameter.ci_account_id.value}:role/CiReadOnly"]
   }
 
   statement {
-    effect = "Allow"
-    actions = ["ecs:DescribeServices",]
+    effect    = "Allow"
+    actions   = ["ecs:DescribeServices", ]
     resources = ["arn:aws:ecs:eu-west-2:${data.aws_caller_identity.current.account_id}:service/${var.environment}*-ecs-cluster/${var.environment}*-service"]
   }
 
@@ -142,13 +142,13 @@ data "aws_iam_policy_document" "terraform_plan_permissions" {
   statement {
     effect = "Allow"
     actions = ["ecs:DescribeClusters", "ecs:ListAttributes", "ecs:ListClusters", "ecs:ListContainerInstances",
-      "ecs:ListServices", "ecs:ListTaskDefinitionFamilies", "ecs:ListTaskDefinitions", "ecs:ListTasks"]
+    "ecs:ListServices", "ecs:ListTaskDefinitionFamilies", "ecs:ListTaskDefinitions", "ecs:ListTasks"]
     resources = ["arn:aws:ecs:eu-west-2:${data.aws_caller_identity.current.account_id}:*"]
   }
 
   statement {
-    effect = "Allow"
-    actions = ["cloudwatch:List*", "cloudwatch:Describe*"]
+    effect    = "Allow"
+    actions   = ["cloudwatch:List*", "cloudwatch:Describe*"]
     resources = ["arn:aws:cloudwatch:eu-west-2:${data.aws_caller_identity.current.account_id}:alarm:*"]
   }
 
@@ -162,9 +162,9 @@ data "aws_iam_policy_document" "terraform_plan_permissions" {
   }
 
   statement {
-    effect = "Allow"
-    sid = "AbilityToRaiseSupportCases"
-    actions = ["support:*"]
+    effect    = "Allow"
+    sid       = "AbilityToRaiseSupportCases"
+    actions   = ["support:*"]
     resources = ["*"]
   }
 }
@@ -172,47 +172,47 @@ data "aws_iam_policy_document" "terraform_plan_permissions" {
 
 resource "aws_iam_role_policy_attachment" "terraform_plan_to_repo_developer" {
   policy_arn = aws_iam_policy.terraform_plan_permissions_policy.arn
-  role = aws_iam_role.repo_developer.name
+  role       = aws_iam_role.repo_developer.name
 }
 
 resource "aws_iam_policy" "aws_console_read" {
-  name = "aws_console_read_policy"
+  name   = "aws_console_read_policy"
   policy = data.aws_iam_policy_document.aws_console_read.json
 }
 
 resource "aws_iam_role_policy_attachment" "aws_console_read" {
   policy_arn = aws_iam_policy.aws_console_read.arn
-  role = aws_iam_role.repo_developer.name
+  role       = aws_iam_role.repo_developer.name
 }
 
 resource "aws_iam_role_policy_attachment" "sqs_read_only_to_repo_developer" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSQSReadOnlyAccess"
-  role = aws_iam_role.repo_developer.name
+  role       = aws_iam_role.repo_developer.name
 }
 
 resource "aws_iam_role_policy_attachment" "cloudwatch_readonly_access_to_repo_developer" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchReadOnlyAccess"
-  role = aws_iam_role.repo_developer.name
+  role       = aws_iam_role.repo_developer.name
 }
 
 resource "aws_iam_role_policy_attachment" "repo_developer_s3_allow_terraform_state_content_access" {
   policy_arn = aws_iam_policy.s3_allow_terraform_state_content_access.arn
-  role = aws_iam_role.repo_developer.name
+  role       = aws_iam_role.repo_developer.name
 }
 
 resource "aws_iam_role_policy_attachment" "repo_developer_s3_allow_ehr_repo_content_access" {
   policy_arn = aws_iam_policy.s3_allow_ehr_repo_content_access.arn
-  role = aws_iam_role.repo_developer.name
+  role       = aws_iam_role.repo_developer.name
 }
 
 resource "aws_iam_role_policy_attachment" "repo_developer_s3_allow_ehr_repo_bucket_access" {
   policy_arn = aws_iam_policy.s3_allow_ehr_repo_log_bucket_access.arn
-  role = aws_iam_role.repo_developer.name
+  role       = aws_iam_role.repo_developer.name
 }
 
 resource "aws_iam_role_policy_attachment" "repo_developer_s3_allow_list_buckets" {
   policy_arn = aws_iam_policy.s3_allow_list_buckets.arn
-  role = aws_iam_role.repo_developer.name
+  role       = aws_iam_role.repo_developer.name
 }
 
 data "aws_iam_policy_document" "aws_console_read" {
@@ -225,7 +225,7 @@ data "aws_iam_policy_document" "aws_console_read" {
       "ecs:ListServices",
       "ecs:ListTaskDefinitionFamilies",
       "ecs:ListTaskDefinitions",
-      "ecs:ListTasks"]
+    "ecs:ListTasks"]
     resources = ["*"]
   }
 
@@ -240,5 +240,5 @@ data "aws_iam_policy_document" "aws_console_read" {
 
 resource "aws_iam_role_policy_attachment" "sns_read_only_access_repo_dev" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSNSReadOnlyAccess"
-  role = aws_iam_role.repo_developer.name
+  role       = aws_iam_role.repo_developer.name
 }

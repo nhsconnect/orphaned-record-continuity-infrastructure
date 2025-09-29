@@ -2,13 +2,13 @@ data "aws_iam_policy_document" "strict_env_trust_policy" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         "arn:aws:iam::${data.aws_ssm_parameter.nhsd_identities_account_id.value}:root"
       ]
     }
     condition {
-      test = "Bool"
+      test     = "Bool"
       variable = "aws:MultiFactorAuthPresent"
       values = [
         "true"

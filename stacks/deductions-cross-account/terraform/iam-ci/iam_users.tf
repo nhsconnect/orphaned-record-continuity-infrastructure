@@ -4,14 +4,14 @@ data "aws_iam_policy_document" "ci_read_only_trust_policy" {
   statement {
     actions = ["sts:AssumeRole"]
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
-        "arn:aws:iam::${data.aws_ssm_parameter.dev_account_id.value}:role/RepoAdmin",              # dev environment (in dev account)
-        "arn:aws:iam::${data.aws_ssm_parameter.test_account_id.value}:role/RepoAdmin",             # test environment (in test account)
-        "arn:aws:iam::${data.aws_ssm_parameter.pre_prod_account_id.value}:role/RepoDeveloper",     # pre-prod environment RepoDeveloper (in pre-prod account)
+        "arn:aws:iam::${data.aws_ssm_parameter.dev_account_id.value}:role/RepoAdmin",          # dev environment (in dev account)
+        "arn:aws:iam::${data.aws_ssm_parameter.test_account_id.value}:role/RepoAdmin",         # test environment (in test account)
+        "arn:aws:iam::${data.aws_ssm_parameter.pre_prod_account_id.value}:role/RepoDeveloper", # pre-prod environment RepoDeveloper (in pre-prod account)
         "arn:aws:iam::${data.aws_ssm_parameter.prod_account_id.value}:role/RepoDeveloper",
         "arn:aws:iam::${data.aws_ssm_parameter.perf_account_id.value}:role/RepoAdmin",
-        "arn:aws:iam::${data.aws_ssm_parameter.pre_prod_account_id.value}:role/BootstrapAdmin",     # pre-prod environment RepoDeveloper (in pre-prod account)
+        "arn:aws:iam::${data.aws_ssm_parameter.pre_prod_account_id.value}:role/BootstrapAdmin", # pre-prod environment RepoDeveloper (in pre-prod account)
         "arn:aws:iam::${data.aws_ssm_parameter.prod_account_id.value}:role/BootstrapAdmin",
         "arn:aws:sts::${data.aws_ssm_parameter.dev_account_id.value}:assumed-role/GitHub-Actions-ReadOnly/GitHubActions",      # dev environment
         "arn:aws:sts::${data.aws_ssm_parameter.test_account_id.value}:assumed-role/GitHub-Actions-ReadOnly/GitHubActions",     # test environment
@@ -24,22 +24,22 @@ data "aws_iam_policy_document" "ci_read_only_trust_policy" {
 }
 
 resource "aws_iam_role" "ci_read_only" {
-  name = "CiReadOnly"
+  name               = "CiReadOnly"
   assume_role_policy = data.aws_iam_policy_document.ci_read_only_trust_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "ci_read_only" {
   policy_arn = aws_iam_policy.ci_read_only.arn
-  role = aws_iam_role.ci_read_only.name
+  role       = aws_iam_role.ci_read_only.name
 }
 
 resource "aws_iam_role_policy_attachment" "sms_read_only" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
-  role = aws_iam_role.ci_read_only.name
+  role       = aws_iam_role.ci_read_only.name
 }
 
 resource "aws_iam_policy" "ci_read_only" {
-  name = "ci-read-only"
+  name   = "ci-read-only"
   policy = data.aws_iam_policy_document.ci_read_only.json
 }
 
@@ -64,9 +64,9 @@ data "aws_iam_policy_document" "ci_read_only" {
   statement {
     effect = "Allow"
     actions = [
-     "ec2:DescribeVpcs",
-     "ec2:DescribeRouteTables",
-     "ec2:DescribeVpcPeeringConnections"
+      "ec2:DescribeVpcs",
+      "ec2:DescribeRouteTables",
+      "ec2:DescribeVpcPeeringConnections"
     ]
     resources = ["*"]
   }

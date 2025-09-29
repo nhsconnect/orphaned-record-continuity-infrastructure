@@ -1,21 +1,21 @@
 variable "region" {
-  type = string
+  type    = string
   default = "eu-west-2"
 }
 
 variable "environment" {
-  type        = string
-  default     = "dev"
+  type    = string
+  default = "dev"
 }
 
 variable "repo_name" {
-  type = string
+  type    = string
   default = "prm-deductions-infra"
 }
 
 variable "component_name" {
-  type        = string
-  default     = "deductions-private"
+  type    = string
+  default = "deductions-private"
 }
 
 variable "vpn_sg_id" {}

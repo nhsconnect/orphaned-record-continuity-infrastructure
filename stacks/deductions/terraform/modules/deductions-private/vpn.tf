@@ -13,7 +13,7 @@ resource "aws_cloudwatch_log_stream" "vpn" {
 }
 
 data "aws_acm_certificate" "vpn" {
-  domain   = "${var.environment}.vpn.patient-deductions.nhs.uk"
+  domain = "${var.environment}.vpn.patient-deductions.nhs.uk"
 }
 
 resource "aws_ec2_client_vpn_endpoint" "vpn" {
@@ -21,7 +21,7 @@ resource "aws_ec2_client_vpn_endpoint" "vpn" {
   client_cidr_block      = var.vpn_client_subnet
   split_tunnel           = true
   dns_servers            = [cidrhost(var.cidr, 2)]
-  security_group_ids     = [ aws_security_group.vpn.id ]
+  security_group_ids     = [aws_security_group.vpn.id]
   vpc_id                 = aws_security_group.vpn.vpc_id
 
   authentication_options {
@@ -36,35 +36,35 @@ resource "aws_ec2_client_vpn_endpoint" "vpn" {
   }
 
   tags = {
-    Name = "${var.environment}-vpn"
+    Name        = "${var.environment}-vpn"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
 resource "aws_security_group" "vpn" {
-    name        = "${var.environment}-vpn-sg"
-    description = "Client VPN in ${var.environment} env"
-    vpc_id      = module.vpc.vpc_id
+  name        = "${var.environment}-vpn-sg"
+  description = "Client VPN in ${var.environment} env"
+  vpc_id      = module.vpc.vpc_id
 
-    egress {
-      description = "Allow private network outbound"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["10.0.0.0/8"]
-    }
+  egress {
+    description = "Allow private network outbound"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
 
-    tags = {
-        Name = "${var.environment}-vpn-sg"
-        CreatedBy   = var.repo_name
-        Environment = var.environment
-    }
+  tags = {
+    Name        = "${var.environment}-vpn-sg"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_ssm_parameter" "vpn_sg_id" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/vpn-sg-id"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/vpn-sg-id"
+  type  = "String"
   value = aws_security_group.vpn.id
 }
 
@@ -80,11 +80,11 @@ resource "aws_ec2_client_vpn_authorization_rule" "deductions_private" {
 }
 
 resource "aws_ec2_client_vpn_route" "repo_mhs_vpc" {
-  description = "repo mhs vpc"
+  description            = "repo mhs vpc"
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.vpn.id
   destination_cidr_block = var.repo_mhs_vpc_cidr_block
   target_vpc_subnet_id   = module.vpc.private_subnets[0]
-  depends_on = [aws_ec2_client_vpn_network_association.private_subnet]
+  depends_on             = [aws_ec2_client_vpn_network_association.private_subnet]
 }
 
 resource "aws_ec2_client_vpn_authorization_rule" "repo_mhs_vpc" {
@@ -94,11 +94,11 @@ resource "aws_ec2_client_vpn_authorization_rule" "repo_mhs_vpc" {
 }
 
 resource "aws_ec2_client_vpn_route" "deductions_core_vpc" {
-  description = "deductions core vpc"
+  description            = "deductions core vpc"
   client_vpn_endpoint_id = aws_ec2_client_vpn_endpoint.vpn.id
   destination_cidr_block = var.deductions_core_cidr
   target_vpc_subnet_id   = module.vpc.private_subnets[0]
-  depends_on = [aws_ec2_client_vpn_network_association.private_subnet]
+  depends_on             = [aws_ec2_client_vpn_network_association.private_subnet]
 }
 
 resource "aws_ec2_client_vpn_authorization_rule" "deductions_core_vpc" {
@@ -108,8 +108,8 @@ resource "aws_ec2_client_vpn_authorization_rule" "deductions_core_vpc" {
 }
 
 resource "aws_ssm_parameter" "client_vpn_endpoint_id" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/client-vpn-endpoint-id"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/client-vpn-endpoint-id"
+  type  = "String"
   value = aws_ec2_client_vpn_endpoint.vpn.id
   tags = {
     CreatedBy   = var.repo_name

@@ -1,10 +1,10 @@
 resource "aws_sns_topic" "repo_incoming" {
-  name = "${var.environment}-${var.component_name}-repo-incoming"
-  kms_master_key_id = aws_kms_key.repo_incoming.id
+  name                          = "${var.environment}-${var.component_name}-repo-incoming"
+  kms_master_key_id             = aws_kms_key.repo_incoming.id
   sqs_failure_feedback_role_arn = var.sns_sqs_role_arn
 
   tags = {
-    Name = "${var.environment}-${var.component_name}-repo-incoming-sns-topic"
+    Name        = "${var.environment}-${var.component_name}-repo-incoming-sns-topic"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }

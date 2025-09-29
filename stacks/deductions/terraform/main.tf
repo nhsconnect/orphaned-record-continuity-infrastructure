@@ -3,8 +3,8 @@ provider "aws" {
 }
 
 provider "aws" {
-  alias  = "ci"
-  region = var.region
+  alias      = "ci"
+  region     = var.region
   sts_region = "us-east-1"
   assume_role {
     role_arn     = "arn:aws:iam::${var.common_account_id}:role/CiReadOnly"
@@ -94,7 +94,7 @@ module "deductions-private" {
   repo_mhs_vpc_cidr_block         = local.repo_cidr_block
   test_harness_mhs_vpc_cidr_block = var.deploy_mhs_test_harness ? local.second_half_mhs_cidr_block : ""
   deploy_mhs_test_harness         = var.deploy_mhs_test_harness
-  
+
   broker_name                = "deductor-amq-broker-${var.environment}"
   deployment_mode            = var.deployment_mode
   mq_deployment_mode         = var.mq_deployment_mode

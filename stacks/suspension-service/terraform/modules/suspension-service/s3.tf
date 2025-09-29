@@ -47,7 +47,7 @@ resource "aws_s3_bucket_public_access_block" "ingestion_bucket" {
 resource "aws_s3_bucket_policy" "ingestion_bucket_policy" {
   bucket = aws_s3_bucket.ingestion_bucket.id
   policy = jsonencode({
-    "Version": "2008-10-17",
+    "Version" : "2008-10-17",
     "Statement" : [
       {
         Effect : "Deny",

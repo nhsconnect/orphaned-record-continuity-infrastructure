@@ -3,10 +3,10 @@ data "aws_ssm_parameter" "alb_access_logs_bucket" {
 }
 
 resource "aws_alb" "mq-admin" {
-  name            = "${var.environment}-mq-admin-alb"
-  subnets         = var.deductions_private_vpc_private_subnets
-  security_groups = [aws_security_group.vpn_to_mq_admin.id, aws_security_group.mq_ui_to_alb.id]
-  internal        = true
+  name                       = "${var.environment}-mq-admin-alb"
+  subnets                    = var.deductions_private_vpc_private_subnets
+  security_groups            = [aws_security_group.vpn_to_mq_admin.id, aws_security_group.mq_ui_to_alb.id]
+  internal                   = true
   drop_invalid_header_fields = true
 
   access_logs {
@@ -26,20 +26,20 @@ resource "aws_security_group" "mq_ui_to_alb" {
   vpc_id      = var.vpc_id
 
   tags = {
-    Name = "${var.environment}-mq-admin-to-alb"
+    Name        = "${var.environment}-mq-admin-to-alb"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
 resource "aws_security_group_rule" "alb_to_mq_health_check" {
-  description = "Allow outbound traffic from Internal ALB to AMQ nodes to make a health check"
-  from_port = "8162"
-  to_port = "8162"
-  protocol = "tcp"
+  description              = "Allow outbound traffic from Internal ALB to AMQ nodes to make a health check"
+  from_port                = "8162"
+  to_port                  = "8162"
+  protocol                 = "tcp"
   source_security_group_id = var.service_to_mq_admin_sg_id
-  security_group_id = aws_security_group.mq_ui_to_alb.id
-  type = "egress"
+  security_group_id        = aws_security_group.mq_ui_to_alb.id
+  type                     = "egress"
 }
 
 resource "aws_security_group" "vpn_to_mq_admin" {
@@ -48,20 +48,20 @@ resource "aws_security_group" "vpn_to_mq_admin" {
   vpc_id      = var.vpc_id
 
   tags = {
-    Name = "${var.environment}-vpn-to-${var.component_name}-sg"
+    Name        = "${var.environment}-vpn-to-${var.component_name}-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
 resource "aws_security_group_rule" "alb_to_mq_ingress" {
-  description = "Allow traffic from Internal ALB to AMQ"
-  from_port = "8162"
-  to_port = "8162"
-  protocol = "tcp"
+  description              = "Allow traffic from Internal ALB to AMQ"
+  from_port                = "8162"
+  to_port                  = "8162"
+  protocol                 = "tcp"
   source_security_group_id = aws_security_group.vpn_to_mq_admin.id
-  security_group_id = var.service_to_mq_admin_sg_id
-  type = "ingress"
+  security_group_id        = var.service_to_mq_admin_sg_id
+  type                     = "ingress"
 }
 
 resource "aws_alb_listener" "int-alb-listener" {
@@ -99,10 +99,10 @@ resource "aws_alb_listener" "int-alb-listener-https" {
   }
 }
 
-resource aws_ssm_parameter "int-alb-listener-https-arn" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/int-alb-listener-https-arn"
+resource "aws_ssm_parameter" "int-alb-listener-https-arn" {
+  name  = "/repo/${var.environment}/output/${var.repo_name}/int-alb-listener-https-arn"
   value = aws_alb_listener.int-alb-listener-https.arn
-  type = "String"
+  type  = "String"
 
   tags = {
     CreatedBy   = var.repo_name
@@ -148,11 +148,11 @@ resource "aws_alb_listener_rule" "mq-int-alb-https-listener-rule" {
 }
 
 resource "aws_alb_target_group" "mq-admin-int-alb-tg" {
-  name        = "${var.environment}-mq-admin-int-tg"
-  port        = 8162
-  protocol    = "HTTPS"
-  vpc_id      = var.deductions_private_vpc_id
-  target_type = "ip"
+  name                 = "${var.environment}-mq-admin-int-tg"
+  port                 = 8162
+  protocol             = "HTTPS"
+  vpc_id               = var.deductions_private_vpc_id
+  target_type          = "ip"
   deregistration_delay = 15
   health_check {
     protocol            = "HTTPS"
@@ -172,7 +172,7 @@ resource "aws_alb_target_group" "mq-admin-int-alb-tg" {
 }
 
 resource "aws_alb_target_group_attachment" "mq-attachment" {
-  count = 2
+  count            = 2
   target_group_arn = aws_alb_target_group.mq-admin-int-alb-tg.arn
   target_id        = var.mq_broker_instances[count.index].ip_address
   port             = 8162
@@ -180,17 +180,17 @@ resource "aws_alb_target_group_attachment" "mq-attachment" {
 
 
 resource "aws_security_group_rule" "vpn_to_mq_admin" {
-  type        = "ingress"
-  description = "Allow vpn to access mq admin ALB"
-  protocol    = "tcp"
-  from_port   = 443
-  to_port     = 443
+  type                     = "ingress"
+  description              = "Allow vpn to access mq admin ALB"
+  protocol                 = "tcp"
+  from_port                = 443
+  to_port                  = 443
   source_security_group_id = var.vpn_sg_id
-  security_group_id = aws_security_group.vpn_to_mq_admin.id
+  security_group_id        = aws_security_group.vpn_to_mq_admin.id
 }
 
 resource "aws_acm_certificate" "mq-admin-cert" {
-  domain_name       = "mq-admin.${var.environment_public_zone.name}"
+  domain_name = "mq-admin.${var.environment_public_zone.name}"
 
   validation_method = "DNS"
 
@@ -202,11 +202,11 @@ resource "aws_acm_certificate" "mq-admin-cert" {
 
 resource "aws_route53_record" "mq-admin-cert-validation-record" {
   for_each = {
-  for dvo in aws_acm_certificate.mq-admin-cert.domain_validation_options : dvo.domain_name => {
-    name   = dvo.resource_record_name
-    record = dvo.resource_record_value
-    type   = dvo.resource_record_type
-  }
+    for dvo in aws_acm_certificate.mq-admin-cert.domain_validation_options : dvo.domain_name => {
+      name   = dvo.resource_record_name
+      record = dvo.resource_record_value
+      type   = dvo.resource_record_type
+    }
   }
 
   allow_overwrite = true
@@ -218,7 +218,7 @@ resource "aws_route53_record" "mq-admin-cert-validation-record" {
 }
 
 resource "aws_acm_certificate_validation" "mq-admin-cert-validation" {
-  certificate_arn = aws_acm_certificate.mq-admin-cert.arn
+  certificate_arn         = aws_acm_certificate.mq-admin-cert.arn
   validation_record_fqdns = [for record in aws_route53_record.mq-admin-cert-validation-record : record.fqdn]
 }
 
@@ -232,8 +232,8 @@ resource "aws_route53_record" "mq-console-r53-record" {
 
 
 resource "aws_ssm_parameter" "deductions_private_int_alb_httpl_arn" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-int-alb-httpl-arn"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-int-alb-httpl-arn"
+  type  = "String"
   value = aws_alb_listener.int-alb-listener.arn
   tags = {
     CreatedBy   = var.repo_name
@@ -242,8 +242,8 @@ resource "aws_ssm_parameter" "deductions_private_int_alb_httpl_arn" {
 }
 
 resource "aws_ssm_parameter" "deductions_private_int_alb_httpsl_arn" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-int-alb-httpsl-arn"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-int-alb-httpsl-arn"
+  type  = "String"
   value = aws_alb_listener.int-alb-listener-https.arn
   tags = {
     CreatedBy   = var.repo_name
@@ -252,8 +252,8 @@ resource "aws_ssm_parameter" "deductions_private_int_alb_httpsl_arn" {
 }
 
 resource "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-alb-internal-dns"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-alb-internal-dns"
+  type  = "String"
   value = aws_alb.mq-admin.dns_name
   tags = {
     CreatedBy   = var.repo_name
@@ -263,8 +263,8 @@ resource "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
 
 
 resource "aws_ssm_parameter" "deductions_private_alb_internal_id" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-alb-internal-id"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-alb-internal-id"
+  type  = "String"
   value = aws_alb.mq-admin.id
   tags = {
     CreatedBy   = var.repo_name

@@ -1,5 +1,5 @@
 locals {
-  sqs_namespace                       = "AWS/SQS"
+  sqs_namespace = "AWS/SQS"
 }
 
 resource "aws_cloudwatch_metric_alarm" "transfer_complete_queue_age_of_message" {
@@ -12,11 +12,11 @@ resource "aws_cloudwatch_metric_alarm" "transfer_complete_queue_age_of_message" 
   alarm_description   = "This alarm triggers when messages on the transfer complete queue is not polled by end of transfer service in last 30 mins"
   statistic           = "Maximum"
   period              = "300"
-  dimensions          = {
+  dimensions = {
     QueueName = aws_sqs_queue.transfer_complete.name
   }
-  alarm_actions       = [data.aws_sns_topic.alarm_notifications.arn]
-  ok_actions          = [data.aws_sns_topic.alarm_notifications.arn]
+  alarm_actions = [data.aws_sns_topic.alarm_notifications.arn]
+  ok_actions    = [data.aws_sns_topic.alarm_notifications.arn]
 }
 
 data "aws_sns_topic" "alarm_notifications" {

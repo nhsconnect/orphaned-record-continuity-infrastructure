@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ecs-service-control-role" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   name = "ECSServiceControlRole"
 
@@ -30,8 +30,8 @@ data "aws_iam_policy_document" "lambda-logs-policy-doc" {
     ]
 
     resources = [
-        "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/ECSServiceStop:*",
-        "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/ECSServiceStart:*"
+      "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/ECSServiceStop:*",
+      "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/ECSServiceStart:*"
     ]
   }
 }
@@ -43,34 +43,34 @@ data "aws_iam_policy_document" "lambda-ecs-policy-doc" {
     ]
 
     resources = [
-        "*"
+      "*"
     ]
   }
 }
 
 resource "aws_iam_policy" "logs_policy" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   name   = "lambda-logs-policy"
   policy = data.aws_iam_policy_document.lambda-logs-policy-doc.json
 }
 
 resource "aws_iam_policy" "ecs_policy" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   name   = "lambda-ecs-policy"
   policy = data.aws_iam_policy_document.lambda-ecs-policy-doc.json
 }
 
 resource "aws_iam_role_policy_attachment" "logs_policy_attach" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   role       = aws_iam_role.ecs-service-control-role[0].name
   policy_arn = aws_iam_policy.logs_policy[0].arn
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_policy_attach" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   role       = aws_iam_role.ecs-service-control-role[0].name
   policy_arn = aws_iam_policy.ecs_policy[0].arn

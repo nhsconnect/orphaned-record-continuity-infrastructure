@@ -17,7 +17,7 @@ locals {
     type = "metric"
     properties = {
       metrics = [
-        ["AWS/AmazonMQ", "EnqueueCount", "Broker", "${var.component.broker}","Queue", "${var.component.name}"],
+        ["AWS/AmazonMQ", "EnqueueCount", "Broker", "${var.component.broker}", "Queue", "${var.component.name}"],
         [".", "InFlightCount", ".", ".", ".", "."],
         [".", "DequeueCount", ".", ".", ".", "."],
         [".", "ConsumerCount", ".", ".", ".", "."],
@@ -28,7 +28,7 @@ locals {
       title  = "${var.component.title}"
       view   = "timeSeries"
       stat   = "Average"
-      yAxis  = {
+      yAxis = {
         right = {
           label = "Size"
         }

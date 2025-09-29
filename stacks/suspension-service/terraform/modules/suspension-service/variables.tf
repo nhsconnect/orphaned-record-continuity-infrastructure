@@ -19,7 +19,7 @@ variable "scale_down_number_of_empty_receives_count" {
 }
 variable "core_task_number" {
   description = "Something to do with number of threads used in metric alarm for scale down"
-  default = 5
+  default     = 5
 }
 variable "enable_scale_action" {
   type    = bool
@@ -27,7 +27,7 @@ variable "enable_scale_action" {
 }
 variable "threshold_for_suspensions_queue_age_of_message" {
   description = "An alarm will be raised if any message gets to this many seconds old"
-  default = "86400"
+  default     = "86400"
 }
 variable "period_of_age_of_message_metric" {
   default = "1800"

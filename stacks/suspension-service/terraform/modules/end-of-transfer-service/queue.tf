@@ -1,6 +1,6 @@
 locals {
-  transfer_complete_queue_name                   = "${var.environment}-${var.component_name}-transfer-complete"
-  transfer_complete_observability_queue_name     = "${var.environment}-${var.component_name}-transfer-complete-observability"
+  transfer_complete_queue_name               = "${var.environment}-${var.component_name}-transfer-complete"
+  transfer_complete_observability_queue_name = "${var.environment}-${var.component_name}-transfer-complete-observability"
 }
 
 resource "aws_sqs_queue" "transfer_complete" {

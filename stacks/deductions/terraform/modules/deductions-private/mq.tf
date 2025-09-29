@@ -7,12 +7,12 @@ resource "aws_mq_broker" "deductor_mq_broker" {
   auto_minor_version_upgrade = var.auto_minor_version_upgrade
   apply_immediately          = var.apply_immediately
   publicly_accessible        = "false"
-  security_groups            = [
+  security_groups = [
     aws_security_group.service_to_mq.id,
     aws_security_group.vpn_to_mq.id,
     aws_security_group.gocd_to_mq.id
   ]
-  subnet_ids                 =  slice(module.vpc.private_subnets, 0, 2)
+  subnet_ids = slice(module.vpc.private_subnets, 0, 2)
 
   logs {
     general = var.general_log
@@ -26,14 +26,14 @@ resource "aws_mq_broker" "deductor_mq_broker" {
   }
 
   user {
-    username = data.aws_ssm_parameter.mq-admin-username.value
-    password = data.aws_ssm_parameter.mq-admin-password.value
+    username       = data.aws_ssm_parameter.mq-admin-username.value
+    password       = data.aws_ssm_parameter.mq-admin-password.value
     console_access = var.grant_access_to_queues_through_vpn ? true : false
   }
 
   user {
-    username = data.aws_ssm_parameter.mq-app-username.value
-    password = data.aws_ssm_parameter.mq-app-password.value
+    username       = data.aws_ssm_parameter.mq-app-username.value
+    password       = data.aws_ssm_parameter.mq-app-password.value
     console_access = false
   }
   lifecycle {
@@ -122,15 +122,15 @@ resource "aws_security_group" "service_to_mq" {
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name = "${var.environment}-service-to-${var.component_name}-sg"
+    Name        = "${var.environment}-service-to-${var.component_name}-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
 resource "aws_ssm_parameter" "service_to_mq" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/service-to-mq-sg-id"
-  type = "String"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/service-to-mq-sg-id"
+  type  = "String"
   value = aws_security_group.service_to_mq.id
   tags = {
     CreatedBy   = var.repo_name
@@ -144,42 +144,42 @@ resource "aws_security_group" "vpn_to_mq" {
   vpc_id      = module.vpc.vpc_id
 
   tags = {
-    Name = "${var.environment}-vpn-to-${var.component_name}-sg"
+    Name        = "${var.environment}-vpn-to-${var.component_name}-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
 
 resource "aws_security_group_rule" "vpn_to_mq_through_openwire" {
-  count = var.grant_access_to_queues_through_vpn ? 1 : 0
-  type = "ingress"
-  protocol = "tcp"
-  from_port = "61617"
-  to_port = "61617"
-  description = "Allow traffic from VPN to MQ through OpenWire"
-  security_group_id = aws_security_group.vpn_to_mq.id
+  count                    = var.grant_access_to_queues_through_vpn ? 1 : 0
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = "61617"
+  to_port                  = "61617"
+  description              = "Allow traffic from VPN to MQ through OpenWire"
+  security_group_id        = aws_security_group.vpn_to_mq.id
   source_security_group_id = aws_security_group.vpn.id
 }
 
 resource "aws_security_group_rule" "vpn_to_mq_through_amqp" {
-  count = var.grant_access_to_queues_through_vpn ? 1 : 0
-  type = "ingress"
-  protocol = "tcp"
-  from_port = "5671"
-  to_port = "5671"
-  description = "Allow traffic from VPN to MQ through AMQP"
-  security_group_id = aws_security_group.vpn_to_mq.id
+  count                    = var.grant_access_to_queues_through_vpn ? 1 : 0
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = "5671"
+  to_port                  = "5671"
+  description              = "Allow traffic from VPN to MQ through AMQP"
+  security_group_id        = aws_security_group.vpn_to_mq.id
   source_security_group_id = aws_security_group.vpn.id
 }
 
 resource "aws_security_group_rule" "vpn_to_mq_web_console" {
-  count = var.grant_access_to_queues_through_vpn ? 1 : 0
-  type = "ingress"
-  protocol = "tcp"
-  from_port = "8162"
-  to_port = "8162"
-  description = "Allow traffic from VPN to MQ Web Console"
-  security_group_id = aws_security_group.vpn_to_mq.id
+  count                    = var.grant_access_to_queues_through_vpn ? 1 : 0
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = "8162"
+  to_port                  = "8162"
+  description              = "Allow traffic from VPN to MQ Web Console"
+  security_group_id        = aws_security_group.vpn_to_mq.id
   source_security_group_id = aws_security_group.vpn.id
 }
 
@@ -189,10 +189,10 @@ resource "aws_security_group" "gocd_to_mq" {
   vpc_id      = module.vpc.vpc_id
 
   ingress {
-    protocol = "tcp"
-    from_port = "61617"
-    to_port = "61617"
-    description = "Allow traffic from gocd to MQ through OpenWire"
+    protocol        = "tcp"
+    from_port       = "61617"
+    to_port         = "61617"
+    description     = "Allow traffic from gocd to MQ through OpenWire"
     security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
   }
 
@@ -200,12 +200,12 @@ resource "aws_security_group" "gocd_to_mq" {
     protocol        = "tcp"
     from_port       = "5671"
     to_port         = "5671"
-    description = "Allow traffic from gocd to MQ through AMQP"
+    description     = "Allow traffic from gocd to MQ through AMQP"
     security_groups = [data.aws_ssm_parameter.gocd_sg_id.value]
   }
 
   tags = {
-    Name = "${var.environment}-gocd-to-${var.component_name}-sg"
+    Name        = "${var.environment}-gocd-to-${var.component_name}-sg"
     CreatedBy   = var.repo_name
     Environment = var.environment
   }
@@ -216,7 +216,7 @@ data "aws_ssm_parameter" "gocd_sg_id" {
 }
 
 resource "aws_ssm_parameter" "mq_broker_name" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/broker-name"
+  name  = "/repo/${var.environment}/output/${var.repo_name}/broker-name"
   type  = "String"
   value = aws_mq_broker.deductor_mq_broker.broker_name
 }

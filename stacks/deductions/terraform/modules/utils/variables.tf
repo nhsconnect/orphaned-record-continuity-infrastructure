@@ -1,12 +1,12 @@
 variable "region" {
-  type        = string
+  type = string
 }
 
 variable "environment" {
-  type        = string
+  type = string
 }
 
 variable "repo_name" {
-  type = string
+  type    = string
   default = "prm-deductions-infra"
 }

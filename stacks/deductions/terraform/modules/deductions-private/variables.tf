@@ -1,21 +1,21 @@
 variable "region" {
-  type = string
+  type    = string
   default = "eu-west-2"
 }
 
 variable "environment" {
-  type        = string
-  default     = "dev"
+  type    = string
+  default = "dev"
 }
 
 variable "repo_name" {
-  type = string
+  type    = string
   default = "prm-deductions-infra"
 }
 
 variable "component_name" {
-  type        = string
-  default     = "deductions-private"
+  type    = string
+  default = "deductions-private"
 }
 
 variable "cidr" {}
@@ -23,19 +23,19 @@ variable "cidr" {}
 variable "deductions_core_cidr" {}
 
 variable "public_subnets" {
-  type = list
+  type = list(any)
 }
 
 variable "private_subnets" {
-  type = list
+  type = list(any)
 }
 
 variable "database_subnets" {
-  type = list
+  type = list(any)
 }
 
 variable "azs" {
-  type = list
+  type = list(any)
 }
 
 variable "pds_deregistration_delay" {
@@ -129,10 +129,10 @@ variable "repo_mhs_vpc_peering_connection_id" {}
 variable "environment_public_zone" {}
 variable "environment_private_zone" {}
 
-variable "deploy_cross_account_vpc_peering"{}
+variable "deploy_cross_account_vpc_peering" {}
 variable "gocd_cidr" {}
 variable "gocd_environment" {
-  default     = "prod"
+  default = "prod"
 }
 variable "test_harness_mhs_vpc_cidr_block" {}
 variable "test_harness_mhs_vpc_peering_connection_id" {}

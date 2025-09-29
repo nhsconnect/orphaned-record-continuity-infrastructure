@@ -23,15 +23,15 @@ locals {
         [".", "NumberOfMessagesSent", ".", "."],
         [".", "ApproximateAgeOfOldestMessage", ".", "."],
         [".", "ApproximateNumberOfMessagesVisible", ".", "."],
-        [".", "SentMessageSize", ".", ".", { "yAxis": "right" } ]
+        [".", "SentMessageSize", ".", ".", { "yAxis" : "right" }]
       ],
       region = var.region
       title  = "${var.component.title}"
       view   = "timeSeries"
       stat   = "Average"
-      yAxis  = {
+      yAxis = {
         right = {
-            label = "Size"
+          label = "Size"
         }
       }
     }

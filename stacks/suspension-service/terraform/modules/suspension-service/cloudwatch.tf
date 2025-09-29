@@ -47,12 +47,12 @@ resource "aws_cloudwatch_metric_alarm" "suspension_service_scale_down_alarm" {
   alarm_description   = "Alarm to alert when all events are processed in the queue"
   statistic           = "Sum"
   period              = 300
-  dimensions          = {
+  dimensions = {
     QueueName = aws_sqs_queue.suspensions.name
   }
-  treat_missing_data  = "notBreaching"
-  actions_enabled     = var.enable_scale_action
-  alarm_actions       = [aws_appautoscaling_policy.scale_down.arn]
+  treat_missing_data = "notBreaching"
+  actions_enabled    = var.enable_scale_action
+  alarm_actions      = [aws_appautoscaling_policy.scale_down.arn]
 }
 
 resource "aws_appautoscaling_policy" "scale_down" {
@@ -96,7 +96,7 @@ resource "aws_appautoscaling_policy" "scale_up" {
 resource "aws_appautoscaling_target" "ecs_target" {
   max_capacity       = 1
   min_capacity       = 0
-  resource_id = "service/${var.ecs_cluster_name}/${var.ecs_service_name}"
+  resource_id        = "service/${var.ecs_cluster_name}/${var.ecs_service_name}"
   scalable_dimension = "ecs:service:DesiredCount"
   service_namespace  = "ecs"
 }
@@ -111,11 +111,11 @@ resource "aws_cloudwatch_metric_alarm" "suspensions_queue_age_of_message" {
   alarm_description   = "Alarm to alert approximate time for message in the queue"
   statistic           = "Maximum"
   period              = var.period_of_age_of_message_metric
-  dimensions          = {
+  dimensions = {
     QueueName = aws_sqs_queue.suspensions.name
   }
-  alarm_actions       = [data.aws_sns_topic.alarm_notifications.arn]
-  ok_actions          = [data.aws_sns_topic.alarm_notifications.arn]
+  alarm_actions = [data.aws_sns_topic.alarm_notifications.arn]
+  ok_actions    = [data.aws_sns_topic.alarm_notifications.arn]
 }
 
 data "aws_sns_topic" "alarm_notifications" {

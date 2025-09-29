@@ -1,14 +1,14 @@
 resource "aws_lambda_function" "stop-ecs-services-lambda" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   filename      = data.archive_file.lambda-zip[0].output_path
   function_name = "ECSServiceStop"
-  description = "Sets 'desired count' of Fargate services with the tag/value TurnOffAtNight=TRUE to the value of the DESIRED_COUNT env var"
+  description   = "Sets 'desired count' of Fargate services with the tag/value TurnOffAtNight=TRUE to the value of the DESIRED_COUNT env var"
   role          = aws_iam_role.ecs-service-control-role[0].arn
 
   source_code_hash = filebase64sha256(data.archive_file.lambda-zip[0].output_path)
 
-   handler       = "ECSServiceControl.lambda_handler"
+  handler = "ECSServiceControl.lambda_handler"
 
   runtime = "python3.7"
 
@@ -28,16 +28,16 @@ resource "aws_lambda_function" "stop-ecs-services-lambda" {
 }
 
 resource "aws_lambda_function" "start-ecs-services-lambda" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   filename      = data.archive_file.lambda-zip[0].output_path
   function_name = "ECSServiceStart"
-  description = "Sets 'desired count' of Fargate services with the tag/value TurnOffAtNight=TRUE to the value of the DESIRED_COUNT env var"
+  description   = "Sets 'desired count' of Fargate services with the tag/value TurnOffAtNight=TRUE to the value of the DESIRED_COUNT env var"
   role          = aws_iam_role.ecs-service-control-role[0].arn
 
   source_code_hash = filebase64sha256(data.archive_file.lambda-zip[0].output_path)
 
-   handler       = "ECSServiceControl.lambda_handler"
+  handler = "ECSServiceControl.lambda_handler"
 
   runtime = "python3.7"
 
@@ -57,7 +57,7 @@ resource "aws_lambda_function" "start-ecs-services-lambda" {
 }
 
 data "archive_file" "lambda-zip" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   type        = "zip"
   source_file = "${path.module}/scripts/ECSServiceControl.py"

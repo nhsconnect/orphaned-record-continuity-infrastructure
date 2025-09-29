@@ -9,27 +9,27 @@
 
 # DynamoDB VPC endpoint
 resource "aws_vpc_endpoint" "dynamodb_endpoint" {
-  vpc_id = var.mhs_vpc_id
-  service_name = "com.amazonaws.${var.region}.dynamodb"
+  vpc_id          = var.mhs_vpc_id
+  service_name    = "com.amazonaws.${var.region}.dynamodb"
   route_table_ids = aws_route_table.mhs.*.id
 
   tags = {
-    Name = "${var.environment}-${var.cluster_name}-dynamodb-endpoint"
+    Name        = "${var.environment}-${var.cluster_name}-dynamodb-endpoint"
     Environment = var.environment
-    CreatedBy = var.repo_name
+    CreatedBy   = var.repo_name
   }
 }
 
 # S3 VPC endpoint
 resource "aws_vpc_endpoint" "s3_endpoint" {
-  vpc_id = var.mhs_vpc_id
-  service_name = "com.amazonaws.${var.region}.s3"
+  vpc_id          = var.mhs_vpc_id
+  service_name    = "com.amazonaws.${var.region}.s3"
   route_table_ids = aws_route_table.mhs.*.id
 
 
   tags = {
-    Name = "${var.environment}-${var.cluster_name}-s3-endpoint"
+    Name        = "${var.environment}-${var.cluster_name}-s3-endpoint"
     Environment = var.environment
-    CreatedBy = var.repo_name
+    CreatedBy   = var.repo_name
   }
 }

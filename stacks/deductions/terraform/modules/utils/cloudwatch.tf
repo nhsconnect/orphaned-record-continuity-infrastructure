@@ -1,5 +1,5 @@
 resource "aws_cloudwatch_event_rule" "morning-mon-fri" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   name                = "Morning-Monday-to-Friday"
   description         = "Fires 7am Monday to Friday"
@@ -11,7 +11,7 @@ resource "aws_cloudwatch_event_rule" "morning-mon-fri" {
 }
 
 resource "aws_cloudwatch_event_rule" "evening-mon-fri" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   name                = "Evening-Monday-to-Friday"
   description         = "Fires 8pm Monday to Friday"
@@ -23,23 +23,23 @@ resource "aws_cloudwatch_event_rule" "evening-mon-fri" {
 }
 
 resource "aws_cloudwatch_event_target" "turn-on-ecs-tasks" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
-  rule      =  aws_cloudwatch_event_rule.morning-mon-fri[0].name
+  rule      = aws_cloudwatch_event_rule.morning-mon-fri[0].name
   target_id = "ECSServiceStart"
-  arn       =  aws_lambda_function.start-ecs-services-lambda[0].arn
+  arn       = aws_lambda_function.start-ecs-services-lambda[0].arn
 }
 
 resource "aws_cloudwatch_event_target" "turn-off-ecs-tasks" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
-  rule      =  aws_cloudwatch_event_rule.evening-mon-fri[0].name
+  rule      = aws_cloudwatch_event_rule.evening-mon-fri[0].name
   target_id = "ECSServiceStop"
-  arn       =  aws_lambda_function.stop-ecs-services-lambda[0].arn
+  arn       = aws_lambda_function.stop-ecs-services-lambda[0].arn
 }
 
 resource "aws_lambda_permission" "allow-cloudwatch-to-turn-on-ecs" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
@@ -49,7 +49,7 @@ resource "aws_lambda_permission" "allow-cloudwatch-to-turn-on-ecs" {
 }
 
 resource "aws_lambda_permission" "allow-cloudwatch-to-turn-off-ecs" {
-  count = var.environment == "dev" ? 1: 0
+  count = var.environment == "dev" ? 1 : 0
 
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
