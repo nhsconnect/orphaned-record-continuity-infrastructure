@@ -59,10 +59,10 @@ jobs:
           common_account_role="CiReadOnly"
           EOF
 
-          mkdir ../generate-cost-report-lambda/build
-          touch ../generate-cost-report-lambda/build/generate-cost-report-lambda.zip
-          mkdir ../notification-lambda/build
-          touch ../notification-lambda/build/alarm.zip
+          mkdir ../../../lambdas/generate-cost-report-lambda/build
+          touch ../../../lambdas/generate-cost-report-lambda/build/generate-cost-report-lambda.zip
+          mkdir ../../../lambdas/notification-lambda/build
+          touch ../../../lambdas/notification-lambda/build/alarm.zip
 
       - name: terraform plan
         id: plan
