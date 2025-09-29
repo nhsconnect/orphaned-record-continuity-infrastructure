@@ -11,6 +11,10 @@ locals {
     aws_sns_topic.splunk_uploader.arn,
     aws_sns_topic.ehr_in_unhandled.arn
   ]
+  sns_topic_map = {
+    for idx, arn in local.sns_topic_arns :
+    tostring(idx) => arn
+  }
 }
 
 resource "aws_sns_topic" "negative_acks" {
