@@ -4,7 +4,7 @@ provider "aws" {
 
 provider "aws" {
   alias  = "ci"
-  region = var.region
+  region = "us-east-1"
   sts_region = "us-east-1"
   assume_role {
     role_arn     = "arn:aws:iam::${var.common_account_id}:role/GitHub-Actions-ReadOnly"
