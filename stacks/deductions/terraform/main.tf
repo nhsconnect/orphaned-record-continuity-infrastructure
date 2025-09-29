@@ -108,7 +108,6 @@ module "deductions-private" {
   maintenance_time_of_day    = var.maintenance_time_of_day
   maintenance_time_zone      = var.maintenance_time_zone
   vpn_client_subnet          = var.deductions_private_vpn_client_subnet
-  repo_mhs_vpc_cidr_block    = local.repo_cidr_block
   state_db_allocated_storage = var.state_db_allocated_storage
   state_db_engine_version    = var.state_db_engine_version
   state_db_instance_class    = var.state_db_instance_class
