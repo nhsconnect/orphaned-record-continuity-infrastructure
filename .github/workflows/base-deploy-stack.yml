@@ -53,6 +53,10 @@ on:
         default: false
         type: boolean
         description: "Whether to deploy"
+      ci_account:
+        default: false
+        description: "Are we deploying to the CI account?"
+        type: boolean
       lambdas_to_build:
         default: false
         description: "Do we need to build any lambdas before deploying?"
@@ -65,9 +69,9 @@ permissions:
 
 jobs:
   deploy_stack:
-    environment: ${{ inputs.environment }}
+    environment: ${{ !inputs.ci_account && inputs.environment || 'ci_account' }}
     env:
-      GITHUB_ENV: ${{ inputs.environment }}
+      GITHUB_ENV: ${{ !inputs.ci_account && inputs.environment || 'ci_account' }}
     runs-on: ubuntu-latest
     defaults:
       run:
