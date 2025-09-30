@@ -90,7 +90,7 @@ jobs:
 
   mesh-forwarder-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
-    name: Deploy MESH Forwarder Infrastructure
+    name: MESH Forwarder Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/base-deploy-stack.yml
     with:
@@ -101,7 +101,7 @@ jobs:
 
   pds-adaptor-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/pds-adaptor') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
-    name: Deploy PDS Adaptor Infrastructure
+    name: PDS Adaptor Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/base-deploy-stack.yml
     with:
@@ -112,7 +112,7 @@ jobs:
 
   re-registration-service-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/re-registration-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
-    name: Deploy Re-Registration Service Infrastructure
+    name: Re-Registration Service Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/base-deploy-stack.yml
     with:
@@ -123,7 +123,7 @@ jobs:
     
   suspension-service-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/suspension-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
-    name: Deploy Suspension Service Infrastructure
+    name: Suspension Service Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/base-deploy-stack.yml
     with:
@@ -134,7 +134,7 @@ jobs:
 
   nems-event-processor-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/nems-event-processor') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
-    name: Deploy NEMS Event Processor Infrastructure
+    name: NEMS Event Processor Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/base-deploy-stack.yml
     with:
