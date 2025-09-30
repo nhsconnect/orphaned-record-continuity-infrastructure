@@ -243,3 +243,7 @@ resource "aws_security_group" "gocd_to_pds_adaptor" {
 data "aws_ssm_parameter" "vpn_sg_id" {
   name = "/repo/${var.environment}/output/prm-deductions-infra/vpn-sg-id"
 }
+
+data "aws_ssm_parameter" "gocd_sg_id" {
+  name = "/repo/${var.environment}/user-input/external/gocd-agent-sg-id"
+}
