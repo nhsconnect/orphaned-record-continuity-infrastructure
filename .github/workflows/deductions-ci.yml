@@ -195,5 +195,6 @@ jobs:
     with:
       stack: mhs
       environment: dev
+      alias: mhs-dev-repo
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit

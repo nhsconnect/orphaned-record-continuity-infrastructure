@@ -120,7 +120,7 @@ jobs:
     - name: Terraform Init
       id: init
       run: |
-        terraform init -no-color -backend-config="key=${{ inputs.alias != '' && inputs.alias || inputs.stack }}-${{ inputs.environment }}/terraform.tfstate" \
+        terraform init -no-color -backend-config="key=${{ inputs.alias != '' && inputs.alias || inputs.stack + '-' + inputs.environment }}/terraform.tfstate" \
         -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
         -backend-config="dynamodb_table=${{ secrets.TF_BACKEND_TABLE }}"
       shell: bash
@@ -131,7 +131,6 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-#      TODO where is aws_env set, within actions vars or within workflow?
       run: |
         terraform plan -no-color -input=false -var-file="${{ vars.AWS_ENVIRONMENT }}.tfvars" -out "${{ vars.AWS_ENVIRONMENT }}.tfplan"
         terraform show -no-color ${{ vars.AWS_ENVIRONMENT }}.tfplan > ${{ vars.AWS_ENVIRONMENT }}.tfplan.txt
