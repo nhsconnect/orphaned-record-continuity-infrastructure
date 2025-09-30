@@ -4,8 +4,7 @@ locals {
     aws_sns_topic.re_registration_audit_topic.arn
   ]
   sns_topic_map = {
-    for idx, arn in local.sns_topic_arns :
-    tostring(idx) => arn
+    for arn in local.sns_topic_arns : arn => arn
   }
 }
 
