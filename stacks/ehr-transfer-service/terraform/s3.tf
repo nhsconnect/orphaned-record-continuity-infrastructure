@@ -75,7 +75,7 @@ resource "aws_s3_bucket" "sqs_large_messages_s3_access_logs" {
   acl           = "private"
   force_destroy = true
   versioning {
-    enabled = false
+    enabled = true
   }
 
   server_side_encryption_configuration {

@@ -22,7 +22,6 @@ resource "aws_alb" "alb_internal" {
   access_logs {
     bucket  = data.aws_ssm_parameter.alb_access_logs_bucket.value
     enabled = true
-    prefix  = "alb_internal"
   }
 
 }

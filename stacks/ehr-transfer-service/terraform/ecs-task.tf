@@ -1,9 +1,9 @@
 locals {
-  task_role_arn       = aws_iam_role.component-ecs-role.arn
-  task_execution_role = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${aws_iam_role.component-ecs-role.name}"
-  task_ecr_url        = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
-  task_log_group      = "/nhs/deductions/${var.environment}-${data.aws_caller_identity.current.account_id}/${var.component_name}"
-  environment_variables = [
+  task_role_arn                = aws_iam_role.component-ecs-role.arn
+  task_execution_role          = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${aws_iam_role.component-ecs-role.name}"
+  task_ecr_url                 = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${var.region}.amazonaws.com"
+  task_log_group               = "/nhs/deductions/${var.environment}-${data.aws_caller_identity.current.account_id}/${var.component_name}"
+  environment_variables        = [
     { name = "EHR_TRANSFER_SERVICE_MHS_QUEUE_URL_1", value = data.aws_ssm_parameter.openwire_endpoint_0.value },
     { name = "EHR_TRANSFER_SERVICE_MHS_QUEUE_URL_2", value = data.aws_ssm_parameter.openwire_endpoint_1.value },
     {
@@ -66,16 +66,16 @@ resource "aws_ecs_task_definition" "task" {
   task_role_arn            = local.task_role_arn
 
   container_definitions = templatefile("${path.module}/templates/ecs-task-def.tmpl", {
-    container_name        = "${var.component_name}-container",
-    ecr_url               = local.task_ecr_url,
-    image_name            = "deductions/ehr-transfer-service",
-    image_tag             = var.task_image_tag,
-    cpu                   = var.task_cpu,
-    memory                = var.task_memory,
-    log_region            = var.region,
-    log_group             = local.task_log_group
-    environment_variables = jsonencode(local.environment_variables),
-    secrets               = jsonencode(local.secret_environment_variables)
+    container_name         = "${var.component_name}-container",
+    ecr_url                = local.task_ecr_url,
+    image_name             = "deductions/ehr-transfer-service",
+    image_tag              = var.task_image_tag,
+    cpu                    = var.task_cpu,
+    memory                 = var.task_memory,
+    log_region             = var.region,
+    log_group              = local.task_log_group
+    environment_variables  = jsonencode(local.environment_variables),
+    secrets                = jsonencode(local.secret_environment_variables)
   })
 
   tags = {
