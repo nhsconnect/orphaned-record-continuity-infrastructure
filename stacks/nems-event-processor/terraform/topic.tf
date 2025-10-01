@@ -6,9 +6,8 @@ locals {
     aws_sns_topic.nems_audit.arn
   ]
   sns_topic_map = {
-    for idx, arn in local.sns_topic_arns :
-    tostring(idx) => arn
-  }
+      for arn in local.sns_topic_arns : arn => arn
+    }
 }
 
 resource "aws_sns_topic" "unhandled_events" {
