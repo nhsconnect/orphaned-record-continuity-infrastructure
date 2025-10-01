@@ -83,6 +83,7 @@ jobs:
     needs: [get-changed-files, deductions-ci]
     with:
       stack: deductions-dashboard
+      alias: deductions-infra-dashboard-dev
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit

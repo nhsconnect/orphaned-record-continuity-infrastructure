@@ -40,6 +40,7 @@ jobs:
     needs: [deductions-ci]
     with:
       stack: deductions-dashboard
+      alias: deductions-infra-dashboard-${{ inputs.environment }}
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
