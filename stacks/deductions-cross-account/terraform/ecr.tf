@@ -70,6 +70,14 @@ resource "aws_ecr_repository" "mesh-forwarder" {
   }
 }
 
+resource "aws_ecr_repository" "mesh-forwarder" {
+  name                 = "deductions/mesh-inbox-s3-forwarder"
+  image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
+  tags = {
+    CreatedBy = var.repo_name
+  }
+}
+
 resource "aws_ecr_repository" "nems-event-processor" {
   name                 = "deductions/nems-event-processor"
   image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
