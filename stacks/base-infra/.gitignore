@@ -1,0 +1,13 @@
+# terraform
+/.terraform/
+/ip_whitelist/.terraform/
+/nhs_deployment.tfplan
+
+# SSH keys
+/modules/transit-opentest/ssh/
+
+# AWS helper scripts
+/utils/*
+
+# User-specific stuff
+.idea/*
