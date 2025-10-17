@@ -91,7 +91,6 @@ resource "aws_ecs_task_definition" "mhs_inbound_task" {
           }
         ]
         essential              = true
-        readonlyRootFilesystem = true
         logConfiguration = {
           logDriver = "awslogs"
           options = {
