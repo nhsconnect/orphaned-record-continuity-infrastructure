@@ -1,2 +1,2 @@
 environment    = "pre-prod"
-component_name = "ehr-repo-db-role"
+component_name = "ehr-repo"
