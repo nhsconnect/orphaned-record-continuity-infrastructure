@@ -5,7 +5,6 @@ on:
     branches: [ main ]
     paths:
       - 'stacks/deductions/**'
-      # - 'stacks/deductions-backup/**'
       - 'stacks/deductions-cross-account/**'
       - 'stacks/deductions-dashboard/**'
       - 'stacks/mesh-forwarder/**'
@@ -26,7 +25,6 @@ on:
     branches: [ main ]
     paths:
       - 'stacks/deductions/**'
-      # - 'stacks/deductions-backup/**'
       - 'stacks/deductions-cross-account/**'
       - 'stacks/deductions-dashboard/**'
       - 'stacks/mesh-forwarder/**'
@@ -167,7 +165,7 @@ jobs:
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
-    
+
   ehr-out-service-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-out-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
     name: EHR Out Service Infrastructure CI
