@@ -14,6 +14,7 @@ on:
       - 'stacks/suspension-service/**'
       - 'stacks/nems-event-processor/**'
       - 'stacks/ehr-repo/**'
+      - 'stacks/ehr-repo-db-roles/**'
       - 'stacks/ehr-out-service/**'
       - 'stacks/ehr-transfer-service/**'
       - 'stacks/gp2gp-messenger/**'
@@ -34,6 +35,7 @@ on:
       - 'stacks/suspension-service/**'
       - 'stacks/nems-event-processor/**'
       - 'stacks/ehr-repo/**'
+      - 'stacks/ehr-repo-db-roles/**'
       - 'stacks/ehr-out-service/**'
       - 'stacks/ehr-transfer-service/**'
       - 'stacks/gp2gp-messenger/**'
@@ -155,6 +157,17 @@ jobs:
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
 
+  ehr-repo-db-roles-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo-db-roles') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: EHR Repo DB Roles Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci, ehr-repo-ci]
+    with:
+      stack: ehr-repo-db-roles
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+    
   ehr-out-service-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-out-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
     name: EHR Out Service Infrastructure CI

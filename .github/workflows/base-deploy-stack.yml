@@ -18,6 +18,7 @@ on:
           type: choice
           options:
             - ehr-repo
+            - ehr-repo-db-roles
             - ehr-out-service
             - ehr-transfer-service
             - re-registration-service
