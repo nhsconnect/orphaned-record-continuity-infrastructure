@@ -84,8 +84,7 @@ jobs:
       with:
        repository: nhsconnect/prm-deductions-infra
        ref: PRM-578
-       fetch-depth: 0
-       
+       fetch-depth: 0 
 
     - name: Configure AWS Credentials (Read Write)
       uses: aws-actions/configure-aws-credentials@v4
