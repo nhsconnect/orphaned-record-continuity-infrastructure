@@ -10,6 +10,34 @@ output.json
 
 .idea
 
+# Base Infra ignores 
+/stacks/base-infra/ip_whitelist/.terraform/
+/stacks/base-infra/nhs_deployment.tfplan
+
+# SSH keys
+/stacks/base-infra/modules/transit-opentest/ssh/
+
+# AWS helper scripts
+*/utils/*
+
+# User-specific stuff
+*/.idea/*
+
+# MHS Specific ignores
+/stacks/**/terraform/ssh/
+/stacks/**/.terraform/
+/stacks/**/*.tfplan
+/stacks/**/*.tfstate
+/stacks/**/tf-out.json
+/stacks/**/terraform.tfstate*
+/stacks/**/.terraform*
+
+/stacks/**/node_modules/
+
+# Imported utilities
+/utils/*
+/imagerc/
+/ops/
 # User-specific stuff
 .idea/**/workspace.xml
 .idea/**/tasks.xml
@@ -303,4 +331,4 @@ latest.zip
 /retry
 /utils/*
 
-/key-rotation-and-generation/node_modules
+/scripts/key-rotation-and-generation/node_modules
