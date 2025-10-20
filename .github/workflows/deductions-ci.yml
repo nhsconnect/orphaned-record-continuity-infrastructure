@@ -5,7 +5,6 @@ on:
     branches: [ main ]
     paths:
       - 'stacks/deductions/**'
-      # - 'stacks/deductions-backup/**'
       - 'stacks/deductions-cross-account/**'
       - 'stacks/deductions-dashboard/**'
       - 'stacks/mesh-forwarder/**'
@@ -14,6 +13,7 @@ on:
       - 'stacks/suspension-service/**'
       - 'stacks/nems-event-processor/**'
       - 'stacks/ehr-repo/**'
+      - 'stacks/ehr-repo-db-roles/**'
       - 'stacks/ehr-out-service/**'
       - 'stacks/ehr-transfer-service/**'
       - 'stacks/gp2gp-messenger/**'
@@ -25,7 +25,6 @@ on:
     branches: [ main ]
     paths:
       - 'stacks/deductions/**'
-      # - 'stacks/deductions-backup/**'
       - 'stacks/deductions-cross-account/**'
       - 'stacks/deductions-dashboard/**'
       - 'stacks/mesh-forwarder/**'
@@ -34,6 +33,7 @@ on:
       - 'stacks/suspension-service/**'
       - 'stacks/nems-event-processor/**'
       - 'stacks/ehr-repo/**'
+      - 'stacks/ehr-repo-db-roles/**'
       - 'stacks/ehr-out-service/**'
       - 'stacks/ehr-transfer-service/**'
       - 'stacks/gp2gp-messenger/**'
@@ -151,6 +151,17 @@ jobs:
     needs: [get-changed-files, deductions-ci]
     with:
       stack: ehr-repo
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  ehr-repo-db-roles-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo-db-roles') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: EHR Repo DB Roles Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci, ehr-repo-ci]
+    with:
+      stack: ehr-repo-db-roles
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit

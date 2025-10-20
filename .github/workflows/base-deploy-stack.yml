@@ -18,6 +18,7 @@ on:
           type: choice
           options:
             - ehr-repo
+            - ehr-repo-db-roles
             - ehr-out-service
             - ehr-transfer-service
             - re-registration-service
@@ -83,8 +84,7 @@ jobs:
       with:
        repository: nhsconnect/orphaned-record-continuity-infrastructure
        ref: PRM-481-1
-       fetch-depth: 0
-       
+       fetch-depth: 0 
 
     - name: Configure AWS Credentials (Read Write)
       uses: aws-actions/configure-aws-credentials@v4
