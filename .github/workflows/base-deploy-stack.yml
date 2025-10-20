@@ -81,7 +81,7 @@ jobs:
     - name: Check out Repo
       uses: actions/checkout@v4
       with:
-       repository: nhsconnect/prm-deductions-infra
+       repository: nhsconnect/orphaned-record-continuity-infrastructure
        ref: PRM-481-1
        fetch-depth: 0
        

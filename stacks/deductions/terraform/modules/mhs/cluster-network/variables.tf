@@ -8,7 +8,7 @@ variable "region" {
 }
 
 variable "repo_name" {
-  default = "prm-deductions-infra"
+  default = "orphaned-record-continuity-infrastructure"
 }
 
 variable "mhs_vpc_id" {}

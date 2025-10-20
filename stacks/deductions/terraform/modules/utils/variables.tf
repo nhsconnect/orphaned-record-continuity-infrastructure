@@ -8,5 +8,5 @@ variable "environment" {
 
 variable "repo_name" {
   type    = string
-  default = "prm-deductions-infra"
+  default = "orphaned-record-continuity-infrastructure"
 }

@@ -22,7 +22,7 @@ variable "mhs_vpc_additional_cidr_block" {
 
 variable "repo_name" {
   type    = string
-  default = "prm-deductions-infra"
+  default = "orphaned-record-continuity-infrastructure"
 }
 
 variable "deductions_private_cidr" {}
