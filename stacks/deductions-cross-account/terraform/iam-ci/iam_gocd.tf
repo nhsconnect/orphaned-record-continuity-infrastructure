@@ -5,10 +5,8 @@ data "aws_iam_policy_document" "ci_to_env_deployment_trust_policy" {
       type = "AWS"
       identifiers = [
         "arn:aws:iam::${data.aws_ssm_parameter.dev_account_id.value}:role/Deployer",
-        "arn:aws:iam::${data.aws_ssm_parameter.test_account_id.value}:role/Deployer",
         "arn:aws:iam::${data.aws_ssm_parameter.pre_prod_account_id.value}:role/Deployer",
         "arn:aws:iam::${data.aws_ssm_parameter.prod_account_id.value}:role/Deployer",
-        "arn:aws:iam::${data.aws_ssm_parameter.perf_account_id.value}:role/Deployer",
       ]
     }
   }
