@@ -15,18 +15,22 @@ data "aws_lb_target_group" "ehr_repo_target_group" {
 }
 
 data "aws_lb" "mhs_inbound_load_balancer" {
+  count = 1
   name  = "${var.environment}-repo-mhs-inbound"
 }
 
 data "aws_lb_target_group" "mhs_inbound_target_group" {
+  count = 1
   name  = "${var.environment}-repo-mhs-in-https"
 }
 
 data "aws_lb" "mhs_outbound_load_balancer" {
+  count = 1
   name  = "${var.environment}-repo-mhs-out-alb"
 }
 
 data "aws_lb_target_group" "mhs_outbound_target_group" {
+  count = 1
   name  = "${var.environment}-repo-mhs-outbound"
 }
 
