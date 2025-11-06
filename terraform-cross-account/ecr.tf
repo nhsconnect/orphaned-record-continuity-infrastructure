@@ -46,8 +46,24 @@ resource "aws_ecr_repository" "mhs-inbound" {
   }
 }
 
+resource "aws_ecr_repository" "mhs-inbound-pull-through-caching" {
+  name = "mhs-inbound-pull-through-caching"
+  image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
+  tags = {
+    CreatedBy = var.repo_name
+  }
+}
+
 resource "aws_ecr_repository" "mhs-outbound" {
   name = "mhs-outbound"
+  image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
+  tags = {
+    CreatedBy = var.repo_name
+  }
+}
+
+resource "aws_ecr_repository" "mhs-outbound-pull-through-caching" {
+  name = "mhs-outbound-pull-through-caching"
   image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
   tags = {
     CreatedBy = var.repo_name
