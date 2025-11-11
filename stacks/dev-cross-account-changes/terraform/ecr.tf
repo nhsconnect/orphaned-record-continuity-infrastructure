@@ -28,14 +28,14 @@ resource "aws_secretsmanager_secret_policy" "dockerhub_ecr_ptc" {
 }
 
 resource "aws_ecr_pull_through_cache_rule" "docker_hub" {
-  ecr_repository_prefix = "nhsdev/nia-mhs-outbound"
+  ecr_repository_prefix = "mhs"
   upstream_registry_url = "registry-1.docker.io"
   credential_arn        = aws_secretsmanager_secret.dockerhub_ecr_ptc.arn
   depends_on = [aws_secretsmanager_secret_policy.dockerhub_ecr_ptc]
 }
 
-resource "aws_ecr_repository_creation_template" "mhs_out" {
-  prefix      = "nhsdev/nia-mhs-outbound"
+resource "aws_ecr_repository_creation_template" "mhs" {
+  prefix      = "mhs"
   applied_for = ["PULL_THROUGH_CACHE"]
 
   image_tag_mutability = "IMMUTABLE"
