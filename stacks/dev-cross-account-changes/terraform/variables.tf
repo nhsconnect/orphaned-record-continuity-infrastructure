@@ -15,7 +15,15 @@ variable "provision_strict_iam_roles" {}
 variable "environment" {
   type = string
 }
-
+# lifecycle tuning
+variable "max_images_per_repo"   { 
+  type = number
+  default = 30 
+ }
+variable "untagged_expire_days"  { 
+  type = number
+  default = 7 
+}
 variable "immutable_ecr_repositories" {
   type = bool
 }
