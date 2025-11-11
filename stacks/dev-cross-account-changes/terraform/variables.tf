@@ -12,6 +12,14 @@ variable "provision_ci_account" {}
 
 variable "provision_strict_iam_roles" {}
 
+variable "dockerhub_username" {
+  type = string
+  sensitive = true
+}
+variable "dockerhub_access_token" {
+  type = string
+  sensitive = true
+}
 variable "environment" {
   type = string
 }

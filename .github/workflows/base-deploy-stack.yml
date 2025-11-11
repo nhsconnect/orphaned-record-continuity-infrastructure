@@ -95,8 +95,17 @@ jobs:
         mask-aws-account-id: true
         role-skip-session-tagging: true
 
+    - name: Setup Terraform variables for Dev Cross Account Changes
+      if: inputs.stack == 'dev-cross-account-changes'
+      run: |
+        cat > pipeline.auto.tfvars <<EOF
+        dockerhub_username=${{ secrets.DOCKERHUB_USERNAME }}
+        dockerhub_access_token=${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+        EOF       
+
     - name: Setup Terraform variables
       id: vars
+      if: inputs.stack != 'dev-cross-account-changes'
       run: |
         COMMON_ACCOUNT_ID=$(aws ssm get-parameter --name /repo/ci/user-input/external/aws-account-id --with-decryption | jq -r .Parameter.Value)
         cat > pipeline.auto.tfvars <<EOF

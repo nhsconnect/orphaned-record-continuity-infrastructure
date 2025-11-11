@@ -29,6 +29,7 @@ locals {
 resource "aws_ecr_pull_through_cache_rule" "docker_hub" {
   ecr_repository_prefix = "nhsdev/nia-mhs-outbound"
   upstream_registry_url = "registry-1.docker.io"
+  credential_arn        = aws_secretsmanager_secret.dockerhub_ecr_ptc.arn
 }
 
 resource "aws_ecr_repository_creation_template" "mhs_out" {
@@ -45,4 +46,18 @@ resource "aws_ecr_repository_creation_template" "mhs_out" {
   description = "Defaults for repos auto-created under mhs-out/* by ECR PTC"
   repository_policy = data.aws_iam_policy_document.ecr_pull_through.json
 
+}
+
+resource "aws_secretsmanager_secret" "dockerhub_ecr_ptc" {
+  name        = "ecr-pullthroughcache/dockerhub"
+  description = "Docker Hub creds for ECR pull-through cache"
+}
+
+resource "aws_secretsmanager_secret_version" "dockerhub_ecr_ptc" {
+  secret_id     = aws_secretsmanager_secret.dockerhub_ecr_ptc.id
+  # Use Docker Hub username + PAT (read-only)
+  secret_string = jsonencode({
+    username    = var.dockerhub_username
+    accessToken = var.dockerhub_access_token
+  })
 }
