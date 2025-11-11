@@ -97,10 +97,13 @@ jobs:
 
     - name: Setup Terraform variables for Dev Cross Account Changes
       if: inputs.stack == 'dev-cross-account-changes'
+      env:
+        DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
       run: |
         cat > pipeline.auto.tfvars <<EOF
-        dockerhub_username=${{ secrets.DOCKERHUB_USERNAME }}
-        dockerhub_access_token=${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+        dockerhub_username=$DOCKER_USER
+        dockerhub_access_token=$DOCKER_ACCESS_TOKEN
         EOF       
 
     - name: Setup Terraform variables
