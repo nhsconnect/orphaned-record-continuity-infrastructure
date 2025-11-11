@@ -88,7 +88,7 @@ data "aws_iam_policy_document" "ecr_pull_through" {
 
     principals {
       type        = "AWS"
-      identifiers = data.aws_caller_identity.this.account_id
+      identifiers = [data.aws_caller_identity.this.account_id]
     }
 
     actions = [
