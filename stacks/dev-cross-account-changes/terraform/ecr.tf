@@ -26,10 +26,40 @@ locals {
   })
 }
 
+data "aws_caller_identity" "this" {}
+
+resource "aws_secretsmanager_secret_policy" "dockerhub_ecr_ptc" {
+  secret_arn = aws_secretsmanager_secret.dockerhub_ecr_ptc.arn
+  policy     = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid      = "AllowEcrToReadForPullThroughCache",
+        Effect   = "Allow",
+        Principal = { Service = "ecr.amazonaws.com" },
+        Action   = [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+        ],
+        Resource = aws_secretsmanager_secret.dockerhub_ecr_ptc.arn,
+        Condition = {
+          StringEquals = {
+            "aws:SourceAccount" = data.aws_caller_identity.this.account_id
+          },
+          ArnLike = {
+            "aws:SourceArn" = "arn:aws:ecr:${var.region}:${data.aws_caller_identity.this.account_id}:pull-through-cache-rule/*"
+          }
+        }
+      }
+    ]
+  })
+}
+
 resource "aws_ecr_pull_through_cache_rule" "docker_hub" {
   ecr_repository_prefix = "nhsdev/nia-mhs-outbound"
   upstream_registry_url = "registry-1.docker.io"
   credential_arn        = aws_secretsmanager_secret.dockerhub_ecr_ptc.arn
+  depends_on = [aws_secretsmanager_secret_policy.dockerhub_ecr_ptc]
 }
 
 resource "aws_ecr_repository_creation_template" "mhs_out" {
