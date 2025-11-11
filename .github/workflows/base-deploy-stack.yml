@@ -33,6 +33,7 @@ on:
             - pds-adapter
             - mesh-forwarder
             - base-infra
+            - dev-cross-account-changes
         is_deployment:
           default: false
           type: boolean
