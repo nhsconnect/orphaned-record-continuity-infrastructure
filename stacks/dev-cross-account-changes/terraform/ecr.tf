@@ -83,15 +83,14 @@ resource "aws_secretsmanager_secret_version" "dockerhub_ecr_ptc" {
 
 data "aws_iam_policy_document" "ecr_pull_through" {
   statement {
-    sid       = "AuthToken"
-    effect    = "Allow"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"]
-  }
+    sid    = "new policy"
+    effect = "Allow"
 
-  statement {
-    sid     = "PullCreateImport"
-    effect  = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = data.aws_caller_identity.this.account_id
+    }
+
     actions = [
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage",
@@ -99,7 +98,6 @@ data "aws_iam_policy_document" "ecr_pull_through" {
       "ecr:PutImage",
       "ecr:InitiateLayerUpload",
       "ecr:UploadLayerPart",
-      "ecr:CreateRepository",
       "ecr:CompleteLayerUpload",
       "ecr:DescribeRepositories",
       "ecr:GetRepositoryPolicy",
@@ -109,6 +107,5 @@ data "aws_iam_policy_document" "ecr_pull_through" {
       "ecr:SetRepositoryPolicy",
       "ecr:DeleteRepositoryPolicy",
     ]
-    resources = ["*"]
   }
 }
