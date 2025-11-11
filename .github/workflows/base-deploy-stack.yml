@@ -102,9 +102,9 @@ jobs:
         DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
       run: |
         cat > pipeline.auto.tfvars <<EOF
-        dockerhub_username=$DOCKER_USER
-        dockerhub_access_token=$DOCKER_ACCESS_TOKEN
-        EOF       
+        dockerhub_username = "${DOCKER_USER}"
+        dockerhub_access_token = "${DOCKER_ACCESS_TOKEN}"
+        EOF
 
     - name: Setup Terraform variables
       id: vars
