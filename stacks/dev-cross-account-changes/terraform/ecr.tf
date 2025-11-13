@@ -34,7 +34,7 @@ resource "aws_ecr_pull_through_cache_rule" "docker_hub" {
   depends_on = [aws_secretsmanager_secret_policy.dockerhub_ecr_ptc]
 }
 
-resource "aws_ecr_repository_creation_template" "mhs" {
+resource "aws_ecr_repository_creation_template" "docker_hub" {
   prefix      = "docker-hub"
   applied_for = ["PULL_THROUGH_CACHE"]
 
