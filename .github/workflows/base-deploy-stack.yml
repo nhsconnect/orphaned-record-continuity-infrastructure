@@ -69,8 +69,73 @@ permissions:
   pull-requests: write
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
-
 jobs:
+  prime:
+    runs-on: ubuntu-latest
+    if: inputs.stack == 'dev-cross-account-changes' && inputs.is_deployment
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS Credentials (Read Write)
+        uses: aws-actions/configure-aws-credentials@v4
+        id: aws-creds
+        with:
+          role-to-assume: ${{ secrets.IAM_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+          mask-aws-account-id: true
+          role-skip-session-tagging: true
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region ${{ vars.AWS_REGION }} |
+          docker login --username AWS --password-stdin "${{ steps.aws-creds.outputs.aws-account-id }}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+
+      - name: Check ECR repositories and prime if empty
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          repos=("docker-hub/nhsdev/nia-mhs-inbound" "docker-hub/nhsdev/nia-mhs-outbound")
+
+          for repo in "${repos[@]}"; do
+            echo "Checking repository: $repo"
+            exists=$(aws ecr describe-repositories --repository-names "$repo" 2>/dev/null || echo "none")
+
+            upstream="${repo#*/}"
+
+            if [ "$exists" = "none" ]; then
+              echo "Repo $repo doesn't exist — will trigger pull-through import."
+              prime_needed=true
+            else
+              image_count=$(aws ecr describe-images \
+                --repository-name "$repo" \
+                --query "length(imageDetails)" \
+                --output text 2>/dev/null || echo 0)
+              if [ "$image_count" -eq 0 ]; then
+                echo "Repo $repo is empty — priming..."
+                prime_needed=true
+              else
+                echo "Repo $repo already contains $image_count image(s). Skipping."
+                prime_needed=false
+              fi
+            fi
+
+            if [ "$prime_needed" = true ]; then
+              echo "Fetching available tags from Docker Hub for $upstream"
+              tags_json=$(curl -s "https://hub.docker.com/v2/repositories/${upstream}/tags?page_size=5")
+              tag=$(echo "$tags_json" | jq -r '.results[].name' | grep -v null | head -n1)
+
+              if [ -z "$tag" ]; then
+                echo "⚠️  No tags found for $upstream on Docker Hub — skipping."
+                continue
+              fi
+
+              echo "Priming ECR cache using tag: $tag"
+              docker pull "${{ steps.aws-creds.outputs.aws-account-id }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${repo}:${tag}" || true
+            fi
+          done
   deploy_stack:
     environment: ${{ !inputs.ci_account && inputs.environment || 'ci_account' }}
     env:
