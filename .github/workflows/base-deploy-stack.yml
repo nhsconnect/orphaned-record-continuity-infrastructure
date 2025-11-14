@@ -87,12 +87,18 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
           mask-aws-account-id: true
           role-skip-session-tagging: true
-
       - name: Login to ECR
         run: |
           aws ecr get-login-password --region ${{ vars.AWS_REGION }} | 
           docker login --username AWS --password-stdin ${{ steps.aws-creds.outputs.aws-account-id }}.dkr.ecr.${{vars.AWS_REGION}}.amazonaws.com
-         
+      
+      - name: Test PTC import explicitly
+        run: |
+          aws ecr batch-import-upstream-image \
+            --repository-name docker-hub/nhsdev/nia-mhs-inbound \
+            --upstream-source registryUrl=registry-1.docker.io,sourceRepositoryName=nhsdev/nia-mhs-inbound,sourceImageTag=2.0.1
+
+        
       - name: Check ECR repositories and prime if empty
         shell: bash
         run: |
@@ -134,7 +140,6 @@ jobs:
               fi
 
               echo "Priming ECR cache using tag: $tag"
-              echo "${{ steps.aws-creds.outputs.aws-account-id }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/$repo:$tag"
               docker pull "${{ steps.aws-creds.outputs.aws-account-id }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/$repo:$tag" || true
             fi
           done
