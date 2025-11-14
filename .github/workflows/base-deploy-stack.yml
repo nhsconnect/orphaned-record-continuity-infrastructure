@@ -134,6 +134,7 @@ jobs:
               fi
 
               echo "Priming ECR cache using tag: $tag"
+              echo "${{ steps.aws-creds.outputs.aws-account-id }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/$repo:$tag"
               docker pull "${{ steps.aws-creds.outputs.aws-account-id }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/$repo:$tag" || true
             fi
           done
