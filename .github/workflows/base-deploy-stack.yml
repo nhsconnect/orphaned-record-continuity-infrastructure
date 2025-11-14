@@ -71,6 +71,7 @@ permissions:
   contents: read # This is required for actions/checkout
 jobs:
   prime:
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     if: inputs.stack == 'dev-cross-account-changes' && inputs.is_deployment
     permissions:
