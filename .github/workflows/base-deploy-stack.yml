@@ -91,7 +91,7 @@ jobs:
       - name: Login to ECR
         run: |
           aws ecr get-login-password --region ${{ vars.AWS_REGION }} | 
-          docker login --username AWS --password-stdin ${{ steps.aws-creds.outputs.aws-account-id }}.dkr.ecr.{{vars.AWS_REGION}}.amazonaws.com
+          docker login --username AWS --password-stdin ${{ steps.aws-creds.outputs.aws-account-id }}.dkr.ecr.${{vars.AWS_REGION}}.amazonaws.com
          
       - name: Check ECR repositories and prime if empty
         shell: bash
