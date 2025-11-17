@@ -163,6 +163,7 @@ jobs:
     with:
       stack: ehr-repo-db-roles
       environment: dev
+      alias: ehr-repo-dev-db-roles
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
 
