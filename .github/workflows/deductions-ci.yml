@@ -77,7 +77,7 @@ jobs:
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
       lambdas_to_build: true
     secrets: inherit
-    
+
   deductions-cross-account:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-cross-account') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
     name: deductions-cross-account
@@ -87,6 +87,7 @@ jobs:
       stack: deductions-cross-account
       environment: dev
       is_deployment: true
+      alias: deductions-cross-account-dev
     secrets: inherit
   deductions-dashboard-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-dashboard') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
