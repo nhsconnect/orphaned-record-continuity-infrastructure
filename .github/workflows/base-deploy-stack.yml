@@ -122,9 +122,26 @@ jobs:
     - name: Terraform Init
       id: init
       run: |
-        terraform init -no-color -backend-config="key=${{ inputs.alias && inputs.alias || format('{0}-{1}', inputs.stack, inputs.environment) }}/terraform.tfstate" \
-        -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
-        -backend-config="dynamodb_table=${{ secrets.TF_BACKEND_TABLE }}"
+        # compute backend key: prefer alias, otherwise replace '-dev-' with the chosen environment
+        STACK="${{ inputs.stack }}"
+        ENV="${{ inputs.environment }}"
+        ALIAS="${{ inputs.alias || '' }}"
+
+        if [ -n "$ALIAS" ]; then
+          KEY="$ALIAS"
+        else
+          if [[ "$STACK" == *"-dev-"* ]]; then
+            KEY="${STACK/-dev-/-$ENV-}"
+          else
+            KEY="${STACK}-$ENV"
+          fi
+        fi
+
+        echo "Using backend key: $KEY/terraform.tfstate"
+        terraform init -no-color \
+          -backend-config="key=${KEY}/terraform.tfstate" \
+          -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
+          -backend-config="dynamodb_table=${{ secrets.TF_BACKEND_TABLE }}"
       shell: bash
 
     - name: Terraform Validate
