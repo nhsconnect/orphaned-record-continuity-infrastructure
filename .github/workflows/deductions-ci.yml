@@ -65,17 +65,6 @@ jobs:
           changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | tr '\n' ' ')
           echo "changed=$changed" >> $GITHUB_OUTPUT
 
-  dev-cross-account-changes:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/dev-cross-account-changes') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
-    name: dev-cross-account-changes
-    uses: ./.github/workflows/base-deploy-stack.yml
-    needs: [get-changed-files]
-    with:
-      stack: dev-cross-account-changes
-      environment: dev
-      is_deployment: true
-    secrets: inherit
-
   deductions-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
     name: Deductions Infrastructure CI

@@ -33,7 +33,6 @@ on:
             - pds-adapter
             - mesh-forwarder
             - base-infra
-            - dev-cross-account-changes
         is_deployment:
           default: false
           type: boolean
@@ -94,8 +93,8 @@ jobs:
         mask-aws-account-id: true
         role-skip-session-tagging: true
 
-    - name: Setup Terraform variables for Dev Cross Account Changes
-      if: inputs.stack == 'dev-cross-account-changes'
+    - name: Setup Terraform variables for Deductions Cross Account
+      if: inputs.stack == 'deductions-cross-account'
       env:
         DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
         DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
