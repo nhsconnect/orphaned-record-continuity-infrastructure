@@ -37,6 +37,3 @@ variable "untagged_expire_days"  {
   type = number
   default = 7 
 }
-variable "immutable_ecr_repositories" {
-  type = bool
-}
