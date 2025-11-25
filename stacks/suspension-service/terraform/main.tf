@@ -32,6 +32,4 @@ module "suspension-service" {
   sns_sqs_role_arn    = aws_iam_role.sns_failure_feedback_role.arn
   ecs_cluster_name    = aws_ecs_cluster.ecs-cluster.name
   ecs_service_name    = aws_ecs_service.ecs-service.name
-  scale_up_expression = var.scale_up_expression
-  enable_scale_action = var.enable_scale_action
 }

@@ -39,16 +39,6 @@ variable "repo_process_only_safe_listed_ods_codes" {
 
 variable "synthetic_patient_prefix" {}
 
-variable "scale_up_expression" {
-  type    = string
-  default = "((HOUR(m1)==17 && MINUTE(m1)==58)),10,0"
-}
-
-variable "enable_scale_action" {
-  type    = bool
-  default = true
-}
-
 variable "can_update_managing_organisation_to_repo" {
   description = "Toggle to allow updating managing organisation to repo ODS code"
   default     = false
@@ -65,5 +55,5 @@ variable "image_name" {
 }
 
 variable "ecs_desired_count" {
-  default = 0
+  default = 1
 }
