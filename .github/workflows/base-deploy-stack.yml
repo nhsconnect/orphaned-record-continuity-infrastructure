@@ -96,12 +96,12 @@ jobs:
     - name: Setup Terraform variables for Deductions Cross Account
       if: inputs.stack == 'deductions-cross-account'
       env:
-        DOCKER_USER: ${{ secrets.DOCKERHUB_USERNAME }}
-        DOCKER_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
       run: |
         cat > pipeline.auto.tfvars <<EOF
-        dockerhub_username = "${DOCKER_USER}"
-        dockerhub_access_token = "${DOCKER_ACCESS_TOKEN}"
+        dockerhub_username = "${DOCKERHUB_USERNAME}"
+        dockerhub_access_token = "${DOCKERHUB_ACCESS_TOKEN}"
         EOF
 
     - name: Setup Terraform variables

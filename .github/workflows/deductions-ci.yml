@@ -7,6 +7,7 @@ on:
       - 'stacks/deductions/**'
       - 'stacks/deductions-cross-account/**'
       - 'stacks/deductions-dashboard/**'
+      - 'stacks/dev-cross-account-changes/**'
       - 'stacks/mesh-forwarder/**'
       - 'stacks/pds-adaptor/**'
       - 'stacks/re-registration-service/**'
@@ -20,7 +21,6 @@ on:
       - 'stacks/mhs/**'
       - '.github/workflows/deductions-ci.yml'
       - '.github/workflows/base-deploy-stack.yml'
-      - 'stacks/dev-cross-account-changes/**'
 
   pull_request:
     branches: [ main ]
@@ -28,6 +28,7 @@ on:
       - 'stacks/deductions/**'
       - 'stacks/deductions-cross-account/**'
       - 'stacks/deductions-dashboard/**'
+      - 'stacks/dev-cross-account-changes/**'
       - 'stacks/mesh-forwarder/**'
       - 'stacks/pds-adaptor/**'
       - 'stacks/re-registration-service/**'
@@ -41,7 +42,6 @@ on:
       - 'stacks/mhs/**'
       - '.github/workflows/deductions-ci.yml'
       - '.github/workflows/base-deploy-stack.yml'
-      - 'stacks/dev-cross-account-changes/**'
 
 permissions:
   pull-requests: write
