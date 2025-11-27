@@ -54,6 +54,22 @@ resource "aws_ecr_repository" "mhs-outbound" {
   }
 }
 
+resource "aws_ecr_repository" "nia_mhs_inbound" {
+  name                 = "docker-hub/nhsdev/nia-mhs-inbound"
+  image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
+  tags = {
+    CreatedBy = var.repo_name
+  }
+}
+
+resource "aws_ecr_repository" "nia_mhs_outbound" {
+  name                 = "docker-hub/nhsdev/nia-mhs-outbound"
+  image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
+  tags = {
+    CreatedBy = var.repo_name
+  }
+}
+
 resource "aws_ecr_repository" "pds_adaptor" {
   name                 = "deductions/pds-adaptor"
   image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
