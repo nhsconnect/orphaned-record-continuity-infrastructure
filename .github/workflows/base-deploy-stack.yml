@@ -106,7 +106,6 @@ jobs:
 
     - name: Setup Terraform variables
       id: vars
-      if: inputs.stack != 'dev-cross-account-changes'
       run: |
         COMMON_ACCOUNT_ID=$(aws ssm get-parameter --name /repo/ci/user-input/external/aws-account-id --with-decryption | jq -r .Parameter.Value)
         cat > pipeline.auto.tfvars <<EOF
