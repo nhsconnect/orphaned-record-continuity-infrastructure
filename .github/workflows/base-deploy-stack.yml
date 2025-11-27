@@ -82,7 +82,7 @@ jobs:
       uses: actions/checkout@v4
       with:
        repository: nhsconnect/orphaned-record-continuity-infrastructure
-       ref: PRM-575-1
+       ref: PRM-481-1
        fetch-depth: 0 
 
     - name: Configure AWS Credentials (Read Write)
