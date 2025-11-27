@@ -1,12 +1,12 @@
 resource "aws_ecr_pull_through_cache_rule" "docker_hub" {
-  ecr_repository_prefix = "dockerhub"
+  ecr_repository_prefix = local.pull_through_cache_prefix
   upstream_registry_url = "registry-1.docker.io"
   credential_arn        = aws_secretsmanager_secret.dockerhub_ecr_ptc.arn
   depends_on            = [aws_secretsmanager_secret_policy.dockerhub_ecr_ptc]
 }
 
 resource "aws_ecr_repository_creation_template" "docker_hub" {
-  prefix      = "dockerhub"
+  prefix      = local.pull_through_cache_prefix
   applied_for = ["PULL_THROUGH_CACHE"]
 
   image_tag_mutability = "IMMUTABLE"

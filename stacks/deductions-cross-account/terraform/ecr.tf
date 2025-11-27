@@ -1,3 +1,7 @@
+locals {
+  pull_through_cache_prefix = "docker-hub"
+}
+
 resource "aws_ecr_repository" "ehr_out_service" {
   name                 = "deductions/ehr-out-service"
   image_tag_mutability = "IMMUTABLE"
@@ -55,7 +59,7 @@ resource "aws_ecr_repository" "mhs-outbound" {
 }
 
 resource "aws_ecr_repository" "nia_mhs_inbound" {
-  name                 = "docker-hub/nhsdev/nia-mhs-inbound"
+  name                 = "${local.pull_through_cache_prefix}/nhsdev/nia-mhs-inbound"
   image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
   tags = {
     CreatedBy = var.repo_name
@@ -63,7 +67,7 @@ resource "aws_ecr_repository" "nia_mhs_inbound" {
 }
 
 resource "aws_ecr_repository" "nia_mhs_outbound" {
-  name                 = "docker-hub/nhsdev/nia-mhs-outbound"
+  name                 = "${local.pull_through_cache_prefix}/nhsdev/nia-mhs-outbound"
   image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
   tags = {
     CreatedBy = var.repo_name
