@@ -68,7 +68,6 @@ permissions:
   pull-requests: write
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
-
 jobs:
   deploy_stack:
     environment: ${{ !inputs.ci_account && inputs.environment || 'ci_account' }}
@@ -93,6 +92,17 @@ jobs:
         aws-region: ${{ vars.AWS_REGION }}
         mask-aws-account-id: true
         role-skip-session-tagging: true
+
+    - name: Setup Terraform variables for Deductions Cross Account
+      if: inputs.stack == 'deductions-cross-account'
+      env:
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+      run: |
+        cat > pipeline.auto.tfvars <<EOF
+        dockerhub_username = "${DOCKERHUB_USERNAME}"
+        dockerhub_access_token = "${DOCKERHUB_ACCESS_TOKEN}"
+        EOF
 
     - name: Setup Terraform variables
       id: vars
