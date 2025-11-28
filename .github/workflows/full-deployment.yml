@@ -2,20 +2,20 @@ name: Full Deployment
 
 on:
   workflow_dispatch:
-      inputs:
-        environment:
-          default: "dev"
-          description: "Which environment should this run against?"
-          required: true
-          type: choice
-          options:
-            - dev
-            - pre-prod
-            - prod
-        is_deployment:
-          default: false
-          type: boolean
-          description: "Whether to run Terraform Apply?"
+    inputs:
+      environment:
+        default: "dev"
+        description: "Which environment should this run against?"
+        required: true
+        type: choice
+        options:
+          - dev
+          - pre-prod
+          - prod
+      is_deployment:
+        default: false
+        type: boolean
+        description: "Whether to run Terraform Apply?"
 
 permissions:
   pull-requests: write
@@ -44,7 +44,6 @@ jobs:
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
-
 
   mesh-forwarder-ci:
     name: Deploy MESH Forwarder Infrastructure
@@ -75,7 +74,7 @@ jobs:
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
-    
+
   suspension-service-ci:
     name: Deploy Suspension Service Infrastructure
     needs: [deductions-ci]
@@ -114,7 +113,7 @@ jobs:
       stack: ehr-out-service
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
-    secrets: inherit  
+    secrets: inherit
 
   ehr-transfer-service-ci:
     name: Deploy EHR Transfer Service Infrastructure CI

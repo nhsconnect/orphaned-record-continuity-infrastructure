@@ -2,44 +2,44 @@ name: Deductions Infrastructure CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'stacks/deductions/**'
-      - 'stacks/deductions-cross-account/**'
-      - 'stacks/deductions-dashboard/**'
-      - 'stacks/mesh-forwarder/**'
-      - 'stacks/pds-adaptor/**'
-      - 'stacks/re-registration-service/**'
-      - 'stacks/suspension-service/**'
-      - 'stacks/nems-event-processor/**'
-      - 'stacks/ehr-repo/**'
-      - 'stacks/ehr-repo-db-roles/**'
-      - 'stacks/ehr-out-service/**'
-      - 'stacks/ehr-transfer-service/**'
-      - 'stacks/gp2gp-messenger/**'
-      - 'stacks/mhs/**'
-      - '.github/workflows/deductions-ci.yml'
-      - '.github/workflows/base-deploy-stack.yml'
+      - "stacks/deductions/**"
+      - "stacks/deductions-cross-account/**"
+      - "stacks/deductions-dashboard/**"
+      - "stacks/mesh-forwarder/**"
+      - "stacks/pds-adaptor/**"
+      - "stacks/re-registration-service/**"
+      - "stacks/suspension-service/**"
+      - "stacks/nems-event-processor/**"
+      - "stacks/ehr-repo/**"
+      - "stacks/ehr-repo-db-roles/**"
+      - "stacks/ehr-out-service/**"
+      - "stacks/ehr-transfer-service/**"
+      - "stacks/gp2gp-messenger/**"
+      - "stacks/mhs/**"
+      - ".github/workflows/deductions-ci.yml"
+      - ".github/workflows/base-deploy-stack.yml"
 
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'stacks/deductions/**'
-      - 'stacks/deductions-cross-account/**'
-      - 'stacks/deductions-dashboard/**'
-      - 'stacks/mesh-forwarder/**'
-      - 'stacks/pds-adaptor/**'
-      - 'stacks/re-registration-service/**'
-      - 'stacks/suspension-service/**'
-      - 'stacks/nems-event-processor/**'
-      - 'stacks/ehr-repo/**'
-      - 'stacks/ehr-repo-db-roles/**'
-      - 'stacks/ehr-out-service/**'
-      - 'stacks/ehr-transfer-service/**'
-      - 'stacks/gp2gp-messenger/**'
-      - 'stacks/mhs/**'
-      - '.github/workflows/deductions-ci.yml'
-      - '.github/workflows/base-deploy-stack.yml'
+      - "stacks/deductions/**"
+      - "stacks/deductions-cross-account/**"
+      - "stacks/deductions-dashboard/**"
+      - "stacks/mesh-forwarder/**"
+      - "stacks/pds-adaptor/**"
+      - "stacks/re-registration-service/**"
+      - "stacks/suspension-service/**"
+      - "stacks/nems-event-processor/**"
+      - "stacks/ehr-repo/**"
+      - "stacks/ehr-repo-db-roles/**"
+      - "stacks/ehr-out-service/**"
+      - "stacks/ehr-transfer-service/**"
+      - "stacks/gp2gp-messenger/**"
+      - "stacks/mhs/**"
+      - ".github/workflows/deductions-ci.yml"
+      - ".github/workflows/base-deploy-stack.yml"
 
 permissions:
   pull-requests: write
@@ -99,7 +99,6 @@ jobs:
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
 
-
   mesh-forwarder-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
     name: MESH Forwarder Infrastructure
@@ -132,7 +131,7 @@ jobs:
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
-    
+
   suspension-service-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/suspension-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
     name: Suspension Service Infrastructure
@@ -187,7 +186,7 @@ jobs:
       stack: ehr-out-service
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
-    secrets: inherit  
+    secrets: inherit
 
   ehr-transfer-service-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-transfer-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
