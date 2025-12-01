@@ -16,7 +16,7 @@ resource "aws_kms_alias" "suspensions_encryption" {
 }
 
 resource "aws_ssm_parameter" "suspensions_kms_key_id" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/suspensions-kms-key-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/suspensions-kms-key-id"
   type  = "String"
   value = aws_kms_key.suspensions.id
 
@@ -97,7 +97,7 @@ resource "aws_kms_alias" "re_registrations_encryption" {
 }
 
 resource "aws_ssm_parameter" "re_registrations_kms_key_id" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/re-registrations-kms-key-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/re-registrations-kms-key-id"
   type  = "String"
   value = aws_kms_key.re_registrations.id
 
@@ -154,7 +154,7 @@ data "aws_iam_policy_document" "kms_key_policy_doc" {
 }
 
 resource "aws_ssm_parameter" "dlq_kms_key_id" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/dlq-kms-key-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/dlq-kms-key-id"
   type  = "String"
   value = aws_kms_key.dlq.id
 

@@ -207,7 +207,7 @@ resource "aws_security_group" "service_to_ehr_repo" {
 }
 
 resource "aws_ssm_parameter" "service_to_ehr_repo" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/service-to-ehr-repo-sg-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/service-to-ehr-repo-sg-id"
   type  = "String"
   value = aws_security_group.service_to_ehr_repo.id
   tags = {
@@ -263,7 +263,7 @@ data "aws_ssm_parameter" "gocd_sg_id" {
 }
 
 resource "aws_ssm_parameter" "deductions_core_internal_alb_dns" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-core-internal-alb-dns"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-core-internal-alb-dns"
   type  = "String"
   value = aws_alb.alb-internal.dns_name
   tags = {
@@ -273,7 +273,7 @@ resource "aws_ssm_parameter" "deductions_core_internal_alb_dns" {
 }
 
 resource "aws_ssm_parameter" "deductions_core_int_alb_httpl_arn" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-core-int-alb-httpl-arn"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-core-int-alb-httpl-arn"
   type  = "String"
   value = aws_alb_listener.int-alb-listener-http.arn
   tags = {
@@ -283,7 +283,7 @@ resource "aws_ssm_parameter" "deductions_core_int_alb_httpl_arn" {
 }
 
 resource "aws_ssm_parameter" "deductions_core_int_alb_httpsl_arn" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-core-int-alb-httpsl-arn"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-core-int-alb-httpsl-arn"
   type  = "String"
   value = aws_alb_listener.int-alb-listener-https.arn
   tags = {

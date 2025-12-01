@@ -33,7 +33,7 @@ output "public_subnets_route_table_id" {
 # }
 
 resource "aws_ssm_parameter" "deductions_private_private_subnets" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-private-subnets"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-private-private-subnets"
   type  = "String"
   value = join(",", module.vpc.private_subnets)
   tags = {
@@ -43,7 +43,7 @@ resource "aws_ssm_parameter" "deductions_private_private_subnets" {
 }
 
 resource "aws_ssm_parameter" "deductions_private_vpc_id" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/private-vpc-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/private-vpc-id"
   type  = "String"
   value = module.vpc.vpc_id
   tags = {
@@ -53,7 +53,7 @@ resource "aws_ssm_parameter" "deductions_private_vpc_id" {
 }
 
 resource "aws_ssm_parameter" "deductions_private_database_subnets" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-database-subnets"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-private-database-subnets"
   type  = "String"
   value = join(",", module.vpc.database_subnets)
   tags = {

@@ -38,7 +38,7 @@ resource "aws_route53_record" "environment_ns_non_prod_env" {
 }
 
 resource "aws_ssm_parameter" "environment_public_zone_id" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/environment-public-zone-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/environment-public-zone-id"
   type  = "String"
   value = aws_route53_zone.environment_public.zone_id
 

@@ -10,7 +10,7 @@ resource "aws_route53_zone" "private" {
 
 # Save the zone IDs to use them in other infra projects
 resource "aws_ssm_parameter" "private_zone_id" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/private-root-zone-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/private-root-zone-id"
   type  = "String"
   value = aws_route53_zone.private.zone_id
 
@@ -40,7 +40,7 @@ resource "aws_route53_zone" "environment_private" {
 }
 
 resource "aws_ssm_parameter" "environment_private_zone_id" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/environment-private-zone-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/environment-private-zone-id"
   type  = "String"
   value = aws_route53_zone.environment_private.zone_id
 
@@ -51,7 +51,7 @@ resource "aws_ssm_parameter" "environment_private_zone_id" {
 }
 
 resource "aws_ssm_parameter" "environment_domain_name" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/environment-domain-name"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/environment-domain-name"
   type  = "String"
   value = local.environment_domain_name
 

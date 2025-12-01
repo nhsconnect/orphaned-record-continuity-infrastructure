@@ -222,7 +222,7 @@ resource "aws_ssm_parameter" "alb_access_logs_s3_bucket_id" {
   value       = aws_s3_bucket.alb_access_logs.id
   type        = "String"
   description = "Exported this bucket id so each alb in different git repos can configure logs"
-  name        = "/repo/${var.environment}/output/${var.repo_name}/alb-access-logs-s3-bucket-id"
+  name        = "/repo/${var.environment}/output/output/prm-deductions-infra/alb-access-logs-s3-bucket-id"
 }
 
 resource "aws_s3_bucket" "access_logs" {

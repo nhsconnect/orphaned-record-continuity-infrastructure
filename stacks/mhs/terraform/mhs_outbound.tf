@@ -226,7 +226,7 @@ resource "aws_security_group" "service_to_mhs_outbound" {
 }
 
 resource "aws_ssm_parameter" "service_to_mhs_outbound" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/service-to-${var.cluster_name}-mhs-outbound-sg-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/service-to-${var.cluster_name}-mhs-outbound-sg-id"
   type  = "String"
   value = aws_security_group.service_to_mhs_outbound.id
   tags = {
@@ -347,7 +347,7 @@ resource "aws_route53_record" "mhs_outbound_load_balancer_record" {
 }
 
 resource "aws_ssm_parameter" "outbound_url" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/${var.cluster_name}-mhs-outbound-url"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/${var.cluster_name}-mhs-outbound-url"
   type  = "String"
   value = "https://${aws_route53_record.mhs_outbound_load_balancer_record.name}.${data.aws_route53_zone.environment_private_zone.name}"
   tags = {

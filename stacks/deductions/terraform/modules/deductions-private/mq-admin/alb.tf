@@ -100,7 +100,7 @@ resource "aws_alb_listener" "int-alb-listener-https" {
 }
 
 resource "aws_ssm_parameter" "int-alb-listener-https-arn" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/int-alb-listener-https-arn"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/int-alb-listener-https-arn"
   value = aws_alb_listener.int-alb-listener-https.arn
   type  = "String"
 
@@ -232,7 +232,7 @@ resource "aws_route53_record" "mq-console-r53-record" {
 
 
 resource "aws_ssm_parameter" "deductions_private_int_alb_httpl_arn" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-int-alb-httpl-arn"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-private-int-alb-httpl-arn"
   type  = "String"
   value = aws_alb_listener.int-alb-listener.arn
   tags = {
@@ -242,7 +242,7 @@ resource "aws_ssm_parameter" "deductions_private_int_alb_httpl_arn" {
 }
 
 resource "aws_ssm_parameter" "deductions_private_int_alb_httpsl_arn" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-int-alb-httpsl-arn"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-private-int-alb-httpsl-arn"
   type  = "String"
   value = aws_alb_listener.int-alb-listener-https.arn
   tags = {
@@ -252,7 +252,7 @@ resource "aws_ssm_parameter" "deductions_private_int_alb_httpsl_arn" {
 }
 
 resource "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-alb-internal-dns"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-private-alb-internal-dns"
   type  = "String"
   value = aws_alb.mq-admin.dns_name
   tags = {
@@ -263,7 +263,7 @@ resource "aws_ssm_parameter" "deductions_private_alb_internal_dns" {
 
 
 resource "aws_ssm_parameter" "deductions_private_alb_internal_id" {
-  name  = "/repo/${var.environment}/output/${var.repo_name}/deductions-private-alb-internal-id"
+  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-private-alb-internal-id"
   type  = "String"
   value = aws_alb.mq-admin.id
   tags = {
