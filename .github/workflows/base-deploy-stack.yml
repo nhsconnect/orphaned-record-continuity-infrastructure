@@ -189,7 +189,6 @@ jobs:
           echo "${PLAN_FULL::$LENGTH}" >> $GITHUB_ENV
           [ ${#PLAN_FULL} -gt $LENGTH ] && echo "(truncated - see workflow logs for full output)" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-        working-directory: ./infrastructure
         shell: bash
 
       - name: Add PR comment
