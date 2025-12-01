@@ -63,7 +63,7 @@ resource "aws_security_group" "vpn" {
 }
 
 resource "aws_ssm_parameter" "vpn_sg_id" {
-  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/vpn-sg-id"
+  name  = "/repo/${var.environment}/output/prm-deductions-infra/vpn-sg-id"
   type  = "String"
   value = aws_security_group.vpn.id
 }
@@ -136,7 +136,7 @@ resource "aws_ec2_client_vpn_authorization_rule" "deductions_core_vpc" {
 }
 
 resource "aws_ssm_parameter" "client_vpn_endpoint_id" {
-  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/client-vpn-endpoint-id"
+  name  = "/repo/${var.environment}/output/prm-deductions-infra/client-vpn-endpoint-id"
   type  = "String"
   value = aws_ec2_client_vpn_endpoint.vpn.id
   tags = {

@@ -149,7 +149,7 @@ resource "aws_security_group" "vpn_to_ehr_repo_ecs" {
 }
 
 resource "aws_ssm_parameter" "deductions_core_ecs_tasks_sg_id" {
-  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/deductions-core-ecs-tasks-sg-id"
+  name  = "/repo/${var.environment}/output/prm-deductions-infra/deductions-core-ecs-tasks-sg-id"
   type  = "String"
   value = aws_security_group.ecs-tasks-sg.id
   tags = {

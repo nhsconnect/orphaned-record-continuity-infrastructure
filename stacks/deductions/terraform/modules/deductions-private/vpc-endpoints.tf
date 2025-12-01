@@ -286,13 +286,13 @@ data "aws_prefix_list" "s3" {
 }
 
 resource "aws_ssm_parameter" "dynamodb_prefix_list_id" {
-  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/dynamodb_prefix_list_id"
+  name  = "/repo/${var.environment}/output/prm-deductions-infra/dynamodb_prefix_list_id"
   type  = "String"
   value = data.aws_prefix_list.private_dynamodb.id
 }
 
 resource "aws_ssm_parameter" "s3_prefix_list_id" {
-  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/s3_prefix_list_id"
+  name  = "/repo/${var.environment}/output/prm-deductions-infra/s3_prefix_list_id"
   type  = "String"
   value = data.aws_prefix_list.s3.id
 }

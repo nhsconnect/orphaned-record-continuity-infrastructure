@@ -68,7 +68,7 @@ resource "aws_cloudwatch_log_resource_policy" "mq-log-publishing-policy" {
 }
 
 resource "aws_ssm_parameter" "amqp-endpoint-0" {
-  name        = "/repo/${var.environment}/output/output/prm-deductions-infra/amqp-endpoint-0"
+  name        = "/repo/${var.environment}/output/prm-deductions-infra/amqp-endpoint-0"
   description = "AMQP endpoint to MQ broker. Index: 0"
   type        = "String"
   value       = aws_mq_broker.deductor_mq_broker.instances.0.endpoints.1
@@ -80,7 +80,7 @@ resource "aws_ssm_parameter" "amqp-endpoint-0" {
 }
 
 resource "aws_ssm_parameter" "amqp-endpoint-1" {
-  name        = "/repo/${var.environment}/output/output/prm-deductions-infra/amqp-endpoint-1"
+  name        = "/repo/${var.environment}/output/prm-deductions-infra/amqp-endpoint-1"
   description = "AMQP endpoint to MQ broker. Index: 1"
   type        = "String"
   value       = aws_mq_broker.deductor_mq_broker.instances.1.endpoints.1
@@ -92,7 +92,7 @@ resource "aws_ssm_parameter" "amqp-endpoint-1" {
 }
 
 resource "aws_ssm_parameter" "openwire-endpoint-0" {
-  name        = "/repo/${var.environment}/output/output/prm-deductions-infra/openwire-endpoint-0"
+  name        = "/repo/${var.environment}/output/prm-deductions-infra/openwire-endpoint-0"
   description = "OpenWire endpoint to MQ broker. Index: 0"
   type        = "String"
   value       = aws_mq_broker.deductor_mq_broker.instances.0.endpoints.0
@@ -104,7 +104,7 @@ resource "aws_ssm_parameter" "openwire-endpoint-0" {
 }
 
 resource "aws_ssm_parameter" "openwire-endpoint-1" {
-  name        = "/repo/${var.environment}/output/output/prm-deductions-infra/openwire-endpoint-1"
+  name        = "/repo/${var.environment}/output/prm-deductions-infra/openwire-endpoint-1"
   description = "OpenWire endpoint to MQ broker. Index: 1"
   type        = "String"
   value       = aws_mq_broker.deductor_mq_broker.instances.1.endpoints.0
@@ -129,7 +129,7 @@ resource "aws_security_group" "service_to_mq" {
 }
 
 resource "aws_ssm_parameter" "service_to_mq" {
-  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/service-to-mq-sg-id"
+  name  = "/repo/${var.environment}/output/prm-deductions-infra/service-to-mq-sg-id"
   type  = "String"
   value = aws_security_group.service_to_mq.id
   tags = {
@@ -216,7 +216,7 @@ data "aws_ssm_parameter" "gocd_sg_id" {
 }
 
 resource "aws_ssm_parameter" "mq_broker_name" {
-  name  = "/repo/${var.environment}/output/output/prm-deductions-infra/broker-name"
+  name  = "/repo/${var.environment}/output/prm-deductions-infra/broker-name"
   type  = "String"
   value = aws_mq_broker.deductor_mq_broker.broker_name
 }
