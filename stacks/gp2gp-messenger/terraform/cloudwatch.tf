@@ -26,7 +26,7 @@ resource "aws_cloudwatch_log_metric_filter" "log_metric_filter" {
 }
 
 resource "aws_ssm_parameter" "error_log_metric_namespace_name" {
-  name  = "/repo/${var.environment}/output/prm-deductions-infra/error_log_metric_namespace"
+  name  = "/repo/${var.environment}/output/prm-deductions-gp2gp-messenger/error_log_metric_namespace"
   type  = "String"
   value = local.gp2gp_messenger_service_metric_namespace
   tags = {

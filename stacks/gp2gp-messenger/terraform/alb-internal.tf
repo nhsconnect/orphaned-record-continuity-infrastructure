@@ -184,7 +184,7 @@ resource "aws_security_group" "service_to_gp2gp_messenger" {
 }
 
 resource "aws_ssm_parameter" "service_to_gp2gp_messenger" {
-  name  = "/repo/${var.environment}/output/prm-deductions-infra/service-to-gp2gp-messenger-sg-id"
+  name  = "/repo/${var.environment}/output/prm-deductions-gp2gp-messenger/service-to-gp2gp-messenger-sg-id"
   type  = "String"
   value = aws_security_group.service_to_gp2gp_messenger.id
   tags = {

@@ -56,7 +56,7 @@ resource "aws_ecs_cluster" "ecs-cluster" {
 }
 
 resource "aws_ssm_parameter" "deductions_core_ecs_cluster_id" {
-  name  = "/repo/${var.environment}/output/prm-deductions-infra/deductions-core-ecs-cluster-id"
+  name  = "/repo/${var.environment}/output/prm-deductions-ehr-repository/deductions-core-ecs-cluster-id"
   type  = "String"
   value = aws_ecs_cluster.ecs-cluster.id
   tags = {

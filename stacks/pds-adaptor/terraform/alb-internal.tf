@@ -189,7 +189,7 @@ resource "aws_security_group" "service_to_pds_adaptor" {
 }
 
 resource "aws_ssm_parameter" "service_to_pds_adaptor" {
-  name  = "/repo/${var.environment}/output/prm-deductions-infra/service-to-pds-adaptor-sg-id"
+  name  = "/repo/${var.environment}/output/prm-deductions-pds-adaptor/service-to-pds-adaptor-sg-id"
   type  = "String"
   value = aws_security_group.service_to_pds_adaptor.id
   tags = {

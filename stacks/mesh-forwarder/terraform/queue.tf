@@ -197,7 +197,7 @@ data "aws_iam_policy_document" "sqs_policy_doc" {
 
 
 resource "aws_ssm_parameter" "sns_sqs_kms_key_id" {
-  name  = "/repo/${var.environment}/output/prm-deductions-infra/sns-sqs-kms-key-id"
+  name  = "/repo/${var.environment}/output/prm-deductions-mesh-forwarder/sns-sqs-kms-key-id"
   type  = "String"
   value = aws_kms_key.sns_sqs_encryption.id
 
@@ -208,7 +208,7 @@ resource "aws_ssm_parameter" "sns_sqs_kms_key_id" {
 }
 
 resource "aws_ssm_parameter" "nems_events_topic_arn" {
-  name  = "/repo/${var.environment}/output/prm-deductions-infra/nems-events-topic-arn"
+  name  = "/repo/${var.environment}/output/prm-deductions-mesh-forwarder/nems-events-topic-arn"
   type  = "String"
   value = aws_sns_topic.nems_events.arn
 
