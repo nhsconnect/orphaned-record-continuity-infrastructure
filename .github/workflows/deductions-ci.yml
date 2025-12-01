@@ -84,8 +84,9 @@ jobs:
     with:
       stack: deductions-cross-account
       environment: dev
-      is_deployment: true
-      alias: dev-cross-account-changes-dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+      alias: deductions-infra-cross-account-ci
+      ci_account: true
     secrets: inherit
   deductions-dashboard-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-dashboard') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
