@@ -166,6 +166,32 @@ jobs:
           echo "summary=$(grep -E 'Plan: [0-9]+ to add, [0-9]+ to change, [0-9]+ to destroy\.|No changes\. Your infrastructure matches the configuration\.' ${{ vars.AWS_ENVIRONMENT }}.tfplan.txt | sed 's/.*No changes\. Your infrastructure matches the configuration/Plan: no changes/g' | sed 's/.*Plan: //g' | sed 's/\..*//g')" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Truncate Plan Output
+        id: plan-truncated
+        if: success() || failure()
+        env:
+          LENGTH: 64512
+        run: |
+          PLAN_FULL=$(grep -v 'Refreshing state...' <<'EOF'
+          ${{ steps.plan.outputs.stdout }}
+          ${{ steps.plan.outputs.stderr }}
+          EOF
+          )
+
+          # Optionally redact sensitive strings in the PLAN_FULL variable
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E 's#arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9_-]+#[REDACTED_IAM_ROLE_ARN]#g')
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E 's/[0-9]{12}/[REDACTED_AWS_ACCOUNT_ID]/g')
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E 's#https://[a-zA-Z0-9.-]+\.lambda\.amazonaws\.com/[a-zA-Z0-9/._-]+#[REDACTED_LAMBDA_URL]#g')
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E 's#https://[a-zA-Z0-9.-]+\.execute-api\.[a-zA-Z0-9.-]+\.amazonaws\.com/[a-zA-Z0-9/._-]*#[REDACTED_API_GATEWAY_URL]#g')
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/s/.*/[REDACTED_PEM_CERT]/')
+
+          echo "PLAN<<EOF" >> $GITHUB_ENV
+          echo "${PLAN_FULL::$LENGTH}" >> $GITHUB_ENV
+          [ ${#PLAN_FULL} -gt $LENGTH ] && echo "(truncated - see workflow logs for full output)" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        working-directory: ./infrastructure
+        shell: bash
+
       - name: Add PR comment
         uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && (success() || failure())
@@ -177,41 +203,58 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-            });
+            })
             const botComment = comments.find(comment => {
-              return comment.user.type === 'Bot' && comment.body.includes('Report for ${{ inputs.stack }} environment: ${{ inputs.environment }}')
-            });
-              
+              return comment.user.type === 'Bot' && comment.body.includes('Report for environment: ndr-dev')
+            })
+
             // 2. Prepare format of the comment
-            const output = `### Report for ${{inputs.stack}} environment: ${{ inputs.environment }}
-              
-            #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-              
-              
+            const output = `### Report for environment: ndr-dev
+            
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-              
-              
+            <details><summary>Initialization Output</summary>
+
+            \`\`\`\n
+            ${{ steps.init.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
             #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-              
-              
+            <details><summary>Validation Output</summary>
+
+            \`\`\`\n
+            ${{ steps.validate.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
             #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-              
-            Plan results: ${{ steps.plan.outputs.summary }}`;
-              
+
+            <details><summary>Show Plan (${{ steps.plan.outputs.summary }})</summary>
+
+            \`\`\`\n
+            ${{ env.PLAN }}
+            \`\`\`
+
+            </details>`;
+
             // 3. If we have a comment, update it, otherwise create a new one
             if (botComment) {
               github.rest.issues.deleteComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: botComment.id,
+                body: output
               })
             }
+            
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
-            });
+            })
 
       - name: Terraform Apply
         if: inputs.is_deployment
