@@ -208,7 +208,7 @@ jobs:
             })
 
             // 2. Prepare format of the comment
-            const output = `### Report for environment: ${{ inputs.environment }} - stack: ${{ inputs.stack }}
+            const output = `### Report for ${{ inputs.stack }}
             
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             <details><summary>Initialization Output</summary>
