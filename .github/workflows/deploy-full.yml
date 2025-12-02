@@ -1,11 +1,13 @@
-name: Full Deployment
+name: Deploy - Full
+
+run-name: "${{ inputs.environment }} | Terraform Apply? = ${{ inputs.is_deployment }}"
 
 on:
   workflow_dispatch:
     inputs:
       environment:
         default: "dev"
-        description: "Which environment should this run against?"
+        description: "Environment"
         required: true
         type: choice
         options:
@@ -15,7 +17,7 @@ on:
       is_deployment:
         default: false
         type: boolean
-        description: "Whether to run Terraform Apply?"
+        description: "Terraform Apply?"
 
 permissions:
   pull-requests: write
@@ -25,7 +27,7 @@ permissions:
 jobs:
   deductions-ci:
     name: Deploy Deductions Infrastructure CI
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: deductions
       alias: deductions-infra-${{ inputs.environment }}
@@ -36,7 +38,7 @@ jobs:
 
   deductions-dashboard-ci:
     name: Deploy Deductions Dashboard Infrastructure CI
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
       stack: deductions-dashboard
@@ -48,7 +50,7 @@ jobs:
   mesh-forwarder-ci:
     name: Deploy MESH Forwarder Infrastructure
     needs: [deductions-ci]
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: mesh-forwarder
       environment: ${{ inputs.environment }}
@@ -58,7 +60,7 @@ jobs:
   pds-adaptor-ci:
     name: Deploy PDS Adaptor Infrastructure
     needs: [deductions-ci]
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: pds-adaptor
       environment: ${{ inputs.environment }}
@@ -68,7 +70,7 @@ jobs:
   re-registration-service-ci:
     name: Deploy Re-Registration Service Infrastructure
     needs: [deductions-ci]
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: re-registration-service
       environment: ${{ inputs.environment }}
@@ -78,7 +80,7 @@ jobs:
   suspension-service-ci:
     name: Deploy Suspension Service Infrastructure
     needs: [deductions-ci]
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: suspension-service
       environment: ${{ inputs.environment }}
@@ -88,7 +90,7 @@ jobs:
   nems-event-processor-ci:
     name: Deploy NEMS Event Processor Infrastructure
     needs: [deductions-ci]
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: nems-event-processor
       environment: ${{ inputs.environment }}
@@ -97,7 +99,7 @@ jobs:
 
   ehr-repo-ci:
     name: EHR Repo Infrastructure CI
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
       stack: ehr-repo
@@ -107,7 +109,7 @@ jobs:
 
   ehr-out-service-ci:
     name: Deploy EHR Out Service Infrastructure CI
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
       stack: ehr-out-service
@@ -117,7 +119,7 @@ jobs:
 
   ehr-transfer-service-ci:
     name: Deploy EHR Transfer Service Infrastructure CI
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
       stack: ehr-transfer-service
@@ -127,7 +129,7 @@ jobs:
 
   gp2gp-messenger-ci:
     name: Deploy GP2GP Messenger Infrastructure CI
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
       stack: gp2gp-messenger
@@ -137,7 +139,7 @@ jobs:
 
   mhs-ci:
     name: Deploy MHS Infrastructure CI
-    uses: ./.github/workflows/base-deploy-stack.yml
+    uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
       stack: mhs

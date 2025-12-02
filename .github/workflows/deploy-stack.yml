@@ -1,11 +1,13 @@
-name: Deploy Infrastructure Stack
+name: Deploy - Stack
+
+run-name: "${{ inputs.environment }} | ${{ inputs.stack }} | Terraform Apply? = ${{ inputs.is_deployment }}"
 
 on:
   workflow_dispatch:
     inputs:
       environment:
         default: "dev"
-        description: "Which environment should this run against"
+        description: "Environment"
         required: true
         type: choice
         options:
@@ -13,7 +15,7 @@ on:
           - pre-prod
           - prod
       stack:
-        description: "Which stack would you like to deploy"
+        description: "Stack"
         required: true
         type: choice
         options:
@@ -36,7 +38,7 @@ on:
       is_deployment:
         default: false
         type: boolean
-        description: "Whether to deploy"
+        description: "Terraform Apply?"
 
   workflow_call:
     inputs:
@@ -54,7 +56,7 @@ on:
       is_deployment:
         default: false
         type: boolean
-        description: "Whether to deploy"
+        description: "Terraform Apply?"
       ci_account:
         default: false
         description: "Are we deploying to the CI account?"
@@ -208,7 +210,7 @@ jobs:
 
             // 2. Prepare format of the comment
             const output = `### Report for ${{ inputs.stack }}
-            
+
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
             <details><summary>Initialization Output</summary>
 
@@ -246,7 +248,7 @@ jobs:
                 body: output
               })
             }
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,

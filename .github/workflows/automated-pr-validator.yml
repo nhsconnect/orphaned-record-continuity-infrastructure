@@ -1,0 +1,212 @@
+name: "Z-AUTOMATED: PR Validator"
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  sbom_scan:
+    name: SBOM Repo Scan
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read # Required for anchore/sbom-action
+      contents: write # Required for anchore/sbom-action
+      id-token: write # Required for requesting the JWT
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: anchore/sbom-action@v0
+        with:
+          path: "."
+          format: cyclonedx-json
+          output-file: sbom-repo-${{ github.event.repository.name }}-${{ github.sha }}.cdx.json
+
+      - uses: anchore/scan-action@v7
+        id: sbom-scan
+        with:
+          sbom: sbom-repo-${{ github.event.repository.name }}-${{ github.sha }}.cdx.json
+          fail-build: false
+          severity-cutoff: low
+          only-fixed: true
+          output-format: sarif
+
+      - name: Upload Anchore scan SARIF report
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: ${{ steps.sbom-scan.outputs.sarif }}
+
+      - name: Add/Update SBOM failure comment
+        uses: actions/github-script@v8
+        if: always() && failure()
+        with:
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Code security issues found')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `### Code security issues found
+
+            View full details [here](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+pr%3A${{ github.event.pull_request.number }}).`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Delete SBOM failure comment
+        uses: actions/github-script@v8
+        if: always() && success()
+        with:
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Code security issues found')
+            })
+
+            // 2. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id
+              })
+            }
+
+  markdown-validation:
+    name: Markdown Validation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Run Markdown Validation Script
+        id: validate
+        run: |
+          BRANCH_NAME=${{ github.event.repository.default_branch }}
+          chmod +x scripts/markdown-validator.sh
+          scripts/markdown-validator.sh
+
+  checkov:
+    name: Checkov Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
+      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
+      pull-requests: write # To add/delete the PR comment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Checkov Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          quiet: true
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+          skip_check: CKV_AWS_144,CKV_AZURE_1
+          # CKV_AWS_144 = Ensure that S3 bucket has cross-region replication enabled | Not required as we only use eu-west-2
+          # CKV_AZURE_1 = Example check to skip - can be deleted once another check is skipped
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v4
+        if: success() || failure()
+        with:
+          sarif_file: results.sarif
+
+      - name: Add/Update Checkov failure comment
+        uses: actions/github-script@v8
+        if: always() && failure()
+        with:
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Checkov issues found')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `### Checkov issues found
+            View full details [here](https://github.com/${{ github.repository }}/security/code-scanning?query=is%3Aopen+pr%3A${{ github.event.pull_request.number }}+tool%3Acheckov).`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Delete Checkov failure comment
+        uses: actions/github-script@v8
+        if: always() && success()
+        with:
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Checkov issues found')
+            })
+
+            // 2. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id
+              })
+            }
