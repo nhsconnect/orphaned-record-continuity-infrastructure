@@ -1,4 +1,4 @@
-name: 'Z-AUTOMATED: SonarQube Cloud Analysis'
+name: "Z-AUTOMATED: SonarQube Cloud Analysis"
 
 on:
   push:
@@ -6,6 +6,8 @@ on:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
+permissions: {}
 
 jobs:
   sonarcloud:
