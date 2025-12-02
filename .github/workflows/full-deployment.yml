@@ -1,0 +1,147 @@
+name: Full Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        default: "dev"
+        description: "Which environment should this run against?"
+        required: true
+        type: choice
+        options:
+          - dev
+          - pre-prod
+          - prod
+      is_deployment:
+        default: false
+        type: boolean
+        description: "Whether to run Terraform Apply?"
+
+permissions:
+  pull-requests: write
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+jobs:
+  deductions-ci:
+    name: Deploy Deductions Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: deductions
+      alias: deductions-infra-${{ inputs.environment }}
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+      lambdas_to_build: true
+    secrets: inherit
+
+  deductions-dashboard-ci:
+    name: Deploy Deductions Dashboard Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [deductions-ci]
+    with:
+      stack: deductions-dashboard
+      alias: deductions-infra-dashboard-${{ inputs.environment }}
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  mesh-forwarder-ci:
+    name: Deploy MESH Forwarder Infrastructure
+    needs: [deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: mesh-forwarder
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  pds-adaptor-ci:
+    name: Deploy PDS Adaptor Infrastructure
+    needs: [deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: pds-adaptor
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  re-registration-service-ci:
+    name: Deploy Re-Registration Service Infrastructure
+    needs: [deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: re-registration-service
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  suspension-service-ci:
+    name: Deploy Suspension Service Infrastructure
+    needs: [deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: suspension-service
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  nems-event-processor-ci:
+    name: Deploy NEMS Event Processor Infrastructure
+    needs: [deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: nems-event-processor
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  ehr-repo-ci:
+    name: EHR Repo Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [deductions-ci]
+    with:
+      stack: ehr-repo
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  ehr-out-service-ci:
+    name: Deploy EHR Out Service Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [deductions-ci]
+    with:
+      stack: ehr-out-service
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  ehr-transfer-service-ci:
+    name: Deploy EHR Transfer Service Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [deductions-ci]
+    with:
+      stack: ehr-transfer-service
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  gp2gp-messenger-ci:
+    name: Deploy GP2GP Messenger Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [deductions-ci]
+    with:
+      stack: gp2gp-messenger
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit
+
+  mhs-ci:
+    name: Deploy MHS Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [deductions-ci]
+    with:
+      stack: mhs
+      environment: ${{ inputs.environment }}
+      alias: mhs-${{ inputs.environment }}-repo
+      is_deployment: ${{ inputs.is_deployment }}
+    secrets: inherit

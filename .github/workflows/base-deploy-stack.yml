@@ -1,0 +1,259 @@
+name: Deploy Infrastructure Stack
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        default: "dev"
+        description: "Which environment should this run against"
+        required: true
+        type: choice
+        options:
+          - dev
+          - pre-prod
+          - prod
+      stack:
+        description: "Which stack would you like to deploy"
+        required: true
+        type: choice
+        options:
+          - ehr-repo
+          - ehr-repo-db-roles
+          - ehr-out-service
+          - ehr-transfer-service
+          - re-registration-service
+          - suspension-service
+          - nems-event-processor
+          - deductions
+          - deductions-backup
+          - deductions-cross-account
+          - deductions-dashboard
+          - mhs
+          - gp2gp-messenger
+          - pds-adapter
+          - mesh-forwarder
+          - base-infra
+      is_deployment:
+        default: false
+        type: boolean
+        description: "Whether to deploy"
+
+  workflow_call:
+    inputs:
+      environment:
+        default: dev
+        description: "Environment to deploy to"
+        type: string
+      stack:
+        description: "Stack to deploy - stack folder name"
+        type: string
+      alias:
+        description: "Alias for the stack - i.e. deductions is referred to as deductions-infra"
+        type: string
+        required: false
+      is_deployment:
+        default: false
+        type: boolean
+        description: "Whether to deploy"
+      ci_account:
+        default: false
+        description: "Are we deploying to the CI account?"
+        type: boolean
+      lambdas_to_build:
+        default: false
+        description: "Do we need to build any lambdas before deploying?"
+        type: boolean
+
+permissions:
+  pull-requests: write
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+jobs:
+  deploy_stack:
+    environment: ${{ !inputs.ci_account && inputs.environment || 'ci_account' }}
+    env:
+      GITHUB_ENV: ${{ !inputs.ci_account && inputs.environment || 'ci_account' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stacks/${{ inputs.stack }}/terraform
+    steps:
+      - name: Check out Repo
+        uses: actions/checkout@v4
+        with:
+          repository: nhsconnect/orphaned-record-continuity-infrastructure
+          fetch-depth: 0
+
+      - name: Configure AWS Credentials (Read Write)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.IAM_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+          mask-aws-account-id: true
+          role-skip-session-tagging: true
+
+      - name: Setup Terraform variables for Deductions Cross Account
+        if: inputs.stack == 'deductions-cross-account'
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+        run: |
+          cat > pipeline-deductions-cross-account.auto.tfvars <<EOF
+          dockerhub_username = "${DOCKERHUB_USERNAME}"
+          dockerhub_access_token = "${DOCKERHUB_ACCESS_TOKEN}"
+          EOF
+
+      - name: Setup Terraform variables
+        id: vars
+        run: |
+          COMMON_ACCOUNT_ID=$(aws ssm get-parameter --name /repo/ci/user-input/external/aws-account-id --with-decryption | jq -r .Parameter.Value)
+          cat > pipeline.auto.tfvars <<EOF
+          common_account_id=$COMMON_ACCOUNT_ID
+          common_account_role="CiReadOnly"
+          EOF
+
+      - name: Build lambdas with additional requirements
+        if: inputs.lambdas_to_build
+        run: |
+          cd ../../../
+          ./tasks build_lambdas
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: latest
+
+      # - name: Terraform Format
+      #   id: fmt
+      #   run: |
+      #     terraform fmt
+
+      - name: Terraform Init
+        id: init
+        run: |
+          # compute backend key: prefer alias, otherwise replace '-dev-' with the chosen environment
+          STACK="${{ inputs.stack }}"
+          ENV="${{ inputs.environment }}"
+          ALIAS="${{ inputs.alias || '' }}"
+
+          if [ -n "$ALIAS" ]; then
+            KEY="$ALIAS"
+          else
+            if [[ "$STACK" == *"-dev-"* ]]; then
+              KEY="${STACK/-dev-/-$ENV-}"
+            else
+              KEY="${STACK}-$ENV"
+            fi
+          fi
+
+          echo "Using backend key: $KEY/terraform.tfstate"
+          terraform init -no-color \
+            -backend-config="key=${KEY}/terraform.tfstate" \
+            -backend-config="bucket=${{ secrets.TF_BACKEND_BUCKET }}" \
+            -backend-config="dynamodb_table=${{ secrets.TF_BACKEND_TABLE }}"
+        shell: bash
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -no-color -input=false -var-file="${{ vars.AWS_ENVIRONMENT }}.tfvars" -out "${{ vars.AWS_ENVIRONMENT }}.tfplan"
+          terraform show -no-color ${{ vars.AWS_ENVIRONMENT }}.tfplan > ${{ vars.AWS_ENVIRONMENT }}.tfplan.txt
+          echo "summary=$(grep -E 'Plan: [0-9]+ to add, [0-9]+ to change, [0-9]+ to destroy\.|No changes\. Your infrastructure matches the configuration\.' ${{ vars.AWS_ENVIRONMENT }}.tfplan.txt | sed 's/.*No changes\. Your infrastructure matches the configuration/Plan: no changes/g' | sed 's/.*Plan: //g' | sed 's/\..*//g')" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Truncate Plan Output
+        id: plan-truncated
+        if: success() || failure()
+        env:
+          LENGTH: 64512
+        run: |
+          PLAN_FULL=$(grep -v 'Refreshing state...' <<'EOF'
+          ${{ steps.plan.outputs.stdout }}
+          ${{ steps.plan.outputs.stderr }}
+          EOF
+          )
+
+          # Optionally redact sensitive strings in the PLAN_FULL variable
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E 's#arn:aws:iam::[0-9]{12}:role/[a-zA-Z0-9_-]+#[REDACTED_IAM_ROLE_ARN]#g')
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E 's/[0-9]{12}/[REDACTED_AWS_ACCOUNT_ID]/g')
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E 's#https://[a-zA-Z0-9.-]+\.lambda\.amazonaws\.com/[a-zA-Z0-9/._-]+#[REDACTED_LAMBDA_URL]#g')
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E 's#https://[a-zA-Z0-9.-]+\.execute-api\.[a-zA-Z0-9.-]+\.amazonaws\.com/[a-zA-Z0-9/._-]*#[REDACTED_API_GATEWAY_URL]#g')
+          PLAN_FULL=$(echo "$PLAN_FULL" | sed -E '/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/s/.*/[REDACTED_PEM_CERT]/')
+
+          echo "PLAN<<EOF" >> $GITHUB_ENV
+          echo "${PLAN_FULL::$LENGTH}" >> $GITHUB_ENV
+          [ ${#PLAN_FULL} -gt $LENGTH ] && echo "(truncated - see workflow logs for full output)" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Add PR comment
+        uses: actions/github-script@v7
+        if: github.event_name == 'pull_request' && (success() || failure())
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // 1. Retrieve existing bot comments for the PR
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            })
+            const botComment = comments.find(comment => {
+              return comment.user.type === 'Bot' && comment.body.includes('Report for environment: ndr-dev')
+            })
+
+            // 2. Prepare format of the comment
+            const output = `### Report for ${{ inputs.stack }}
+            
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            <details><summary>Initialization Output</summary>
+
+            \`\`\`\n
+            ${{ steps.init.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            <details><summary>Validation Output</summary>
+
+            \`\`\`\n
+            ${{ steps.validate.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan (${{ steps.plan.outputs.summary }})</summary>
+
+            \`\`\`\n
+            ${{ env.PLAN }}
+            \`\`\`
+
+            </details>`;
+
+            // 3. If we have a comment, update it, otherwise create a new one
+            if (botComment) {
+              github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: output
+              })
+            }
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Apply
+        if: inputs.is_deployment
+        run: terraform apply -auto-approve -input=false ${{ vars.AWS_ENVIRONMENT }}.tfplan

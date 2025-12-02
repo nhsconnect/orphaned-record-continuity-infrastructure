@@ -1,0 +1,223 @@
+name: Deductions Infrastructure CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "stacks/deductions/**"
+      - "stacks/deductions-cross-account/**"
+      - "stacks/deductions-dashboard/**"
+      - "stacks/mesh-forwarder/**"
+      - "stacks/pds-adaptor/**"
+      - "stacks/re-registration-service/**"
+      - "stacks/suspension-service/**"
+      - "stacks/nems-event-processor/**"
+      - "stacks/ehr-repo/**"
+      - "stacks/ehr-repo-db-roles/**"
+      - "stacks/ehr-out-service/**"
+      - "stacks/ehr-transfer-service/**"
+      - "stacks/gp2gp-messenger/**"
+      - "stacks/mhs/**"
+      - ".github/workflows/deductions-ci.yml"
+      - ".github/workflows/base-deploy-stack.yml"
+
+  pull_request:
+    branches: [main]
+    paths:
+      - "stacks/deductions/**"
+      - "stacks/deductions-cross-account/**"
+      - "stacks/deductions-dashboard/**"
+      - "stacks/mesh-forwarder/**"
+      - "stacks/pds-adaptor/**"
+      - "stacks/re-registration-service/**"
+      - "stacks/suspension-service/**"
+      - "stacks/nems-event-processor/**"
+      - "stacks/ehr-repo/**"
+      - "stacks/ehr-repo-db-roles/**"
+      - "stacks/ehr-out-service/**"
+      - "stacks/ehr-transfer-service/**"
+      - "stacks/gp2gp-messenger/**"
+      - "stacks/mhs/**"
+      - ".github/workflows/deductions-ci.yml"
+      - ".github/workflows/base-deploy-stack.yml"
+
+permissions:
+  pull-requests: write
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+jobs:
+  get-changed-files:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.get-changes.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: get-changes
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | tr '\n' ' ')
+          echo "changed=$changed" >> $GITHUB_OUTPUT
+
+  deductions-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: Deductions Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files]
+    with:
+      stack: deductions
+      alias: deductions-infra-dev
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+      lambdas_to_build: true
+    secrets: inherit
+
+  deductions-cross-account:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-cross-account') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: deductions-cross-account
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci]
+    with:
+      stack: deductions-cross-account
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+      alias: deductions-infra-cross-account-dev
+    secrets: inherit
+  deductions-dashboard-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-dashboard') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: Deductions Dashboard Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci]
+    with:
+      stack: deductions-dashboard
+      alias: deductions-infra-dashboard-dev
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  mesh-forwarder-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    name: MESH Forwarder Infrastructure
+    needs: [get-changed-files, deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: mesh-forwarder
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  pds-adaptor-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/pds-adaptor') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    name: PDS Adaptor Infrastructure
+    needs: [get-changed-files, deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: pds-adaptor
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  re-registration-service-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/re-registration-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    name: Re-Registration Service Infrastructure
+    needs: [get-changed-files, deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: re-registration-service
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  suspension-service-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/suspension-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    name: Suspension Service Infrastructure
+    needs: [get-changed-files, deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: suspension-service
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  nems-event-processor-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/nems-event-processor') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    name: NEMS Event Processor Infrastructure
+    needs: [get-changed-files, deductions-ci]
+    uses: ./.github/workflows/base-deploy-stack.yml
+    with:
+      stack: nems-event-processor
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  ehr-repo-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: EHR Repo Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci]
+    with:
+      stack: ehr-repo
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  ehr-repo-db-roles-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo') || contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo-db-roles') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: EHR Repo DB Roles Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci, ehr-repo-ci]
+    with:
+      stack: ehr-repo-db-roles
+      environment: dev
+      alias: ehr-repo-dev-db-roles
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  ehr-out-service-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-out-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: EHR Out Service Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci]
+    with:
+      stack: ehr-out-service
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  ehr-transfer-service-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-transfer-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: EHR Transfer Service Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci]
+    with:
+      stack: ehr-transfer-service
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  gp2gp-messenger-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/gp2gp-messenger') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: GP2GP Messenger Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci]
+    with:
+      stack: gp2gp-messenger
+      environment: dev
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
+
+  mhs-ci:
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mhs') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    name: MHS Infrastructure CI
+    uses: ./.github/workflows/base-deploy-stack.yml
+    needs: [get-changed-files, deductions-ci]
+    with:
+      stack: mhs
+      environment: dev
+      alias: mhs-dev-repo
+      is_deployment: ${{ github.ref == 'refs/heads/main' }}
+    secrets: inherit
