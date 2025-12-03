@@ -27,7 +27,7 @@ resource "aws_ssm_parameter" "active_suspensions_topic" {
 }
 
 resource "aws_ssm_parameter" "active_suspensions_kms_key_id" {
-  name  = "/repo/${var.environment}/output/prm-deductions-infra/active-suspensions-kms-key-id"
+  name  = "/repo/${var.environment}/output/${var.component_name}/active-suspensions-kms-key-id"
   type  = "String"
   value = aws_kms_key.active_suspensions.id
 
