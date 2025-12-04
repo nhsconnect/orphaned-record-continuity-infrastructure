@@ -210,7 +210,7 @@ data "aws_iam_policy_document" "deny_load_balancers_to_publish_to_access_logs_s3
       type        = "AWS"
       identifiers = ["*"]
     }
-    actions = ["s3:*"]
+    actions = ["s3:PutObject"]
     resources = [
       aws_s3_bucket.alb_access_logs.arn,
       "${aws_s3_bucket.alb_access_logs.arn}/*"
