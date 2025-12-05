@@ -217,31 +217,6 @@ data "aws_iam_policy_document" "restrict_load_balancers_to_read_access_logs_s3_b
     ]
   }
 }
-resource "aws_s3_bucket_policy" "cost_usage_permit_developer_to_see_access_logs_policy" {
-  count  = var.is_restricted_account ? 1 : 0
-  bucket = aws_s3_bucket.cost_and_usage_access_logs.id
-  policy = jsonencode({
-    "Version" : "2008-10-17",
-    "Statement" : [
-      {
-        Effect : "Allow",
-        Principal : {
-          "AWS" : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/RepoDeveloper"
-        },
-        Action : ["s3:Get*", "s3:ListBucket"],
-        Resource : [
-          "${aws_s3_bucket.cost_and_usage_access_logs.arn}",
-          "${aws_s3_bucket.cost_and_usage_access_logs.arn}/*"
-        ],
-        Condition : {
-          Bool : {
-            "aws:SecureTransport" : "false"
-          }
-        }
-      }
-    ]
-  })
-}
 
 resource "aws_ssm_parameter" "alb_access_logs_s3_bucket_id" {
   value       = "nhsd-audit-lbaccesslogs" # Send ALB access logs externally to the CCoE managed bucket
