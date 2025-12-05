@@ -210,7 +210,7 @@ data "aws_iam_policy_document" "restrict_load_balancers_to_read_access_logs_s3_b
       type        = "AWS"
       identifiers = ["*"]
     }
-    actions = ["s3:Get*", "s3:ListBucket"]
+    actions = ["s3:GetBucket", "s3:GetBucketAcl", "s3:GetBucketPolicy", "s3:ListBucket"]
     resources = [
       aws_s3_bucket.alb_access_logs.arn,
       "${aws_s3_bucket.alb_access_logs.arn}/*"
