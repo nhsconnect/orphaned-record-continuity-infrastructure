@@ -191,7 +191,7 @@ resource "aws_s3_bucket_versioning" "alb_access_logs" {
 
 resource "aws_s3_bucket_policy" "alb_access_logs_policy" {
   bucket = aws_s3_bucket.alb_access_logs.id
-  policy = data.aws_iam_policy_document.restrict_load_balancers_to_read_access_logs_s3_bucket.json
+  policy = data.aws_iam_policy_document.allow_load_balancers_to_publish_to_access_logs_s3_bucket.json
 }
 
 resource "aws_s3_bucket_public_access_block" "alb_access_logs" {
@@ -203,18 +203,31 @@ resource "aws_s3_bucket_public_access_block" "alb_access_logs" {
   restrict_public_buckets = true
 }
 
-data "aws_iam_policy_document" "restrict_load_balancers_to_read_access_logs_s3_bucket" {
+data "aws_iam_policy_document" "allow_load_balancers_to_publish_to_access_logs_s3_bucket" {
   statement {
-    effect = "Allow"
     principals {
       type        = "AWS"
       identifiers = ["arn:aws:iam::652711504416:root"]
     }
-    actions = ["s3:GetBucket", "s3:GetBucketAcl", "s3:GetBucketPolicy", "s3:ListBucket"]
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.alb_access_logs.arn}/*"]
+  }
+  statement {
+    effect = "Deny"
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    actions = ["s3:*"]
     resources = [
       aws_s3_bucket.alb_access_logs.arn,
       "${aws_s3_bucket.alb_access_logs.arn}/*"
     ]
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
   }
 }
 
