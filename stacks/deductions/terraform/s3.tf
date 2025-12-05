@@ -1,7 +1,7 @@
 locals {
   cost_usage_access_logs_prefix = "access-logs/"
+  alb_logs_bucket_name = var.environment == "dev" ? "dev-new-load-balancer-access-logs" : "${var.environment}-repo-load-balancer-access-logs"
 }
-
 resource "aws_s3_bucket" "cost_and_usage_bucket" {
   bucket = "${var.environment}-cost-and-usage"
 
@@ -171,7 +171,7 @@ resource "aws_s3_bucket_policy" "cost_usage_permit_s3_to_write_access_logs_polic
 }
 
 resource "aws_s3_bucket" "alb_access_logs" {
-  bucket = "${var.environment}-repo-load-balancer-access-logs"
+  bucket = local.alb_logs_bucket_name
 
   tags = {
     CreatedBy   = var.repo_name
@@ -212,7 +212,6 @@ data "aws_iam_policy_document" "allow_load_balancers_to_publish_to_access_logs_s
     }
     actions = ["s3:PutObject"]
     resources = [
-      aws_s3_bucket.alb_access_logs.arn,
       "${aws_s3_bucket.alb_access_logs.arn}/*"
     ]
   }
