@@ -219,7 +219,7 @@ data "aws_iam_policy_document" "deny_load_balancers_to_publish_to_access_logs_s3
 }
 
 resource "aws_ssm_parameter" "alb_access_logs_s3_bucket_id" {
-  value       = aws_s3_bucket.alb_access_logs.id
+  value       = "nhsd-audit-lbaccesslogs" # Send ALB access logs externally to the CCoE managed bucket
   type        = "String"
   description = "Exported this bucket id so each alb in different git repos can configure logs"
   name        = "/repo/${var.environment}/output/prm-deductions-infra/alb-access-logs-s3-bucket-id"
