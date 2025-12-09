@@ -100,7 +100,7 @@ jobs:
     secrets: inherit
 
   mesh-forwarder-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: MESH Forwarder Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/deploy-stack.yml
@@ -111,7 +111,7 @@ jobs:
     secrets: inherit
 
   pds-adaptor-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/pds-adaptor') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/pds-adaptor') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: PDS Adaptor Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/deploy-stack.yml
@@ -122,7 +122,7 @@ jobs:
     secrets: inherit
 
   re-registration-service-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/re-registration-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/re-registration-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: Re-Registration Service Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/deploy-stack.yml
@@ -133,7 +133,7 @@ jobs:
     secrets: inherit
 
   suspension-service-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/suspension-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/suspension-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: Suspension Service Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/deploy-stack.yml
@@ -144,7 +144,7 @@ jobs:
     secrets: inherit
 
   nems-event-processor-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/nems-event-processor') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/continuity-service-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/nems-event-processor') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: NEMS Event Processor Infrastructure
     needs: [get-changed-files, deductions-ci]
     uses: ./.github/workflows/deploy-stack.yml
