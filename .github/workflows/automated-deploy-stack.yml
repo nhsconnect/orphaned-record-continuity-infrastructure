@@ -18,7 +18,7 @@ on:
       - "stacks/ehr-transfer-service/**"
       - "stacks/gp2gp-messenger/**"
       - "stacks/mhs/**"
-      - ".github/workflows/deductions-ci.yml"
+      - ".github/workflows/automated-deploy-stack.yml"
       - ".github/workflows/base-deploy-stack.yml"
 
   pull_request:
@@ -38,7 +38,7 @@ on:
       - "stacks/ehr-transfer-service/**"
       - "stacks/gp2gp-messenger/**"
       - "stacks/mhs/**"
-      - ".github/workflows/deductions-ci.yml"
+      - ".github/workflows/automated-deploy-stack.yml"
       - ".github/workflows/base-deploy-stack.yml"
 
 permissions:
@@ -64,7 +64,7 @@ jobs:
           echo "changed=$changed" >> $GITHUB_OUTPUT
 
   deductions-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mesh-forwarder') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: Deductions Infrastructure CI
     uses: ./.github/workflows/deploy-stack.yml
     needs: [get-changed-files]
@@ -77,7 +77,7 @@ jobs:
     secrets: inherit
 
   deductions-cross-account:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-cross-account') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-cross-account') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: deductions-cross-account
     uses: ./.github/workflows/deploy-stack.yml
     needs: [get-changed-files, deductions-ci]
@@ -88,7 +88,7 @@ jobs:
       alias: deductions-infra-cross-account-dev
     secrets: inherit
   deductions-dashboard-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-dashboard') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-dashboard') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: Deductions Dashboard Infrastructure CI
     uses: ./.github/workflows/deploy-stack.yml
     needs: [get-changed-files, deductions-ci]
@@ -155,7 +155,7 @@ jobs:
     secrets: inherit
 
   ehr-repo-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: EHR Repo Infrastructure CI
     uses: ./.github/workflows/deploy-stack.yml
     needs: [get-changed-files, deductions-ci]
@@ -166,7 +166,7 @@ jobs:
     secrets: inherit
 
   ehr-repo-db-roles-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo') || contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo-db-roles') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo') || contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-repo-db-roles') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: EHR Repo DB Roles Infrastructure CI
     uses: ./.github/workflows/deploy-stack.yml
     needs: [get-changed-files, deductions-ci, ehr-repo-ci]
@@ -178,7 +178,7 @@ jobs:
     secrets: inherit
 
   ehr-out-service-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-out-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-out-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: EHR Out Service Infrastructure CI
     uses: ./.github/workflows/deploy-stack.yml
     needs: [get-changed-files, deductions-ci]
@@ -189,7 +189,7 @@ jobs:
     secrets: inherit
 
   ehr-transfer-service-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-transfer-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/ehr-transfer-service') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: EHR Transfer Service Infrastructure CI
     uses: ./.github/workflows/deploy-stack.yml
     needs: [get-changed-files, deductions-ci]
@@ -200,7 +200,7 @@ jobs:
     secrets: inherit
 
   gp2gp-messenger-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/gp2gp-messenger') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/gp2gp-messenger') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: GP2GP Messenger Infrastructure CI
     uses: ./.github/workflows/deploy-stack.yml
     needs: [get-changed-files, deductions-ci]
@@ -211,7 +211,7 @@ jobs:
     secrets: inherit
 
   mhs-ci:
-    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mhs') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/deductions-ci.yml')
+    if: contains(needs.get-changed-files.outputs.changed, 'stacks/mhs') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
     name: MHS Infrastructure CI
     uses: ./.github/workflows/deploy-stack.yml
     needs: [get-changed-files, deductions-ci]
