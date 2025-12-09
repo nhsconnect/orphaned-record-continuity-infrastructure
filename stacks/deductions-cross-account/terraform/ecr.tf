@@ -4,7 +4,7 @@ locals {
 
 resource "aws_ecr_repository" "ehr_out_service" {
   name                 = "deductions/ehr-out-service"
-  image_tag_mutability = "IMMUTABLE"
+  image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
   tags = {
     CreatedBy = var.repo_name
   }
