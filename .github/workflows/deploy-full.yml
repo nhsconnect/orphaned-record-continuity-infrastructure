@@ -26,7 +26,7 @@ permissions:
 
 jobs:
   deductions-ci:
-    name: Deploy Deductions Infrastructure CI
+    name: Deploy Deductions Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: deductions
@@ -36,8 +36,19 @@ jobs:
       lambdas_to_build: true
     secrets: inherit
 
+  deductions-cross-account:
+    name: Deploy Deductions Cross Account Infrastructure
+    uses: ./.github/workflows/deploy-stack.yml
+    with:
+      stack: deductions-cross-account
+      alias: deductions-infra-cross-account-${{ inputs.environment }}
+      environment: ${{ inputs.environment }}
+      is_deployment: ${{ inputs.is_deployment }}
+      lambdas_to_build: true
+    secrets: inherit
+
   deductions-dashboard-ci:
-    name: Deploy Deductions Dashboard Infrastructure CI
+    name: Deploy Deductions Dashboard Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
@@ -98,7 +109,7 @@ jobs:
     secrets: inherit
 
   ehr-repo-ci:
-    name: EHR Repo Infrastructure CI
+    name: EHR Repo Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
@@ -108,7 +119,7 @@ jobs:
     secrets: inherit
 
   ehr-out-service-ci:
-    name: Deploy EHR Out Service Infrastructure CI
+    name: Deploy EHR Out Service Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
@@ -118,7 +129,7 @@ jobs:
     secrets: inherit
 
   ehr-transfer-service-ci:
-    name: Deploy EHR Transfer Service Infrastructure CI
+    name: Deploy EHR Transfer Service Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
@@ -128,7 +139,7 @@ jobs:
     secrets: inherit
 
   gp2gp-messenger-ci:
-    name: Deploy GP2GP Messenger Infrastructure CI
+    name: Deploy GP2GP Messenger Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
@@ -138,7 +149,7 @@ jobs:
     secrets: inherit
 
   mhs-ci:
-    name: Deploy MHS Infrastructure CI
+    name: Deploy MHS Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
     needs: [deductions-ci]
     with:
