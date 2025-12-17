@@ -122,7 +122,7 @@ jobs:
             inputs.stack == 'mesh-forwarder'
         run: |
           LATEST_IMAGE_TAG=$(aws ecr describe-images \
-            --repository-name "${{ inputs.ecr-alias }}" \
+            --repository-name "${{ inputs.ecr_alias }}" \
             --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
             --output text)
           
