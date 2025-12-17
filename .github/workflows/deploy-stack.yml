@@ -49,8 +49,12 @@ on:
       stack:
         description: "Stack to deploy - stack folder name"
         type: string
-      alias:
+      backend_key_alias:
         description: "Alias for the stack - i.e. deductions is referred to as deductions-infra"
+        type: string
+        required: false
+      ecr_alias:
+        description: "ECR Repository Alias"
         type: string
         required: false
       is_deployment:
@@ -117,14 +121,12 @@ jobs:
             inputs.stack == 'pds-adaptor' || 
             inputs.stack == 'mesh-forwarder'
         run: |
-          ECR_REPO="deductions/${{ inputs.stack }}"
-
           LATEST_IMAGE_TAG=$(aws ecr describe-images \
-            --repository-name "$ECR_REPO" \
+            --repository-name "${{ inputs.ecr-alias }}" \
             --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
             --output text)
           
-          echo "Most recent image tag for $ECR_REPO: $LATEST_IMAGE_TAG"
+          echo "Most recent image tag for ${{ inputs.ecr_alias }}: $LATEST_IMAGE_TAG"
           echo "image_tag=$LATEST_IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Setup Terraform variables
@@ -163,7 +165,7 @@ jobs:
           # compute backend key: prefer alias, otherwise replace '-dev-' with the chosen environment
           STACK="${{ inputs.stack }}"
           ENV="${{ inputs.environment }}"
-          ALIAS="${{ inputs.alias || '' }}"
+          ALIAS="${{ inputs.backend_key_alias || '' }}"
 
           if [ -n "$ALIAS" ]; then
             KEY="$ALIAS"
