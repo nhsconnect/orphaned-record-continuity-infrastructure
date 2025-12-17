@@ -105,6 +105,28 @@ jobs:
           dockerhub_access_token = "${DOCKERHUB_ACCESS_TOKEN}"
           EOF
 
+      - name: Get Most Recent ECR Image Tag
+        id: get-image-tag
+        if: inputs.stack == 'ehr-repo' || 
+            inputs.stack == 'ehr-out-service' || 
+            inputs.stack == 'ehr-transfer-service' || 
+            inputs.stack == 're-registration-service' || 
+            inputs.stack == 'suspension-service' || 
+            inputs.stack == 'nems-event-processor' || 
+            inputs.stack == 'gp2gp-messenger' || 
+            inputs.stack == 'pds-adaptor' || 
+            inputs.stack == 'mesh-forwarder'
+        run: |
+          ECR_REPO="deductions/${{ inputs.stack }}"
+
+          LATEST_IMAGE_TAG=$(aws ecr describe-images \
+            --repository-name "$ECR_REPO" \
+            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
+            --output text)
+          
+          echo "Most recent image tag for $ECR_REPO: $LATEST_IMAGE_TAG"
+          echo "image_tag=$LATEST_IMAGE_TAG" >> $GITHUB_OUTPUT
+
       - name: Setup Terraform variables
         id: vars
         run: |
@@ -113,6 +135,11 @@ jobs:
           common_account_id=$COMMON_ACCOUNT_ID
           common_account_role="CiReadOnly"
           EOF
+          
+          # Only add task_image_tag if stack uses an ECR image
+          if [ -n "${{ steps.get-image-tag.outputs.image_tag }}" ]; then
+            echo 'task_image_tag="${{ steps.get-image-tag.outputs.image_tag }}"' >> pipeline.auto.tfvars
+          fi
 
       - name: Build lambdas with additional requirements
         if: inputs.lambdas_to_build
