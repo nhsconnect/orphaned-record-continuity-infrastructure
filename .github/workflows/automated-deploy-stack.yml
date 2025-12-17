@@ -70,7 +70,7 @@ jobs:
     needs: [get-changed-files]
     with:
       stack: deductions
-      alias: deductions-infra-dev
+      backend_key_alias: deductions-infra-dev
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
       lambdas_to_build: true
@@ -85,7 +85,7 @@ jobs:
       stack: deductions-cross-account
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
-      alias: deductions-infra-cross-account-dev
+      backend_key_alias: deductions-infra-cross-account-dev
     secrets: inherit
   deductions-dashboard-ci:
     if: contains(needs.get-changed-files.outputs.changed, 'stacks/deductions-dashboard') || contains(needs.get-changed-files.outputs.changed, '.github/workflows/automated-deploy-stack.yml')
@@ -94,7 +94,7 @@ jobs:
     needs: [get-changed-files, deductions-ci]
     with:
       stack: deductions-dashboard
-      alias: deductions-infra-dashboard-dev
+      backend_key_alias: deductions-infra-dashboard-dev
       environment: dev
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
@@ -173,7 +173,7 @@ jobs:
     with:
       stack: ehr-repo-db-roles
       environment: dev
-      alias: ehr-repo-dev-db-roles
+      backend_key_alias: ehr-repo-dev-db-roles
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
 
@@ -218,6 +218,6 @@ jobs:
     with:
       stack: mhs
       environment: dev
-      alias: mhs-dev-repo
+      backend_key_alias: mhs-dev-repo
       is_deployment: ${{ github.ref == 'refs/heads/main' }}
     secrets: inherit
