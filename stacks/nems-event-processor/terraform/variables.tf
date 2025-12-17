@@ -18,9 +18,7 @@ variable "dns_name" {
   default = "nems-event-processor"
 }
 
-variable "task_image_tag" {
-  default = "latest"
-}
+variable "task_image_tag" {}
 
 variable "task_cpu" {
   default = 512

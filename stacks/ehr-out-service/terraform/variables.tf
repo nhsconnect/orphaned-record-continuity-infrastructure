@@ -15,7 +15,7 @@ variable "component_name" {
 }
 
 variable "task_image_tag" {
-  default = "latest"
+
 }
 variable "task_cpu" {
   default = 512

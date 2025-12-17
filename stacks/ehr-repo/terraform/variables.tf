@@ -22,9 +22,8 @@ variable "s3_backup_enabled" {
   description = "Set to true if the environment needs backing up e.g. in production. This will result in versioning and object locking being enabled for select buckets containing critical live data."
 }
 
-variable "task_image_tag" {
-  default = "latest"
-}
+variable "task_image_tag" {}
+
 variable "task_cpu" {
   default = 512
 }
