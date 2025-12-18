@@ -122,10 +122,11 @@ jobs:
             inputs.stack == 'mesh-forwarder'
         env:
           ECR_ALIAS: ${{ inputs.ecr_alias }}
+        # get the most recent image with a non-null tag from ECR and then use the first tag found
         run: |
           LATEST_IMAGE_TAG=$(aws ecr describe-images \
             --repository-name $ECR_ALIAS \
-            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
+            --query "reverse(sort_by(imageDetails,&imagePushedAt))[?imageTags!=null].imageTags[0][0]" \
             --output text)
           
           echo "Most recent image tag for $ECR_ALIAS: $LATEST_IMAGE_TAG"
