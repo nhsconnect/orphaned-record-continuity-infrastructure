@@ -111,15 +111,15 @@ jobs:
 
       - name: Get Most Recent ECR Image Tag
         id: get-image-tag
-        if: inputs.stack == 'ehr-repo' || 
-            inputs.stack == 'ehr-out-service' || 
-            inputs.stack == 'ehr-transfer-service' || 
-            inputs.stack == 're-registration-service' || 
-            inputs.stack == 'suspension-service' || 
-            inputs.stack == 'nems-event-processor' || 
-            inputs.stack == 'gp2gp-messenger' || 
-            inputs.stack == 'pds-adaptor' || 
-            inputs.stack == 'mesh-forwarder'
+        if: inputs.stack == 'ehr-repo' ||
+          inputs.stack == 'ehr-out-service' ||
+          inputs.stack == 'ehr-transfer-service' ||
+          inputs.stack == 're-registration-service' ||
+          inputs.stack == 'suspension-service' ||
+          inputs.stack == 'nems-event-processor' ||
+          inputs.stack == 'gp2gp-messenger' ||
+          inputs.stack == 'pds-adaptor' ||
+          inputs.stack == 'mesh-forwarder'
         env:
           ECR_ALIAS: ${{ inputs.ecr_alias }}
         run: |
@@ -135,7 +135,7 @@ jobs:
         id: vars
         run: |
           COMMON_ACCOUNT_ID=$(aws ssm get-parameter --name /repo/ci/user-input/external/aws-account-id --with-decryption | jq -r .Parameter.Value)
-          cat > pipeline.auto.tfvars <<EOF 
+          cat > pipeline.auto.tfvars <<EOF
           common_account_id=$COMMON_ACCOUNT_ID
           common_account_role="CiReadOnly"
           EOF
