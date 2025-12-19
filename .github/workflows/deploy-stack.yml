@@ -111,15 +111,7 @@ jobs:
 
       - name: Get Most Recent ECR Image Tag
         id: get-image-tag
-        if: inputs.stack == 'ehr-repo' ||
-          inputs.stack == 'ehr-out-service' ||
-          inputs.stack == 'ehr-transfer-service' ||
-          inputs.stack == 're-registration-service' ||
-          inputs.stack == 'suspension-service' ||
-          inputs.stack == 'nems-event-processor' ||
-          inputs.stack == 'gp2gp-messenger' ||
-          inputs.stack == 'pds-adaptor' ||
-          inputs.stack == 'mesh-forwarder'
+        if: inputs.ecr_alias
         env:
           ECR_ALIAS: ${{ inputs.ecr_alias }}
         run: |
