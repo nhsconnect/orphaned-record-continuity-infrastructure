@@ -9,6 +9,12 @@ variable "mhs_state_table_write_capacity" {}
 variable "mhs_sync_async_table_read_capacity" {}
 variable "mhs_sync_async_table_write_capacity" {}
 
+variable "mhs_version" {
+  description = "Version of MHS NIA adaptor to deploy"
+  default     = "2.0.1"
+  type        = string
+}
+
 variable "recipient_ods_code" {
   description = "ODS code that was used for the MHS (CMA endpoint) registration"
 }

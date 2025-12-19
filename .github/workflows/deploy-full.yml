@@ -164,7 +164,6 @@ jobs:
     with:
       stack: mhs
       backend_key_alias: mhs-${{ inputs.environment }}-repo
-      # TODO-PRM-495-5 - Does ECR alias need to be added here? It's just one CI job, but there are two ECR repos?
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
