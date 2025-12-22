@@ -18,7 +18,9 @@ variable "component_name" {
   default = "re-registration-service"
 }
 
-variable "task_image_tag" {}
+variable "task_image_tag" {
+    type = string
+}
 
 variable "task_cpu" {
   default = 512
