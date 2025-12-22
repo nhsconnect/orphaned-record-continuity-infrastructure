@@ -125,6 +125,9 @@ jobs:
 
       - name: Setup Terraform variables
         id: vars
+        env:
+          ECR_ALIAS: ${{ inputs.ecr_alias }}
+          IMAGE_TAG: ${{ steps.get-image-tag.outputs.image_tag || '' }}
         run: |
           COMMON_ACCOUNT_ID=$(aws ssm get-parameter --name /repo/ci/user-input/external/aws-account-id --with-decryption | jq -r .Parameter.Value)
           cat > pipeline.auto.tfvars <<EOF
@@ -133,8 +136,8 @@ jobs:
           EOF
           
           # Only add task_image_tag if stack uses an ECR image
-          if [ -n "${{ steps.get-image-tag.outputs.image_tag }}" ]; then
-            echo 'task_image_tag="${{ steps.get-image-tag.outputs.image_tag }}"' >> pipeline.auto.tfvars
+          if [ -n "$ECR_ALIAS" ]; then
+            echo 'task_image_tag="$IMAGE_TAG"' >> pipeline.auto.tfvars
           fi
 
       - name: Build lambdas with additional requirements
