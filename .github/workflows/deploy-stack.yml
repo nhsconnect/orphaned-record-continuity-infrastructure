@@ -136,8 +136,10 @@ jobs:
           EOF
           
           # Only add task_image_tag if stack uses an ECR image
-          if [ -n "$ECR_ALIAS" ]; then
-            echo 'task_image_tag="$IMAGE_TAG"' >> pipeline.auto.tfvars
+          if [ -n "$ECR_ALIAS" ] && [ -n "$IMAGE_TAG" ]; then
+            cat >> pipeline.auto.tfvars <<EOF
+            task_image_tag = "${IMAGE_TAG}"
+            EOF
           fi
 
       - name: Build lambdas with additional requirements
