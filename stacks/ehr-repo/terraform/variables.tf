@@ -23,8 +23,9 @@ variable "s3_backup_enabled" {
 }
 
 variable "task_image_tag" {
-  default = "latest"
+    type = string
 }
+
 variable "task_cpu" {
   default = 512
 }

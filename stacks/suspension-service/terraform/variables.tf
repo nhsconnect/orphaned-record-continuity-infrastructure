@@ -14,7 +14,7 @@ variable "component_name" {}
 variable "metric_namespace" {}
 
 variable "task_image_tag" {
-  default = "latest"
+    type = string
 }
 
 variable "task_cpu" {

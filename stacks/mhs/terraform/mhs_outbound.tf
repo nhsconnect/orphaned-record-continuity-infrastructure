@@ -29,16 +29,20 @@ resource "aws_ecs_cluster" "mhs_outbound_cluster" {
   }
 }
 
+data "aws_ecr_repository" "nia_mhs_outbound" {
+  name = "docker-hub/nhsdev/nia-mhs-outbound"
+}
+
 resource "aws_ecs_task_definition" "mhs_outbound_task" {
   family = "${var.environment}-${var.cluster_name}-mhs-outbound"
   container_definitions = jsonencode(
     [
       {
-        name                   = "mhs-outbound"
-        image                  = "nhsdev/nia-mhs-outbound:${var.build_id}"
-        environment            = local.mhs_outbound_base_environment_vars
-        secrets                = local.mhs_outbound_base_secrets
-        essential              = true
+        name        = "mhs-outbound"
+        image       = "${data.aws_ecr_repository.nia_mhs_outbound.repository_url}:${var.mhs_version}"
+        environment = local.mhs_outbound_base_environment_vars
+        secrets     = local.mhs_outbound_base_secrets
+        essential   = true
         logConfiguration = {
           logDriver = "awslogs"
           options = {

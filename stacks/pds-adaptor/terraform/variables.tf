@@ -19,7 +19,7 @@ variable "dns_name" {
 }
 
 variable "task_image_tag" {
-  default = "latest"
+    type = string
 }
 
 variable "task_cpu" {}

@@ -30,7 +30,7 @@ jobs:
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: deductions
-      alias: deductions-infra-${{ inputs.environment }}
+      backend_key_alias: deductions-infra-${{ inputs.environment }}
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
       lambdas_to_build: true
@@ -41,7 +41,7 @@ jobs:
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: deductions-cross-account
-      alias: deductions-infra-cross-account-${{ inputs.environment }}
+      backend_key_alias: deductions-infra-cross-account-${{ inputs.environment }}
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
       lambdas_to_build: true
@@ -53,7 +53,7 @@ jobs:
     needs: [deductions-ci]
     with:
       stack: deductions-dashboard
-      alias: deductions-infra-dashboard-${{ inputs.environment }}
+      backend_key_alias: deductions-infra-dashboard-${{ inputs.environment }}
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -64,6 +64,7 @@ jobs:
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: mesh-forwarder
+      ecr_alias: deductions/mesh-forwarder
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -74,6 +75,7 @@ jobs:
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: pds-adaptor
+      ecr_alias: deductions/pds-adaptor
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -84,6 +86,7 @@ jobs:
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: re-registration-service
+      ecr_alias: repo/re-registration-service
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -94,6 +97,7 @@ jobs:
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: suspension-service
+      ecr_alias: repo/suspension-service
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -104,6 +108,7 @@ jobs:
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: nems-event-processor
+      ecr_alias: deductions/nems-event-processor
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -114,6 +119,7 @@ jobs:
     needs: [deductions-ci]
     with:
       stack: ehr-repo
+      ecr_alias: deductions/ehr-repo
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -124,6 +130,7 @@ jobs:
     needs: [deductions-ci]
     with:
       stack: ehr-out-service
+      ecr_alias: deductions/ehr-out-service
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -134,6 +141,7 @@ jobs:
     needs: [deductions-ci]
     with:
       stack: ehr-transfer-service
+      ecr_alias: deductions/ehr-transfer-service
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -144,6 +152,7 @@ jobs:
     needs: [deductions-ci]
     with:
       stack: gp2gp-messenger
+      ecr_alias: deductions/gp2gp-messenger
       environment: ${{ inputs.environment }}
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit
@@ -154,7 +163,7 @@ jobs:
     needs: [deductions-ci]
     with:
       stack: mhs
+      backend_key_alias: mhs-${{ inputs.environment }}-repo
       environment: ${{ inputs.environment }}
-      alias: mhs-${{ inputs.environment }}-repo
       is_deployment: ${{ inputs.is_deployment }}
     secrets: inherit

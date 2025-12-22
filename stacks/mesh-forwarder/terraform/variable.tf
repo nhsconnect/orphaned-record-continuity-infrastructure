@@ -15,11 +15,8 @@ variable "component_name" {
 }
 
 variable "task_image_tag" {
-  type        = string
-  description = "Docker image tag of Mesh to S3 forwarder"
-  default     = "latest"
+  type = string
 }
-
 variable "task_cpu" {}
 variable "task_memory" {}
 

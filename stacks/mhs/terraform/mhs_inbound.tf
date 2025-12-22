@@ -30,6 +30,10 @@ resource "aws_ecs_cluster" "mhs_inbound_cluster" {
   }
 }
 
+data "aws_ecr_repository" "nia_mhs_inbound" {
+  name = "docker-hub/nhsdev/nia-mhs-inbound"
+}
+
 # MHS inbound ECS task definition
 resource "aws_ecs_task_definition" "mhs_inbound_task" {
   family = "${var.environment}-${var.cluster_name}-mhs-inbound"
@@ -37,7 +41,7 @@ resource "aws_ecs_task_definition" "mhs_inbound_task" {
     [
       {
         name  = "mhs-inbound"
-        image = "nhsdev/nia-mhs-inbound:${var.build_id}"
+        image = "${data.aws_ecr_repository.nia_mhs_inbound.repository_url}:${var.mhs_version}"
         environment = [
           {
             name  = "MHS_LOG_LEVEL"
@@ -90,7 +94,7 @@ resource "aws_ecs_task_definition" "mhs_inbound_task" {
             valueFrom = local.inbound_ca_certs_arn
           }
         ]
-        essential              = true
+        essential = true
         logConfiguration = {
           logDriver = "awslogs"
           options = {

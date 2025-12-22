@@ -49,8 +49,12 @@ on:
       stack:
         description: "Stack to deploy - stack folder name"
         type: string
-      alias:
+      backend_key_alias:
         description: "Alias for the stack - i.e. deductions is referred to as deductions-infra"
+        type: string
+        required: false
+      ecr_alias:
+        description: "ECR Repository Alias"
         type: string
         required: false
       is_deployment:
@@ -105,6 +109,20 @@ jobs:
           dockerhub_access_token = "${DOCKERHUB_ACCESS_TOKEN}"
           EOF
 
+      - name: Get Most Recent ECR Image Tag
+        id: get-image-tag
+        if: inputs.ecr_alias
+        env:
+          ECR_ALIAS: ${{ inputs.ecr_alias }}
+        run: |
+          LATEST_IMAGE_TAG=$(aws ecr describe-images \
+            --repository-name $ECR_ALIAS \
+            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
+            --output json | tr -d '"')
+          
+          echo "Most recent image tag for $ECR_ALIAS: $LATEST_IMAGE_TAG"
+          echo "image_tag=$LATEST_IMAGE_TAG" >> $GITHUB_OUTPUT 
+
       - name: Setup Terraform variables
         id: vars
         run: |
@@ -113,6 +131,11 @@ jobs:
           common_account_id=$COMMON_ACCOUNT_ID
           common_account_role="CiReadOnly"
           EOF
+          
+          # Only add task_image_tag if stack uses an ECR image
+          if [ -n "${{ steps.get-image-tag.outputs.image_tag }}" ]; then
+            echo 'task_image_tag="${{ steps.get-image-tag.outputs.image_tag }}"' >> pipeline.auto.tfvars
+          fi
 
       - name: Build lambdas with additional requirements
         if: inputs.lambdas_to_build
@@ -136,7 +159,7 @@ jobs:
           # compute backend key: prefer alias, otherwise replace '-dev-' with the chosen environment
           STACK="${{ inputs.stack }}"
           ENV="${{ inputs.environment }}"
-          ALIAS="${{ inputs.alias || '' }}"
+          ALIAS="${{ inputs.backend_key_alias || '' }}"
 
           if [ -n "$ALIAS" ]; then
             KEY="$ALIAS"
