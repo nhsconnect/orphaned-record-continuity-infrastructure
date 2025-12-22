@@ -138,7 +138,6 @@ jobs:
           
           # Only add task_image_tag if stack uses an ECR image
           if [[ -n "$ECR_ALIAS" ]]; then
-            image_tag=$IMAGE_TAG
             echo "task_image_tag = $IMAGE_TAG" >> pipeline.auto.tfvars
           fi
 
