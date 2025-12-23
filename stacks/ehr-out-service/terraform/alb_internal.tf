@@ -85,7 +85,14 @@ resource "aws_alb_target_group" "internal_alb_tg" {
   vpc_id               = data.aws_ssm_parameter.deductions_private_vpc_id.value
   target_type          = "ip"
   deregistration_delay = var.alb_deregistration_delay
-
+  health_check {
+    healthy_threshold   = 3
+    unhealthy_threshold = 5
+    timeout             = 5
+    interval            = 10
+    path                = "/health"
+    port                = 3000
+  }
   tags = {
     Environment = var.environment
     CreatedBy   = var.repo_name
