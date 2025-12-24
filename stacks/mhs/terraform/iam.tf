@@ -87,7 +87,7 @@ data "aws_iam_policy_document" "ecr_policy_doc" {
     ]
 
     resources = [
-      "arn:aws:ecr:${var.region}:${local.account_id}:repository/mhs-*"
+      "arn:aws:ecr:${var.region}:${local.account_id}:repository/docker-hub/*"
 
     ]
   }
