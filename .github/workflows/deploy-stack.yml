@@ -75,6 +75,44 @@ permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
 jobs:
+  promote-images-from-dev:
+    environment: ${{ inputs.environment }}
+    name: Promote images to ${{ inputs.environment }}
+    if: ${{ inputs.is_deployment && inputs.environment != 'dev' && inputs.ecr_alias}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v5
+
+      - name: Configure AWS Credentials
+        id: creds
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-skip-session-tagging: true
+          mask-aws-account-id: true
+
+      # Needs the AmazonEC2ContainerRegistryPowerUser role
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: "${{ steps.creds.outputs.aws-account-id }},${{ secrets.AWS_DEV_ACCOUNT_ID }}"
+
+      - name: ECR Copy
+        id: ecr-copy
+        run: |
+          source_repo=${{ secrets.AWS_DEV_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
+          destination_repo=${{ steps.creds.outputs.aws-account-id }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
+          docker pull $source_repo:latest
+          docker tag $source_repo:latest $destination_repo:latest
+          docker tag $source_repo:latest $destination_repo:${{ steps.checkout.outputs.commit }}
+          docker tag $source_repo:latest $destination_repo:${{ github.ref_name }}
+          docker push $destination_repo:latest
+          docker push $destination_repo:${{ steps.checkout.outputs.commit }}
+          docker push $destination_repo:${{ github.ref_name }}
+
   deploy_stack:
     environment: ${{ !inputs.ci_account && inputs.environment || 'ci_account' }}
     env:
