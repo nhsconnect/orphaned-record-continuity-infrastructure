@@ -100,17 +100,30 @@ jobs:
         with:
           registries: "${{ steps.creds.outputs.aws-account-id }},${{ secrets.AWS_DEV_ACCOUNT_ID }}"
 
+      - name: Get Most Recent ECR Image Tag
+        id: get-image-tag
+        env:
+          ECR_ALIAS: ${{ inputs.ecr_alias }}
+        run: |
+          LATEST_IMAGE_TAG=$(aws ecr describe-images \
+            --repository-name $ECR_ALIAS \
+            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
+            --output json | tr -d '"')
+          
+          echo "Most recent image tag for $ECR_ALIAS: $LATEST_IMAGE_TAG"
+          echo "image_tag=$LATEST_IMAGE_TAG" >> $GITHUB_OUTPUT 
+
       - name: ECR Copy
         id: ecr-copy
+        env:
+          TAG: ${{ steps.get-image-tag.outputs.image_tag }}
         run: |
           source_repo=${{ secrets.AWS_DEV_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
           destination_repo=${{ steps.creds.outputs.aws-account-id }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
-          docker pull $source_repo:latest
-          docker tag $source_repo:latest $destination_repo:latest
-          docker tag $source_repo:latest $destination_repo:${{ steps.checkout.outputs.commit }}
-          docker tag $source_repo:latest $destination_repo:${{ github.ref_name }}
-          docker push $destination_repo:latest
-          docker push $destination_repo:${{ steps.checkout.outputs.commit }}
+          docker pull $source_repo:$TAG
+          docker tag $source_repo:$TAG $destination_repo:$TAG
+          docker tag $source_repo:$TAG $destination_repo:${{ github.ref_name }}
+          docker push $destination_repo:$TAG
           docker push $destination_repo:${{ github.ref_name }}
 
   deploy_stack:
