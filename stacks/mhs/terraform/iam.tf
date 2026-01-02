@@ -83,12 +83,12 @@ data "aws_iam_policy_document" "ecr_policy_doc" {
     actions = [
       "ecr:BatchCheckLayerAvailability",
       "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage"
+      "ecr:BatchGetImage",
+      "ecr:BatchImportUpstreamImage"
     ]
 
     resources = [
       "arn:aws:ecr:${var.region}:${local.account_id}:repository/docker-hub/*"
-
     ]
   }
 
