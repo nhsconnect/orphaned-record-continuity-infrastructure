@@ -118,7 +118,7 @@ jobs:
         env:
           TAG: ${{ steps.get-image-tag.outputs.image_tag }}
         run: |
-          source_repo=${{ secrets.AWS_DEV_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
+          source_repo=${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
           destination_repo=${{ steps.creds.outputs.aws-account-id }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
           docker pull $source_repo:$TAG
           docker tag $source_repo:$TAG $destination_repo:$TAG
