@@ -170,7 +170,7 @@ resource "aws_secretsmanager_secret_version" "dockerhub_ecr_ptc" {
   secret_id = aws_secretsmanager_secret.dockerhub_ecr_ptc.id
 
   secret_string = jsonencode({
-    username    = var.dockerhub_username
     accessToken = var.dockerhub_access_token
+    username    = var.dockerhub_username
   })
 }

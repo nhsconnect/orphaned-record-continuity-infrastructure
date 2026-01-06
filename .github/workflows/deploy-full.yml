@@ -60,7 +60,7 @@ jobs:
 
   mesh-forwarder-ci:
     name: Deploy MESH Forwarder Infrastructure
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: mesh-forwarder
@@ -71,7 +71,7 @@ jobs:
 
   pds-adaptor-ci:
     name: Deploy PDS Adaptor Infrastructure
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: pds-adaptor
@@ -82,7 +82,7 @@ jobs:
 
   re-registration-service-ci:
     name: Deploy Re-Registration Service Infrastructure
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: re-registration-service
@@ -93,7 +93,7 @@ jobs:
 
   suspension-service-ci:
     name: Deploy Suspension Service Infrastructure
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: suspension-service
@@ -104,7 +104,7 @@ jobs:
 
   nems-event-processor-ci:
     name: Deploy NEMS Event Processor Infrastructure
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     uses: ./.github/workflows/deploy-stack.yml
     with:
       stack: nems-event-processor
@@ -116,7 +116,7 @@ jobs:
   ehr-repo-ci:
     name: EHR Repo Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     with:
       stack: ehr-repo
       ecr_alias: deductions/ehr-repo
@@ -127,7 +127,7 @@ jobs:
   ehr-out-service-ci:
     name: Deploy EHR Out Service Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     with:
       stack: ehr-out-service
       ecr_alias: deductions/ehr-out-service
@@ -138,7 +138,7 @@ jobs:
   ehr-transfer-service-ci:
     name: Deploy EHR Transfer Service Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     with:
       stack: ehr-transfer-service
       ecr_alias: deductions/ehr-transfer-service
@@ -149,7 +149,7 @@ jobs:
   gp2gp-messenger-ci:
     name: Deploy GP2GP Messenger Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     with:
       stack: gp2gp-messenger
       ecr_alias: deductions/gp2gp-messenger
@@ -160,7 +160,7 @@ jobs:
   mhs-ci:
     name: Deploy MHS Infrastructure
     uses: ./.github/workflows/deploy-stack.yml
-    needs: [deductions-ci]
+    needs: [deductions-ci, deductions-cross-account]
     with:
       stack: mhs
       backend_key_alias: mhs-${{ inputs.environment }}-repo

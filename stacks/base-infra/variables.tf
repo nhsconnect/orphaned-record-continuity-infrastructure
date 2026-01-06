@@ -5,7 +5,7 @@ variable "region" {
 
 variable "repo_name" {
   type = string
-  default = "prm-deductions-base-infra"
+  default = "orphaned-record-continuity-infrastructure"
 }
 
 variable "common_account_id" {}

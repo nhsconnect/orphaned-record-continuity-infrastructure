@@ -75,9 +75,9 @@ permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
 jobs:
-  promote-images-from-dev:
+  promote-images-from-source-ecr-account:
     environment: ${{ inputs.environment }}
-    name: Promote images to ${{ inputs.environment }}
+    name: Promote images from source to current environment
     if: ${{ inputs.is_deployment && inputs.environment != 'dev' && inputs.ecr_alias}}
     runs-on: ubuntu-latest
     steps:
@@ -98,7 +98,7 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
         with:
-          registries: "${{ steps.creds.outputs.aws-account-id }},${{ secrets.AWS_DEV_ACCOUNT_ID }}"
+          registries: "${{ steps.creds.outputs.aws-account-id }},${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }}"
 
       - name: Get Most Recent ECR Image Tag
         id: get-image-tag
@@ -118,7 +118,7 @@ jobs:
         env:
           TAG: ${{ steps.get-image-tag.outputs.image_tag }}
         run: |
-          source_repo=${{ secrets.AWS_DEV_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
+          source_repo=${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
           destination_repo=${{ steps.creds.outputs.aws-account-id }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
           docker pull $source_repo:$TAG
           docker tag $source_repo:$TAG $destination_repo:$TAG
@@ -141,7 +141,7 @@ jobs:
           repository: nhsconnect/orphaned-record-continuity-infrastructure
           fetch-depth: 0
 
-      - name: Configure AWS Credentials (Read Write)
+      - name: Configure AWS Credentials (ReadWrite)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.IAM_ROLE }}

@@ -1,5 +1,5 @@
 region      = "eu-west-2"
-repo_name   = "prm-deductions-infra"
+repo_name   = "orphaned-record-continuity-infrastructure"
 
 deductions_private_component_name = "deductions-private"
 deductions_core_component_name    = "deductions-core"
