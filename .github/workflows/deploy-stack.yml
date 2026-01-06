@@ -89,7 +89,7 @@ jobs:
         id: creds
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+          role-to-assume: ${{ secrets.IAM_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
           role-skip-session-tagging: true
           mask-aws-account-id: true
