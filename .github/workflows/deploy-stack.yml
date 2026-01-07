@@ -78,7 +78,7 @@ jobs:
   promote-images-from-source-ecr-account:
     environment: ${{ inputs.environment }}
     name: Promote images from source to current environment
-    if: ${{ inputs.is_deployment && inputs.environment != 'dev' && inputs.ecr_alias}}
+    if: ${{ inputs.is_deployment && inputs.environment != 'dev' && inputs.ecr_alias }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -89,7 +89,7 @@ jobs:
         id: creds
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: ${{ secrets.AWS_ASSUME_ROLE }}
+          role-to-assume: ${{ secrets.IAM_ROLE }}
           aws-region: ${{ vars.AWS_REGION }}
           role-skip-session-tagging: true
           mask-aws-account-id: true
@@ -131,6 +131,8 @@ jobs:
     env:
       GITHUB_ENV: ${{ !inputs.ci_account && inputs.environment || 'ci_account' }}
     runs-on: ubuntu-latest
+    needs: [ promote-images-from-source-ecr-account ]
+    if: always() && (needs.promote-images-from-source-ecr-account.result == 'skipped' || needs.promote-images-from-source-ecr-account.result == 'success')
     defaults:
       run:
         working-directory: ./stacks/${{ inputs.stack }}/terraform
