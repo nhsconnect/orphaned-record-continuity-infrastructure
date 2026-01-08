@@ -68,8 +68,7 @@ jobs:
         if: github.event_name == 'push'
         id: get-changes-push
         run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | tr '\n' ' ')
+          changed=$(git diff --name-only HEAD^ HEAD | tr '\n' ' ')
           echo "changed=$changed" >> $GITHUB_OUTPUT
 
   deductions-ci:
