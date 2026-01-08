@@ -21,11 +21,16 @@ variable "immutable_ecr_repositories" {
 }
 
 variable "dockerhub_username" {
-  type = string
+  type      = string
   sensitive = true
 }
 
 variable "dockerhub_access_token" {
-  type = string
+  type      = string
+  sensitive = true
+}
+
+variable "promotion_iam_arn" {
+  type      = string
   sensitive = true
 }

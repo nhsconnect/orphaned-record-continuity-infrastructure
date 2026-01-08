@@ -130,6 +130,87 @@ resource "aws_ecr_repository" "gp_registrations_mi_forwarder" {
   }
 }
 
+data "aws_iam_policy_document" "ecr_promotion_account_permissions" {
+  count = var.environment == "prod" ? 0 : 1
+
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = [var.promotion_iam_arn] # arn:aws:sts::xxxxxxxxxxxx:assumed-role/<ROLE_NAME>/GitHubActions
+    }
+
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:DescribeImages",
+      "ecr:ListImages",
+    ]
+  }
+}
+
+resource "aws_ecr_repository_policy" "ehr_out_service_promotion" {
+  count = var.environment == "prod" ? 0 : 1
+
+  repository = aws_ecr_repository.ehr_out_service.name
+  policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
+}
+
+resource "aws_ecr_repository_policy" "gp2gp_messenger_promotion" {
+  count = var.environment == "prod" ? 0 : 1
+
+  repository = aws_ecr_repository.gp2gp-messenger.name
+  policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
+}
+
+resource "aws_ecr_repository_policy" "ehr_transfer_service_promotion" {
+  count = var.environment == "prod" ? 0 : 1
+
+  repository = aws_ecr_repository.ehr-transfer-service.name
+  policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
+}
+
+resource "aws_ecr_repository_policy" "ehr_repo_promotion" {
+  count = var.environment == "prod" ? 0 : 1
+
+  repository = aws_ecr_repository.ehr-repo.name
+  policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
+}
+
+resource "aws_ecr_repository_policy" "pds_adaptor_promotion" {
+  count = var.environment == "prod" ? 0 : 1
+
+  repository = aws_ecr_repository.pds_adaptor.name
+  policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
+}
+
+resource "aws_ecr_repository_policy" "mesh_forwarder_promotion" {
+  count = var.environment == "prod" ? 0 : 1
+
+  repository = aws_ecr_repository.mesh-forwarder.name
+  policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
+}
+resource "aws_ecr_repository_policy" "nems_event_processor_promotion" {
+  count = var.environment == "prod" ? 0 : 1
+
+  repository = aws_ecr_repository.nems-event-processor.name
+  policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
+}
+resource "aws_ecr_repository_policy" "suspension_service_promotion" {
+  count = var.environment == "prod" ? 0 : 1
+
+  repository = aws_ecr_repository.suspension-service.name
+  policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
+}
+resource "aws_ecr_repository_policy" "re_registration_service_promotion" {
+  count = var.environment == "prod" ? 0 : 1
+
+  repository = aws_ecr_repository.re_registration_service.name
+  policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
+}
+
 data "aws_caller_identity" "this" {}
 
 resource "aws_secretsmanager_secret_policy" "dockerhub_ecr_ptc" {

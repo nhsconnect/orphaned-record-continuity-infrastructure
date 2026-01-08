@@ -52,15 +52,15 @@ jobs:
     outputs:
       changed: ${{ steps.get-changes.outputs.changed }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Get changed files
         id: get-changes
         run: |
-          git fetch origin ${{ github.event.pull_request.base.ref }}
-          changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD | tr '\n' ' ')
+          git fetch origin main
+          changed=$(git diff --name-only origin/main... | tr '\n' ' ')
           echo "changed=$changed" >> $GITHUB_OUTPUT
 
   deductions-ci:
