@@ -192,18 +192,21 @@ resource "aws_ecr_repository_policy" "mesh_forwarder_promotion" {
   repository = aws_ecr_repository.mesh-forwarder.name
   policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
 }
+
 resource "aws_ecr_repository_policy" "nems_event_processor_promotion" {
   count = var.environment == "prod" ? 0 : 1
 
   repository = aws_ecr_repository.nems-event-processor.name
   policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
 }
+
 resource "aws_ecr_repository_policy" "suspension_service_promotion" {
   count = var.environment == "prod" ? 0 : 1
 
   repository = aws_ecr_repository.suspension-service.name
   policy     = data.aws_iam_policy_document.ecr_promotion_account_permissions[0].json
 }
+
 resource "aws_ecr_repository_policy" "re_registration_service_promotion" {
   count = var.environment == "prod" ? 0 : 1
 
