@@ -100,12 +100,13 @@ jobs:
         with:
           registries: "${{ steps.creds.outputs.aws-account-id }},${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }}"
 
-      - name: Get Most Recent ECR Image Tag
+      - name: Get Most Recent ECR Image Tag From Lower Environment
         id: get-image-tag
         env:
           ECR_ALIAS: ${{ inputs.ecr_alias }}
         run: |
           LATEST_IMAGE_TAG=$(aws ecr describe-images \
+            --registry-id ${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }} \
             --repository-name $ECR_ALIAS \
             --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
             --output json | tr -d '"')
