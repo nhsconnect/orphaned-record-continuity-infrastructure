@@ -105,33 +105,34 @@ jobs:
         env:
           ECR_ALIAS: ${{ inputs.ecr_alias }}
         run: |
-          LATEST_IMAGE_TAGS=$(aws ecr describe-images \
+          LATEST_IMAGE_SHA=$(aws ecr describe-images \
             --registry-id ${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }} \
             --repository-name $ECR_ALIAS \
-            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags' \
-            --output text)
-          echo "All image tags for $ECR_ALIAS: $LATEST_IMAGE_TAGS"
-          echo "image_tags=$LATEST_IMAGE_TAGS" >> $GITHUB_OUTPUT 
+            --output json |
+            jq -r '
+              .imageDetails
+              | map(select(.imageTags != null and (.imageTags|length>0)))
+              | sort_by(.imagePushedAt)
+              | last
+              | .imageTags[]
+              | select(test("^[0-9a-f]{40}$"))
+            ' | head -n 1)
+
+          echo "All image tags for $ECR_ALIAS: $LATEST_IMAGE_SHA"
+          echo "image_sha=$LATEST_IMAGE_SHA" >> $GITHUB_OUTPUT 
 
       - name: ECR Copy
         id: ecr-copy
         env:
-          TAGS: ${{ steps.get-image-tag.outputs.image_tags }}
+          IMAGE_SHA: '${{ steps.get-image-tag.outputs.image_sha }}'
         run: |
           source_repo=${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
           destination_repo=${{ steps.creds.outputs.aws-account-id }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
-          
-          # Convert space separated string into an array
-          for TAG in ${TAGS[@]}; do
-            if [ "$TAG" != "${{ github.ref_name }}" ]; then
-              docker pull $source_repo:$TAG
-              docker tag $source_repo:$TAG $destination_repo:$TAG
-              docker push $destination_repo:$TAG
-            fi
-          done
-          
-          # separately stamp the Git ref on there - this guarantees it happens once and only once
-          docker tag $source_repo:$TAGS $destination_repo:${{ github.ref_name }}
+
+          docker pull $source_repo:$IMAGE_SHA
+          docker tag $source_repo:$IMAGE_SHA $destination_repo:$IMAGE_SHA
+          docker tag $source_repo:$IMAGE_SHA $destination_repo:${{ github.ref_name }}
+          docker push $destination_repo:$IMAGE_SHA
           docker push $destination_repo:${{ github.ref_name }}
 
   deploy_stack:
@@ -172,31 +173,29 @@ jobs:
           promotion_iam_arn = "${PROMOTION_IAM_ARN}"
           EOF
 
-      - name: Get Most Recent ECR Image Tag (Git SHA)
+      - name: Get Most Recent ECR Image Tag
         id: get-image-tag
         if: inputs.ecr_alias
         env:
           ECR_ALIAS: ${{ inputs.ecr_alias }}
         run: |
-          ALL_TAGS_FOR_MOST_RECENT_IMAGE=$(aws ecr describe-images \
+          LATEST_IMAGE_SHA=$(aws ecr describe-images \
+            --registry-id ${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }} \
             --repository-name $ECR_ALIAS \
-            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags' \
-            --output text)
+            --output json |
+            jq -r '
+              .imageDetails
+              | map(select(.imageTags != null and (.imageTags|length>0)))
+              | sort_by(.imagePushedAt)
+              | last
+              | .imageTags[]
+              | select(test("^[0-9a-f]{40}$"))
+            ' | head -n 1)
           
-          echo "Found tags on latest image: $ALL_TAGS_FOR_MOST_RECENT_IMAGE"
-          
-          LATEST_IMAGE_TAG=""
-          
-          # Iterate through tags to find the Git SHA (hexadecimal string)
-          for tag in $ALL_TAGS_FOR_MOST_RECENT_IMAGE; do
-            if [[ "$tag" =~ ^[0-9a-fA-F]+$ ]]; then
-              LATEST_IMAGE_TAG=$tag
-              break
-            fi
-          done
-          
-          echo "Most recent image tag for $ECR_ALIAS: $LATEST_IMAGE_TAG"
-          echo "image_tag=$LATEST_IMAGE_TAG" >> $GITHUB_OUTPUT 
+          echo "Found tag: $LATEST_IMAGE_SHA"
+
+          echo "Most recent image tag for $ECR_ALIAS: $LATEST_IMAGE_SHA"
+          echo "image_tag=$LATEST_IMAGE_SHA" >> $GITHUB_OUTPUT 
 
       - name: Setup Terraform variables
         id: vars
