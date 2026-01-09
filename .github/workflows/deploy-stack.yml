@@ -109,8 +109,7 @@ jobs:
             --registry-id ${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }} \
             --repository-name $ECR_ALIAS \
             --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags' \
-            --output json | tr -d '"')
-          
+            --output text)
           echo "All image tags for $ECR_ALIAS: $LATEST_IMAGE_TAGS"
           echo "image_tags=$LATEST_IMAGE_TAGS" >> $GITHUB_OUTPUT 
 
@@ -122,11 +121,12 @@ jobs:
           source_repo=${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
           destination_repo=${{ steps.creds.outputs.aws-account-id }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
           
-          for tag in $tags; do
-            if [ "$tag" != "${{ github.ref_name }}" ]; then
-              docker pull $source_repo:$tag
-              docker tag $source_repo:$tag $destination_repo:$tag
-              docker push $destination_repo:$tag
+          # Convert space separated string into an array
+          for TAG in ${TAGS[@]}; do
+            if [ "$TAG" != "${{ github.ref_name }}" ]; then
+              docker pull $source_repo:$TAG
+              docker tag $source_repo:$TAG $destination_repo:$TAG
+              docker push $destination_repo:$TAG
             fi
           done
           
