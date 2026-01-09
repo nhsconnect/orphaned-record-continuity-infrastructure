@@ -100,31 +100,38 @@ jobs:
         with:
           registries: "${{ steps.creds.outputs.aws-account-id }},${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }}"
 
-      - name: Get Most Recent ECR Image Tag From Lower Environment
+      - name: Get Most Recent ECR Image Tags From Lower Environment
         id: get-image-tag
         env:
           ECR_ALIAS: ${{ inputs.ecr_alias }}
         run: |
-          LATEST_IMAGE_TAG=$(aws ecr describe-images \
+          LATEST_IMAGE_TAGS=$(aws ecr describe-images \
             --registry-id ${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }} \
             --repository-name $ECR_ALIAS \
-            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
+            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags' \
             --output json | tr -d '"')
           
-          echo "Most recent image tag for $ECR_ALIAS: $LATEST_IMAGE_TAG"
-          echo "image_tag=$LATEST_IMAGE_TAG" >> $GITHUB_OUTPUT 
+          echo "All image tags for $ECR_ALIAS: $LATEST_IMAGE_TAGS"
+          echo "image_tags=$LATEST_IMAGE_TAGS" >> $GITHUB_OUTPUT 
 
       - name: ECR Copy
         id: ecr-copy
         env:
-          TAG: ${{ steps.get-image-tag.outputs.image_tag }}
+          TAGS: ${{ steps.get-image-tag.outputs.image_tags }}
         run: |
           source_repo=${{ secrets.AWS_SOURCE_ECR_ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
           destination_repo=${{ steps.creds.outputs.aws-account-id }}.dkr.ecr.eu-west-2.amazonaws.com/${{ inputs.ecr_alias }}
-          docker pull $source_repo:$TAG
-          docker tag $source_repo:$TAG $destination_repo:$TAG
-          docker tag $source_repo:$TAG $destination_repo:${{ github.ref_name }}
-          docker push $destination_repo:$TAG
+          
+          for tag in $tags; do
+            if [ "$tag" != "${{ github.ref_name }}" ]; then
+              docker pull $source_repo:$tag
+              docker tag $source_repo:$tag $destination_repo:$tag
+              docker push $destination_repo:$tag
+            fi
+          done
+          
+          # separately stamp the Git ref on there - this guarantees it happens once and only once
+          docker tag $source_repo:$TAGS $destination_repo:${{ github.ref_name }}
           docker push $destination_repo:${{ github.ref_name }}
 
   deploy_stack:
@@ -165,16 +172,28 @@ jobs:
           promotion_iam_arn = "${PROMOTION_IAM_ARN}"
           EOF
 
-      - name: Get Most Recent ECR Image Tag
+      - name: Get Most Recent ECR Image Tag (Git SHA)
         id: get-image-tag
         if: inputs.ecr_alias
         env:
           ECR_ALIAS: ${{ inputs.ecr_alias }}
         run: |
-          LATEST_IMAGE_TAG=$(aws ecr describe-images \
+          ALL_TAGS_FOR_MOST_RECENT_IMAGE=$(aws ecr describe-images \
             --repository-name $ECR_ALIAS \
-            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' \
-            --output json | tr -d '"')
+            --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags' \
+            --output text)
+          
+          echo "Found tags on latest image: $ALL_TAGS_FOR_MOST_RECENT_IMAGE"
+          
+          LATEST_IMAGE_TAG=""
+          
+          # Iterate through tags to find the Git SHA (hexadecimal string)
+          for tag in $ALL_TAGS_FOR_MOST_RECENT_IMAGE; do
+            if [[ "$tag" =~ ^[0-9a-fA-F]+$ ]]; then
+              LATEST_IMAGE_TAG=$tag
+              break
+            fi
+          done
           
           echo "Most recent image tag for $ECR_ALIAS: $LATEST_IMAGE_TAG"
           echo "image_tag=$LATEST_IMAGE_TAG" >> $GITHUB_OUTPUT 
